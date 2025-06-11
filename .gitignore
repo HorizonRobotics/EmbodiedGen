@@ -51,18 +51,12 @@ wheels*/
 # node
 node_modules
 
-# local scripts
+# local files
 build.sh
 __pycache__/
 output*
 *.log
-scripts/tools/process_video/
-scripts/demo/
-scripts/apps/assets/
-scripts/apps/*sessions/
-*/*/tmp/
+scripts/tools/
 weights/
-*/*/backup
-apps/assets/example_image_raw/
 apps/assets/example_texture/
 apps/sessions/
