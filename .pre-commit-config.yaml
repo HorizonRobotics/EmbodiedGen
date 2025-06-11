@@ -1,0 +1,78 @@
+repos:
+  - repo: git@gitlab.hobot.cc:ptd/3rd/pre-commit/pre-commit-hooks.git
+    rev: v2.3.0 # Use the ref you want to point at
+    hooks:
+      - id: trailing-whitespace
+      - id: check-added-large-files
+        name: Check for added large files
+        description: Prevent giant files from being committed
+        entry: check-added-large-files
+        language: python
+        args: ["--maxkb=1024"]
+  - repo: local
+    hooks:
+      - id: cpplint-cpp-source
+        name: cpplint
+        description: Check cpp code style.
+        entry: python3 scripts/lint_src/lint.py
+        language: system
+        exclude: (?x)(^tools/|^thirdparty/|^patch_files/)
+        files: \.(c|cc|cxx|cpp|cu|h|hpp)$
+        args: [--project=asset_recons, --path]
+  - repo: local
+    hooks:
+      - id: pycodestyle-python
+        name: pep8-exclude-docs
+        description: Check python code style.
+        entry: pycodestyle
+        language: system
+        exclude: (?x)(^docs/|^thirdparty/|^scripts/build/)
+        files: \.(py)$
+        types: [file, python]
+        args: [--config=setup.cfg]
+
+
+  # pre-commit install --hook-type commit-msg to enable it
+  # - repo: local
+  #   hooks:
+  #     - id: commit-check
+  #       name: check for commit msg format
+  #       language: pygrep
+  #       entry: '\A(?!(feat|fix|docs|style|refactor|perf|test|chore)\(.*\): (\[[a-zA-Z][a-zA-Z0-9_]+-[1-9][0-9]*\]|\[cr_id_skip\]) [A-Z]+.*)'
+  #       args: [--multiline]
+  #       stages: [commit-msg]
+
+  - repo: local
+    hooks:
+      - id: pydocstyle-python
+        name: pydocstyle-change-exclude-docs
+        description: Check python doc style.
+        entry: pydocstyle
+        language: system
+        exclude: (?x)(^docs/|^thirdparty/)
+        files: \.(py)$
+        types: [file, python]
+        args: [--config=pyproject.toml]
+  - repo: local
+    hooks:
+      - id: black
+        name: black-exclude-docs
+        description: black format
+        entry: black
+        language: system
+        exclude: (?x)(^docs/|^thirdparty/)
+        files: \.(py)$
+        types: [file, python]
+        args: [--config=pyproject.toml]
+
+  - repo: local
+    hooks:
+      - id: isort
+        name: isort
+        description: isort format
+        entry: isort
+        language: system
+        exclude: (?x)(^thirdparty/)
+        files: \.(py)$
+        types: [file, python]
+        args: [--settings-file=pyproject.toml]

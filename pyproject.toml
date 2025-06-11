@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools", "wheel", "build"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["embodied_gen"]
+
+[project]
+name = "embodied_gen"
+version = "v0.1.0"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+
+dependencies = []
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+dev = [
+    "cpplint==2.0.0",
+    "pre-commit==2.13.0",
+    "pydocstyle",
+    "black",
+    "isort",
+]
+
+[project.scripts]
+drender-cli = "embodied_gen.data.differentiable_render:entrypoint"
+backproject-cli = "embodied_gen.data.backproject_v2:entrypoint"
+
+[tool.pydocstyle]
+match = '(?!test_).*(?!_pb2)\.py'
+match-dir = '^(?!(raw|projects|tools|k8s_submit|thirdparty)$)[\w.-]+$'
+convention = "google"
+add-ignore = 'D104,D107,D202,D105,D100,D102,D103,D101,E203'
+
+[tool.pycodestyle]
+max-line-length = 79
+ignore = "E203"
+
+[tool.black]
+line-length = 79
+exclude = "thirdparty"
+skip-string-normalization = true
+
+[tool.isort]
+line_length = 79
+profile = 'black'
+no_lines_before = 'FIRSTPARTY'
+known_first_party = ['embodied_gen']
+skip = "thirdparty/"

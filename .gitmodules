@@ -1,0 +1,4 @@
+[submodule "thirdparty/TRELLIS"]
+	path = thirdparty/TRELLIS
+	url = https://github.com/microsoft/TRELLIS.git
+	branch = main
