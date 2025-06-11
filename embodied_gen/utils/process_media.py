@@ -19,7 +19,6 @@ import base64
 import logging
 import math
 import os
-import subprocess
 import sys
 from glob import glob
 from io import BytesIO
@@ -33,6 +32,7 @@ import spaces
 import torch
 from moviepy.editor import VideoFileClip, clips_array
 from tqdm import tqdm
+from embodied_gen.data.differentiable_render import entrypoint as render_api
 
 current_file_path = os.path.abspath(__file__)
 current_dir = os.path.dirname(current_file_path)
@@ -56,8 +56,6 @@ __all__ = [
     "combine_images_to_base64",
     "render_mesh",
     "render_video",
-    "create_mp4_from_images",
-    "create_gif_from_images",
 ]
 
 
@@ -75,34 +73,25 @@ def render_asset3d(
     gen_viewnormal_mp4: bool = False,
     gen_glonormal_mp4: bool = False,
 ) -> list[str]:
-    command = [
-        "python3",
-        "embodied_gen/data/differentiable_render.py",
-        "--mesh_path",
-        mesh_path,
-        "--output_root",
-        output_root,
-        "--uuid",
-        output_subdir,
-        "--distance",
-        str(distance),
-        "--num_images",
-        str(num_images),
-        "--elevation",
-        *map(str, elevation),
-        "--pbr_light_factor",
-        str(pbr_light_factor),
-        "--with_mtl",
-    ]
+    input_args = dict(
+        mesh_path=mesh_path,
+        output_root=output_root,
+        uuid=output_subdir,
+        distance=distance,
+        num_images=num_images,
+        elevation=elevation,
+        pbr_light_factor=pbr_light_factor,
+        with_mtl=True,
+    )
     if gen_color_mp4:
-        command.append("--gen_color_mp4")
+        input_args["gen_color_mp4"] = True
     if gen_viewnormal_mp4:
-        command.append("--gen_viewnormal_mp4")
+        input_args["gen_viewnormal_mp4"] = True
     if gen_glonormal_mp4:
-        command.append("--gen_glonormal_mp4")
+        input_args["gen_glonormal_mp4"] = True
     try:
-        subprocess.run(command, check=True)
-    except subprocess.CalledProcessError as e:
+        _ = render_api(**input_args)
+    except Exception as e:
         logger.error(f"Error occurred during rendering: {e}.")
 
     dst_paths = glob(os.path.join(output_root, output_subdir, return_key))
@@ -261,54 +250,6 @@ def render_video(
     )
 
     return result
-
-
-def create_mp4_from_images(images, output_path, fps=10, prompt=None):
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    font_scale = 0.5
-    font_thickness = 1
-    color = (255, 255, 255)
-    position = (20, 25)
-
-    with imageio.get_writer(output_path, fps=fps) as writer:
-        for image in images:
-            image = image.clip(min=0, max=1)
-            image = (255.0 * image).astype(np.uint8)
-            image = image[..., :3]
-            if prompt is not None:
-                cv2.putText(
-                    image,
-                    prompt,
-                    position,
-                    font,
-                    font_scale,
-                    color,
-                    font_thickness,
-                )
-
-            writer.append_data(image)
-
-    logger.info(f"MP4 video saved to {output_path}")
-
-
-def create_gif_from_images(images, output_path, fps=10):
-    pil_images = []
-    for image in images:
-        image = image.clip(min=0, max=1)
-        image = (255.0 * image).astype(np.uint8)
-        image = Image.fromarray(image, mode="RGBA")
-        pil_images.append(image.convert("RGB"))
-
-    duration = 1000 // fps
-    pil_images[0].save(
-        output_path,
-        save_all=True,
-        append_images=pil_images[1:],
-        duration=duration,
-        loop=0,
-    )
-
-    logger.info(f"GIF saved to {output_path}")
 
 
 if __name__ == "__main__":
