@@ -153,8 +153,8 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                         label="Randomize Seed", value=False
                     )
                     project_delight = gr.Checkbox(
-                        label="Backproject delighting",
-                        value=False,
+                        label="Back-project Delight",
+                        value=True,
                     )
                 gr.Markdown("Geo Structure Generation")
                 with gr.Row():

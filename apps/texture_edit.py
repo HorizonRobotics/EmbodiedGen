@@ -215,7 +215,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                         )
                     with gr.Row():
                         project_delight = gr.Checkbox(
-                            label="delight", value=True
+                            label="Back-project delight", value=True
                         )
                         fix_mesh = gr.Checkbox(
                             label="simplify mesh", value=False

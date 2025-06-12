@@ -28,6 +28,7 @@ from kolors.pipelines.pipeline_controlnet_xl_kolors_img2img import (
     StableDiffusionXLControlNetImg2ImgPipeline,
 )
 from transformers import CLIPImageProcessor, CLIPVisionModelWithProjection
+from embodied_gen.models.text_model import download_kolors_weights
 
 __all__ = [
     "build_texture_gen_pipe",
@@ -40,6 +41,8 @@ def build_texture_gen_pipe(
     ip_adapt_scale: float = 0,
     device: str = "cuda",
 ) -> DiffusionPipeline:
+    download_kolors_weights(f"{base_ckpt_dir}/Kolors")
+
     tokenizer = ChatGLMTokenizer.from_pretrained(
         f"{base_ckpt_dir}/Kolors/text_encoder"
     )

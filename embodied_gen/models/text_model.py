@@ -16,7 +16,9 @@
 
 
 import logging
+import os
 import random
+import subprocess
 
 import numpy as np
 import torch
@@ -47,7 +49,37 @@ __all__ = [
     "build_text2img_ip_pipeline",
     "build_text2img_pipeline",
     "text2img_gen",
+    "download_kolors_weights",
 ]
+
+
+def download_kolors_weights(local_dir: str = "weights/Kolors") -> None:
+    logger.info(f"Download kolors weights from huggingface...")
+    os.makedirs(local_dir, exist_ok=True)
+    subprocess.run(
+        [
+            "huggingface-cli",
+            "download",
+            "--resume-download",
+            "Kwai-Kolors/Kolors",
+            "--local-dir",
+            local_dir,
+        ],
+        check=True,
+    )
+
+    ip_adapter_path = f"{local_dir}/../Kolors-IP-Adapter-Plus"
+    subprocess.run(
+        [
+            "huggingface-cli",
+            "download",
+            "--resume-download",
+            "Kwai-Kolors/Kolors-IP-Adapter-Plus",
+            "--local-dir",
+            ip_adapter_path,
+        ],
+        check=True,
+    )
 
 
 def build_text2img_ip_pipeline(
@@ -55,6 +87,8 @@ def build_text2img_ip_pipeline(
     ref_scale: float,
     device: str = "cuda",
 ) -> StableDiffusionXLPipelineIP:
+    download_kolors_weights(ckpt_dir)
+
     text_encoder = ChatGLMModel.from_pretrained(
         f"{ckpt_dir}/text_encoder", torch_dtype=torch.float16
     ).half()
@@ -106,6 +140,8 @@ def build_text2img_pipeline(
     ckpt_dir: str,
     device: str = "cuda",
 ) -> StableDiffusionXLPipeline:
+    download_kolors_weights(ckpt_dir)
+
     text_encoder = ChatGLMModel.from_pretrained(
         f"{ckpt_dir}/text_encoder", torch_dtype=torch.float16
     ).half()

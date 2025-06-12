@@ -136,32 +136,6 @@ def patched_setup_functions(self):
 Gaussian.setup_functions = patched_setup_functions
 
 
-def download_kolors_weights() -> None:
-    logger.info(f"Download kolors weights from huggingface...")
-    subprocess.run(
-        [
-            "huggingface-cli",
-            "download",
-            "--resume-download",
-            "Kwai-Kolors/Kolors",
-            "--local-dir",
-            "weights/Kolors",
-        ],
-        check=True,
-    )
-    subprocess.run(
-        [
-            "huggingface-cli",
-            "download",
-            "--resume-download",
-            "Kwai-Kolors/Kolors-IP-Adapter-Plus",
-            "--local-dir",
-            "weights/Kolors-IP-Adapter-Plus",
-        ],
-        check=True,
-    )
-
-
 if os.getenv("GRADIO_APP") == "imageto3d":
     RBG_REMOVER = RembgRemover()
     RBG14_REMOVER = BMGG14Remover()
@@ -185,9 +159,6 @@ elif os.getenv("GRADIO_APP") == "textto3d":
     )
     # PIPELINE.cuda()
     text_model_dir = "weights/Kolors"
-    if not os.path.exists(text_model_dir):
-        download_kolors_weights()
-
     PIPELINE_IMG_IP = build_text2img_ip_pipeline(text_model_dir, ref_scale=0.3)
     PIPELINE_IMG = build_text2img_pipeline(text_model_dir)
     SEG_CHECKER = ImageSegChecker(GPT_CLIENT)
@@ -198,9 +169,6 @@ elif os.getenv("GRADIO_APP") == "textto3d":
         os.path.dirname(os.path.abspath(__file__)), "sessions/textto3d"
     )
 elif os.getenv("GRADIO_APP") == "texture_edit":
-    if not os.path.exists("weights/Kolors"):
-        download_kolors_weights()
-
     PIPELINE_IP = build_texture_gen_pipe(
         base_ckpt_dir="./weights",
         ip_adapt_scale=0.7,

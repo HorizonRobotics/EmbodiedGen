@@ -63,7 +63,7 @@ CUDA_VISIBLE_DEVICES=0 nohup python apps/image_to_3d.py > /dev/null 2>&1 &
 
 ### API
 Generate a 3D model from an image using the command-line API.
-
+Models will be downloaded automatically, please wait for the first run.
 ```sh
 python3 embodied_gen/scripts/imageto3d.py \
     --image_path apps/assets/example_image/sample_04.jpg apps/assets/example_image/sample_19.jpg \
@@ -87,7 +87,7 @@ python apps/text_to_3d.py
 ```
 
 ### API
-
+Models will be downloaded automatically, see `download_kolors_weights`.
 ```sh
 bash embodied_gen/scripts/textto3d.sh \
     --prompts "small bronze figurine of a lion" "带木质底座，具有经纬线的地球仪" "橙色电动手钻，有磨损细节" \
@@ -109,8 +109,7 @@ python apps/texture_edit.py
 ```
 
 ### API
-Generate textures for a 3D mesh using a text prompt.
-
+Models will be downloaded automatically, see `download_kolors_weights`, `geo_cond_mv`.
 ```sh
 bash embodied_gen/scripts/texture_gen.sh \
     --mesh_path "apps/assets/example_texture/meshes/robot_text.obj" \
