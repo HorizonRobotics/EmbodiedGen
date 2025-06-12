@@ -9,6 +9,6 @@ gpt-4o:
 
 qwen2.5-vl:
   endpoint: https://openrouter.ai/api/v1
-  api_key: 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
+  api_key: sk-or-v1-xxx
   api_version: null
   model_name: qwen/qwen2.5-vl-72b-instruct:free

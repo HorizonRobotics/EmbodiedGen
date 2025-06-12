@@ -7,10 +7,11 @@
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Text_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D)
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Texture_Gen_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Texture-Gen)
 
+
+**EmbodiedGen** is a toolkit to generate diverse and interactive 3D worlds composed of generative 3D assets with plausible physics, leveraging generative AI to address the challenges of generalization in embodied intelligence related research. EmbodiedGen composed of six key modules: `Image-to-3D`, `Text-to-3D`, `Texture Generation`, `Articulated Object Generation`, `Scene Generation` and `Layout Generation`.
+
+
 <img src="apps/assets/overall.jpg" alt="Overall Framework" width="700"/>
-
-
-**EmbodiedGen** generates interactive 3D worlds with real-world scale and physical realism at low cost.
 
 ---
 
@@ -25,8 +26,8 @@
 ## 🚀 Quick Start
 
 ```sh
-git clone https://github.com/HorizonRobotics/EmbodiedGen
-cd EmbodiedGen
+git clone https://github.com/HorizonRobotics/EmbodiedGen.git
+cd EmbodiedGen && git submodule update --init --recursive --progress
 conda create -n embodiedgen python=3.10.13 -y
 conda activate embodiedgen
 pip install -r requirements.txt --use-deprecated=legacy-resolver
@@ -42,7 +43,7 @@ Update the API key in file: `embodied_gen/utils/gpt_config.yaml`.
 You can choose between two backends for the GPT agent:
 
 - **`gpt-4o`** (Recommended) – Use this if you have access to **Azure OpenAI**.
-- **`qwen2.5-vl`** – An open alternative with free usage via [OpenRouter](https://openrouter.ai/settings/keys) (50 free requests per day)
+- **`qwen2.5-vl`** – An alternative with free usage via OpenRouter, apply a free key [here](https://openrouter.ai/settings/keys) and update `api_key` in `embodied_gen/utils/gpt_config.yaml` (50 free requests per day)
 
 
 ---

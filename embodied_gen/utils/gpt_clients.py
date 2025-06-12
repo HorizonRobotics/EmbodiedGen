@@ -185,9 +185,8 @@ if __name__ == "__main__":
             text_prompt="What is the content in each image?",
             image_base64=combine_images_to_base64(
                 [
-                    "outputs/text2image/demo_objects/bed/sample_0.jpg",
-                    "outputs/imageto3d/v2/cups/sample_69/URDF_sample_69/qa_renders/image_color/003.png",  # noqa
-                    "outputs/text2image/demo_objects/cardboard/sample_1.jpg",
+                    "apps/assets/example_image/sample_02.jpg",
+                    "apps/assets/example_image/sample_03.jpg",
                 ]
             ),  # input raw image_path if only one image
         )
@@ -196,10 +195,8 @@ if __name__ == "__main__":
         response = GPT_CLIENT.query(
             text_prompt="What is the content in the images?",
             image_base64=[
-                Image.open("outputs/text2image/demo_objects/bed/sample_0.jpg"),
-                Image.open(
-                    "outputs/imageto3d/v2/cups/sample_69/URDF_sample_69/qa_renders/image_color/003.png"  # noqa
-                ),
+                Image.open("apps/assets/example_image/sample_02.jpg"),
+                Image.open("apps/assets/example_image/sample_03.jpg"),
             ],
         )
         print(response)

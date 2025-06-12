@@ -139,7 +139,9 @@ class DiffrastRender(object):
         vertices: torch.Tensor,
         matrix: torch.Tensor,
     ) -> torch.Tensor:
-        verts_ones = torch.ones((len(vertices), 1)).to(vertices)
+        verts_ones = torch.ones(
+            (len(vertices), 1), device=vertices.device, dtype=vertices.dtype
+        )
         verts_homo = torch.cat([vertices, verts_ones], dim=-1)
         trans_vertices = torch.matmul(verts_homo, matrix.permute(0, 2, 1))
 
