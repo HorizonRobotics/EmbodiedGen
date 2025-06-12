@@ -35,7 +35,6 @@ clip@git+https://github.com/openai/CLIP.git
 kolors@git+https://github.com/Kwai-Kolors/Kolors.git#egg=038818d
 segment-anything@git+https://github.com/facebookresearch/segment-anything.git#egg=dca509f
 nvdiffrast@git+https://github.com/NVlabs/nvdiffrast.git#egg=729261d
-kaolin@git+https://github.com/NVIDIAGameWorks/kaolin.git@v0.16.0
-https://github.com/nerfstudio-project/gsplat/releases/download/v1.5.0/gsplat-1.5.0+pt24cu118-cp310-cp310-linux_x86_64.whl
-https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.0.post2/flash_attn-2.7.0.post2+cu11torch2.4cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
-https://huggingface.co/xinjjj/RoboAssetGen/resolve/main/wheel_cu118/diff_gaussian_rasterization-0.0.0-cp310-cp310-linux_x86_64.whl
+# https://github.com/nerfstudio-project/gsplat/releases/download/v1.5.0/gsplat-1.5.0+pt24cu118-cp310-cp310-linux_x86_64.whl
+# https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.0.post2/flash_attn-2.7.0.post2+cu11torch2.4cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
+# https://huggingface.co/xinjjj/RoboAssetGen/resolve/main/wheel_cu118/diff_gaussian_rasterization-0.0.0-cp310-cp310-linux_x86_64.whl

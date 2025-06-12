@@ -58,5 +58,5 @@ output*
 *.log
 scripts/tools/
 weights/
-apps/assets/example_texture/
 apps/sessions/
+apps/assets/

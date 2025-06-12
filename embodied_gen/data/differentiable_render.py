@@ -505,7 +505,7 @@ def parse_args():
         help="Text prompts for the rendering.",
     )
 
-    args = parser.parse_args()
+    args, unknown = parser.parse_known_args()
 
     if args.uuid is None and args.mesh_path is not None:
         args.uuid = []
