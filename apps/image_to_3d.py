@@ -498,4 +498,4 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
 
 
 if __name__ == "__main__":
-    demo.launch(server_name="10.34.8.82", server_port=8081)
+    demo.launch()

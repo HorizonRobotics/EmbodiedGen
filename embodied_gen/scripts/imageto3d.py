@@ -20,7 +20,7 @@ import logging
 import os
 import sys
 from glob import glob
-from shutil import copy, copytree
+from shutil import copy, copytree, rmtree
 
 import numpy as np
 import trimesh
@@ -294,6 +294,8 @@ if __name__ == "__main__":
 
             # Organize the final result files
             result_dir = f"{output_root}/result"
+            if os.path.exists(result_dir):
+                rmtree(result_dir, ignore_errors=True)
             os.makedirs(result_dir, exist_ok=True)
             copy(urdf_path, f"{result_dir}/{os.path.basename(urdf_path)}")
             copytree(
