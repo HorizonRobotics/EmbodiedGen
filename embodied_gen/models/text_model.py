@@ -94,6 +94,7 @@ def build_text2img_ip_pipeline(
     pipe.set_ip_adapter_scale([ref_scale])
 
     pipe = pipe.to(device)
+    pipe.image_encoder = pipe.image_encoder.to(device)
     pipe.enable_model_cpu_offload()
     # pipe.enable_xformers_memory_efficient_attention()
     # pipe.enable_vae_slicing()

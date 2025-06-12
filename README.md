@@ -51,7 +51,7 @@ You can choose between two backends for the GPT agent:
 
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Image_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Image-to-3D) Generate physically plausible 3D asset from input image.
 
-### Local Service
+### Service
 Run the image-to-3D generation service locally. The first run will download required models.
 
 ```sh
@@ -61,7 +61,7 @@ python apps/image_to_3d.py
 CUDA_VISIBLE_DEVICES=0 nohup python apps/image_to_3d.py > /dev/null 2>&1 &
 ```
 
-### Local API
+### API
 Generate a 3D model from an image using the command-line API.
 
 ```sh
@@ -79,14 +79,14 @@ python3 embodied_gen/scripts/imageto3d.py \
 
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Text_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D) Create 3D assets from text descriptions for a wide range of geometry and styles.
 
-### Local Service
+### Service
 Run the text-to-3D generation service locally.
 
 ```sh
 python apps/text_to_3d.py
 ```
 
-### Local API
+### API
 
 ```sh
 bash embodied_gen/scripts/textto3d.sh \
@@ -101,14 +101,14 @@ bash embodied_gen/scripts/textto3d.sh \
 
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Texture_Gen_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Texture-Gen) Generate visually rich textures for 3D mesh.
 
-### Local Service
+### Service
 Run the texture generation service locally.
 
 ```sh
 python apps/texture_edit.py
 ```
 
-### Local API
+### API
 Generate textures for a 3D mesh using a text prompt.
 
 ```sh
@@ -154,23 +154,8 @@ Coming Soon
 ## 🙌 Acknowledgement
 
 EmbodiedGen builds upon the following amazing projects and models:
+🌟 [Trellis](https://github.com/microsoft/TRELLIS) | 🌟 [Hunyuan-Delight](https://huggingface.co/tencent/Hunyuan3D-2/tree/main/hunyuan3d-delight-v2-0) | 🌟 [Segment Anything](https://github.com/facebookresearch/segment-anything) | 🌟 [Rembg](https://github.com/danielgatis/rembg) | 🌟 [RMBG-1.4](https://huggingface.co/briaai/RMBG-1.4) | 🌟 [Stable Diffusion x4](https://huggingface.co/stabilityai/stable-diffusion-x4-upscaler) | 🌟 [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) | 🌟 [Kolors](https://github.com/Kwai-Kolors/Kolors) | 🌟 [ChatGLM3](https://github.com/THUDM/ChatGLM3) | 🌟 [Aesthetic Score](http://captions.christoph-schuhmann.de/aesthetic_viz_laion_sac+logos+ava1-l14-linearMSE-en-2.37B.html) | 🌟 [Pano2Room](https://github.com/TrickyGo/Pano2Room) | 🌟 [Diffusion360](https://github.com/ArcherFMY/SD-T2I-360PanoImage) | 🌟 [Kaolin](https://github.com/NVIDIAGameWorks/kaolin) | 🌟 [diffusers](https://github.com/huggingface/diffusers) | 🌟 [gsplat](https://github.com/nerfstudio-project/gsplat) | 🌟 GPT: QWEN2.5VL, GPT4o
 
-- 🌟 [Trellis](https://github.com/microsoft/TRELLIS)
-- 🌟 [Hunyuan-Delight](https://huggingface.co/tencent/Hunyuan3D-2/tree/main/hunyuan3d-delight-v2-0)
-- 🌟 [Segment Anything Model](https://github.com/facebookresearch/segment-anything)
-- 🌟 [Rembg: a tool to remove images background](https://github.com/danielgatis/rembg)
-- 🌟 [RMBG-1.4: BRIA Background Removal](https://huggingface.co/briaai/RMBG-1.4)
-- 🌟 [stable-diffusion-x4-upscaler](https://huggingface.co/stabilityai/stable-diffusion-x4-upscaler)
-- 🌟 [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN)
-- 🌟 [Kolors](https://github.com/Kwai-Kolors/Kolors)
-- 🌟 [ChatGLM3](https://github.com/THUDM/ChatGLM3)
-- 🌟 [Aesthetic Score Model](http://captions.christoph-schuhmann.de/aesthetic_viz_laion_sac+logos+ava1-l14-linearMSE-en-2.37B.html)
-- 🌟 [Pano2Room](https://github.com/TrickyGo/Pano2Room)
-- 🌟 [Diffusion360](https://github.com/ArcherFMY/SD-T2I-360PanoImage)
-- 🌟 [kaolin](https://github.com/NVIDIAGameWorks/kaolin)
-- 🌟 [diffusers](https://github.com/huggingface/diffusers)
-- 🌟 [gsplat](https://github.com/nerfstudio-project/gsplat)
-- 🌟 GPT: QWEN2.5VL, GPT4o
 
 ---
 
