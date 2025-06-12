@@ -24,6 +24,7 @@ from xml.dom.minidom import parseString
 
 import numpy as np
 import trimesh
+from embodied_gen.data.utils import zip_files
 from embodied_gen.utils.gpt_clients import GPT_CLIENT, GPTclient
 from embodied_gen.utils.process_media import render_asset3d
 from embodied_gen.utils.tags import VERSION

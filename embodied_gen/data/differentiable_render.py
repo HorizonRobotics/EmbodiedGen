@@ -24,10 +24,7 @@ from collections import defaultdict
 from typing import List, Union
 
 import cv2
-import imageio
-import numpy as np
 import nvdiffrast.torch as dr
-import PIL.Image as Image
 import torch
 from tqdm import tqdm
 from embodied_gen.data.utils import (
@@ -42,6 +39,10 @@ from embodied_gen.data.utils import (
     render_pbr,
     save_images,
 )
+from embodied_gen.utils.process_media import (
+    create_gif_from_images,
+    create_mp4_from_images,
+)
 
 os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "1"
 os.environ["TORCH_EXTENSIONS_DIR"] = os.path.expanduser(
@@ -53,66 +54,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-__all__ = [
-    "ImageRender",
-    "create_mp4_from_images",
-    "create_gif_from_images",
-]
-
-
-def create_mp4_from_images(
-    images: list[np.ndarray],
-    output_path: str,
-    fps: int = 10,
-    prompt: str = None,
-):
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    font_scale = 0.5
-    font_thickness = 1
-    color = (255, 255, 255)
-    position = (20, 25)
-
-    with imageio.get_writer(output_path, fps=fps) as writer:
-        for image in images:
-            image = image.clip(min=0, max=1)
-            image = (255.0 * image).astype(np.uint8)
-            image = image[..., :3]
-            if prompt is not None:
-                cv2.putText(
-                    image,
-                    prompt,
-                    position,
-                    font,
-                    font_scale,
-                    color,
-                    font_thickness,
-                )
-
-            writer.append_data(image)
-
-    logger.info(f"MP4 video saved to {output_path}")
-
-
-def create_gif_from_images(
-    images: list[np.ndarray], output_path: str, fps: int = 10
-) -> None:
-    pil_images = []
-    for image in images:
-        image = image.clip(min=0, max=1)
-        image = (255.0 * image).astype(np.uint8)
-        image = Image.fromarray(image, mode="RGBA")
-        pil_images.append(image.convert("RGB"))
-
-    duration = 1000 // fps
-    pil_images[0].save(
-        output_path,
-        save_all=True,
-        append_images=pil_images[1:],
-        duration=duration,
-        loop=0,
-    )
-
-    logger.info(f"GIF saved to {output_path}")
+__all__ = ["ImageRender"]
 
 
 class ImageRender(object):

@@ -35,7 +35,7 @@ from gradio.themes.utils.colors import gray, neutral, slate, stone, teal, zinc
 from PIL import Image
 from embodied_gen.data.backproject_v2 import entrypoint as backproject_api
 from embodied_gen.data.differentiable_render import entrypoint as render_api
-from embodied_gen.data.utils import trellis_preprocess, zip_files
+from embodied_gen.data.utils import trellis_preprocess
 from embodied_gen.models.delight_model import DelightingModel
 from embodied_gen.models.gs_model import GaussianOperator
 from embodied_gen.models.segment_model import (
@@ -64,7 +64,7 @@ from embodied_gen.validators.quality_checkers import (
     ImageSegChecker,
     MeshGeoChecker,
 )
-from embodied_gen.validators.urdf_convertor import URDFGenerator
+from embodied_gen.validators.urdf_convertor import URDFGenerator, zip_files
 
 current_file_path = os.path.abspath(__file__)
 current_dir = os.path.dirname(current_file_path)

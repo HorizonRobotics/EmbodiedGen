@@ -25,8 +25,8 @@
 ## 🚀 Quick Start
 
 ```sh
-git clone https://github.com/HorizonRobotics/EmbodiedGen.git
-cd EmbodiedGen && git submodule update --init --recursive
+git clone https://github.com/HorizonRobotics/EmbodiedGen
+cd EmbodiedGen
 conda create -n embodiedgen python=3.10.13 -y
 conda activate embodiedgen
 pip install -r requirements.txt --use-deprecated=legacy-resolver
@@ -42,7 +42,7 @@ Update the API key in file: `embodied_gen/utils/gpt_config.yaml`.
 You can choose between two backends for the GPT agent:
 
 - **`gpt-4o`** (Recommended) – Use this if you have access to **Azure OpenAI**.
-- **`qwen2.5-vl`** – An alternative with free usage via OpenRouter, apply a free key [here](https://openrouter.ai/settings/keys) and update `api_key` in `embodied_gen/utils/gpt_config.yaml` (50 free requests per day)
+- **`qwen2.5-vl`** – An open alternative with free usage via [OpenRouter](https://openrouter.ai/settings/keys) (50 free requests per day)
 
 
 ---
