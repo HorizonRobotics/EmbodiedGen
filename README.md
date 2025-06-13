@@ -132,7 +132,7 @@ bash embodied_gen/scripts/texture_gen.sh \
 
 🚧 *Coming Soon*
 
-<img src="apps/assets/scene3d.gif" alt="scene3d" style="width: 600px;">
+<img src="apps/assets/scene3d.gif" alt="scene3d" style="width: 650px;">
 
 ---
 
@@ -141,7 +141,7 @@ bash embodied_gen/scripts/texture_gen.sh \
 
 🚧 *Coming Soon*
 
-<img src="apps/assets/articulate.gif" alt="articulate" style="width: 500px;">
+<img src="apps/assets/articulate.gif" alt="articulate" style="width: 550px;">
 
 
 ---
