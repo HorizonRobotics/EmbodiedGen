@@ -52,6 +52,8 @@ You can choose between two backends for the GPT agent:
 
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Image_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Image-to-3D) Generate physically plausible 3D asset from input image.
 
+<img src="apps/assets/image_to_3d.jpg" alt="Image to 3D" width="900">
+
 ### Service
 Run the image-to-3D generation service locally. The first run will download required models.
 
@@ -80,6 +82,8 @@ python3 embodied_gen/scripts/imageto3d.py \
 
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Text_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D) Create 3D assets from text descriptions for a wide range of geometry and styles.
 
+<img src="apps/assets/text_to_3d.jpg" alt="Text to 3D" width="900">
+
 ### Service
 Run the text-to-3D generation service locally.
 
@@ -101,6 +105,9 @@ bash embodied_gen/scripts/textto3d.sh \
 <h2 id="texture-generation">🎨 Texture Generation</h2>
 
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Texture_Gen_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Texture-Gen) Generate visually rich textures for 3D mesh.
+
+<img src="apps/assets/texture_gen.jpg" alt="Texture Gen" width="900">
+
 
 ### Service
 Run the texture generation service locally.
@@ -125,12 +132,17 @@ bash embodied_gen/scripts/texture_gen.sh \
 
 🚧 *Coming Soon*
 
+![scene3d](apps/assets/scene3d.gif)
+
 ---
 
 
 <h2 id="articulated-object-generation">⚙️ Articulated Object Generation</h2>
 
 🚧 *Coming Soon*
+
+![articulate](apps/assets/articulate.gif)
+
 
 ---
 
