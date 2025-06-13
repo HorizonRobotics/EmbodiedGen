@@ -1,7 +1,7 @@
 # EmbodiedGen: Towards a Generative 3D World Engine for Embodied Intelligence
 
 [![🌐 Project Page](https://img.shields.io/badge/🌐-Project_Page-blue)](https://horizonrobotics.github.io/robot_lab/embodied_gen/index.html)
-[![📄 arXiv](https://img.shields.io/badge/📄-arXiv-b31b1b)](#)
+[![📄 arXiv](https://img.shields.io/badge/📄-arXiv-b31b1b)](https://arxiv.org/abs/2506.10600)
 [![🎥 Video](https://img.shields.io/badge/🎥-Video-red)](https://www.youtube.com/watch?v=SnHhzHeb_aI)
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Image_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Image-to-3D)
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Text_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D)
@@ -29,6 +29,7 @@
 ```sh
 git clone https://github.com/HorizonRobotics/EmbodiedGen.git
 cd EmbodiedGen
+git checkout v0.1.0
 git submodule update --init --recursive --progress
 conda create -n embodiedgen python=3.10.13 -y
 conda activate embodiedgen
@@ -145,7 +146,15 @@ bash embodied_gen/scripts/texture_gen.sh \
 If you use EmbodiedGen in your research or projects, please cite:
 
 ```bibtex
-Coming Soon
+@misc{xinjie2025embodiedgengenerative3dworld,
+      title={EmbodiedGen: Towards a Generative 3D World Engine for Embodied Intelligence},
+      author={Wang Xinjie and Liu Liu and Cao Yu and Wu Ruiqi and Qin Wenkang and Wang Dehui and Sui Wei and Su Zhizhong},
+      year={2025},
+      eprint={2506.10600},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2506.10600},
+}
 ```
 
 ---
