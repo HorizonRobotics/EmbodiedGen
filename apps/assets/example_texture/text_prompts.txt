@@ -12,11 +12,8 @@ apps/assets/example_texture/meshes/chair.obj \ 具有大理石材质框架，坐
 apps/assets/example_texture/meshes/chair.obj \ 具有桃木色木质框架，坐垫为柔软灰色织物纹理的旋转吧台椅
 apps/assets/example_texture/meshes/vase.obj \ 瓶身上绘有彩色飞鸟图案的花瓶
 apps/assets/example_texture/meshes/vase.obj \ 陶土花瓶
-apps/assets/example_texture/meshes/globe.obj \ 木质底座的经纬线地球仪
 apps/assets/example_texture/meshes/flashlight.obj \ 筒橡胶防滑纹路，红色磨砂质感的手电筒
 apps/assets/example_texture/meshes/desk.obj \ 欧式风格木质梳妆台及配套凳子
 apps/assets/example_texture/meshes/desk.obj \ 白色带抽屉和镜子的欧式风格梳妆台及配套凳子模型，添加金色装饰细节
 apps/assets/example_texture/meshes/clock.obj \ 木质闹钟，黑色指针，显示时间为数字
 apps/assets/example_texture/meshes/clock.obj \ 黑色闹钟搭配复古罗马数字表盘，古典韵味
-apps/assets/example_texture/meshes/table2.obj \ 一套现代简约风格的灰色方桌和四把木质椅子，桌面呈现光滑的哑光质感
-apps/assets/example_texture/meshes/table2.obj \ 一套现代简约风格的青色方桌和四把蓝色木质椅子，桌面呈现光滑的哑光质感

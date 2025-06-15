@@ -121,7 +121,7 @@ Models will be downloaded automatically, see `download_kolors_weights`, `geo_con
 ```sh
 bash embodied_gen/scripts/texture_gen.sh \
     --mesh_path "apps/assets/example_texture/meshes/robot_text.obj" \
-    --prompt "举着牌子的红色写实风格机器人，牌子上写着“Hello”" \
+    --prompt "举着牌子的写实风格机器人，大眼睛，牌子上写着“Hello”的文字" \
     --output_root "outputs/texture_gen/" \
     --uuid "robot_text"
 ```
