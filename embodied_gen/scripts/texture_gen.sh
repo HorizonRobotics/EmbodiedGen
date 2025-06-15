@@ -40,7 +40,7 @@ drender-cli --mesh_path ${mesh_path} \
 # Step 2: multi-view rendering
 python embodied_gen/scripts/render_mv.py \
     --index_file "${output_root}/condition/index.json" \
-    --controlnet_cond_scale 0.75 \
+    --controlnet_cond_scale 0.7 \
     --guidance_scale 9 \
     --strength 0.9 \
     --num_inference_steps 40 \

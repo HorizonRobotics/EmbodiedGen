@@ -116,7 +116,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                     0.0,
                     1.0,
                     label="Geo Condition Scale",
-                    value=0.60,
+                    value=0.70,
                     step=0.01,
                 )
                 guidance_scale = gr.Slider(

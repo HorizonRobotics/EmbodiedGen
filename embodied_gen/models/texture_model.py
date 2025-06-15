@@ -60,7 +60,7 @@ def build_texture_gen_pipe(
     )
 
     if controlnet_ckpt is None:
-        suffix = "geo_cond_mv"
+        suffix = "texture_gen_mv_v1"  # "geo_cond_mv"
         model_path = snapshot_download(
             repo_id="xinjjj/RoboAssetGen", allow_patterns=f"{suffix}/*"
         )

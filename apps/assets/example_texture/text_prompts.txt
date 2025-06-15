@@ -1,11 +1,11 @@
 apps/assets/example_texture/meshes/robot.obj \ 写实风格机甲3D模型，主体色调为米色和深灰色，机甲结构带有机械细节和磨损痕迹
 apps/assets/example_texture/meshes/robot.obj \ 写实风格机甲3D模型，主体色调为深灰色和荧光黄，机甲结构带有机械细节和磨损痕迹
-apps/assets/example_texture/meshes/robot_text.obj \ 举着牌子的红色写实风格机器人，牌子上写着“Hello”的文字
+apps/assets/example_texture/meshes/robot_text.obj \ 举着牌子的写实风格机器人，大眼睛，牌子上写着“Hello”的文字
 apps/assets/example_texture/meshes/robot_text.obj \ 举着牌子的彩色写实风格机器人，牌子上写着“World”的文字
-apps/assets/example_texture/meshes/robot_text.obj \ 举着木质牌子的写实风格机甲3D模型，主体红色，牌子上写着“中国”的文字
-apps/assets/example_texture/meshes/robot_text.obj \ 举着牌子的黄色写实风格机器人，牌子上画着爱心
-apps/assets/example_texture/meshes/horse.obj \ 具有古典质感、鬃毛飞扬的棕色马首，黑色眼睛
-apps/assets/example_texture/meshes/horse.obj \ 具有古典质感、鬃毛飞扬的栗色马首
+apps/assets/example_texture/meshes/robot_text.obj \ 举着木质牌子的写实风格机甲3D模型，大眼睛，牌子上写着“中国”的文字
+apps/assets/example_texture/meshes/robot_text.obj \ 举着牌子的粉色写实风格机器人，爱心眼睛，牌子上画着爱心
+apps/assets/example_texture/meshes/horse.obj \ 一匹棕色的马头，有着经典的纹理和飞扬的鬃毛，还有黑色的眼睛
+apps/assets/example_texture/meshes/horse.obj \ A gray horse head with flying mane and brown eyes
 apps/assets/example_texture/meshes/electric_drill.obj \ 电动手钻，有磨损细节，灰色红色相间磨砂质感哑光外壳
 apps/assets/example_texture/meshes/electric_drill.obj \ 电动手钻，有磨损细节，黄蓝色哑光外壳带有磨砂质感
 apps/assets/example_texture/meshes/chair.obj \ 具有大理石材质框架，坐垫为柔软青色织物纹理的旋转吧台椅
