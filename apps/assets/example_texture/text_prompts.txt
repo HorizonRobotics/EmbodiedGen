@@ -1,17 +1,17 @@
-apps/assets/example_texture/meshes/robot.obj \ 写实风格机甲3D模型，主体色调为米色和深灰色，机甲结构带有机械细节和磨损痕迹
+apps/assets/example_texture/meshes/robot.obj \ A Gundam-style blue and gray robot model with a futuristic, high-tech appearance
 apps/assets/example_texture/meshes/robot.obj \ 写实风格机甲3D模型，主体色调为深灰色和荧光黄，机甲结构带有机械细节和磨损痕迹
-apps/assets/example_texture/meshes/robot_text.obj \ 举着牌子的写实风格机器人，大眼睛，牌子上写着“Hello”的文字
+apps/assets/example_texture/meshes/robot_text.obj \ A robot with eyes, holding a wooden sign that says 'hello'
 apps/assets/example_texture/meshes/robot_text.obj \ 举着牌子的彩色写实风格机器人，牌子上写着“World”的文字
 apps/assets/example_texture/meshes/robot_text.obj \ 举着木质牌子的写实风格机甲3D模型，大眼睛，牌子上写着“中国”的文字
-apps/assets/example_texture/meshes/robot_text.obj \ 举着牌子的粉色写实风格机器人，爱心眼睛，牌子上画着爱心
+apps/assets/example_texture/meshes/robot_text.obj \ Pink robot with eyes, holding a sign with heart symbol on it
 apps/assets/example_texture/meshes/horse.obj \ 一匹棕色的马头，有着经典的纹理和飞扬的鬃毛，还有黑色的眼睛
 apps/assets/example_texture/meshes/horse.obj \ A gray horse head with flying mane and brown eyes
-apps/assets/example_texture/meshes/electric_drill.obj \ 电动手钻，有磨损细节，灰色红色相间磨砂质感哑光外壳
+apps/assets/example_texture/meshes/electric_drill.obj \ Electric hand drill with worn details and matte, textured shell in a gray and red color
 apps/assets/example_texture/meshes/electric_drill.obj \ 电动手钻，有磨损细节，黄蓝色哑光外壳带有磨砂质感
-apps/assets/example_texture/meshes/chair.obj \ 具有大理石材质框架，坐垫为柔软青色织物纹理的旋转吧台椅
+apps/assets/example_texture/meshes/chair.obj \ A swivel bar stool with a marble frame and a soft teal fabric-textured cushion
 apps/assets/example_texture/meshes/chair.obj \ 具有桃木色木质框架，坐垫为柔软灰色织物纹理的旋转吧台椅
 apps/assets/example_texture/meshes/vase.obj \ 瓶身上绘有彩色飞鸟图案的花瓶
-apps/assets/example_texture/meshes/vase.obj \ 陶土花瓶
+apps/assets/example_texture/meshes/vase.obj \ Blue and white porcelain vase with intricate dragon patterns
 apps/assets/example_texture/meshes/flashlight.obj \ 筒橡胶防滑纹路，红色磨砂质感的手电筒
 apps/assets/example_texture/meshes/desk.obj \ 欧式风格木质梳妆台及配套凳子
 apps/assets/example_texture/meshes/desk.obj \ 白色带抽屉和镜子的欧式风格梳妆台及配套凳子模型，添加金色装饰细节

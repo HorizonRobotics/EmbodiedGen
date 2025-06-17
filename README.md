@@ -95,7 +95,7 @@ python apps/text_to_3d.py
 Models will be downloaded automatically, see `download_kolors_weights`.
 ```sh
 bash embodied_gen/scripts/textto3d.sh \
-    --prompts "small bronze figurine of a lion" "带木质底座，具有经纬线的地球仪" "橙色电动手钻，有磨损细节" \
+    --prompts "small bronze figurine of a lion" "A globe with wooden base and latitude and longitude lines" "橙色电动手钻，有磨损细节" \
     --output_root outputs/textto3d/
 ```
 
@@ -158,9 +158,9 @@ bash embodied_gen/scripts/texture_gen.sh \
 If you use EmbodiedGen in your research or projects, please cite:
 
 ```bibtex
-@misc{xinjie2025embodiedgengenerative3dworld,
+@misc{wang2025embodiedgengenerative3dworld,
       title={EmbodiedGen: Towards a Generative 3D World Engine for Embodied Intelligence},
-      author={Wang Xinjie and Liu Liu and Cao Yu and Wu Ruiqi and Qin Wenkang and Wang Dehui and Sui Wei and Su Zhizhong},
+      author={Xinjie Wang and Liu Liu and Yu Cao and Ruiqi Wu and Wenkang Qin and Dehui Wang and Wei Sui and Zhizhong Su},
       year={2025},
       eprint={2506.10600},
       archivePrefix={arXiv},
