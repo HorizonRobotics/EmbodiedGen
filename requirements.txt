@@ -30,7 +30,7 @@ realesrgan==0.3.0
 pydantic==2.9.2
 vtk==9.3.1
 spaces
-utils3d@git+https://github.com/EasternJournalist/utils3d.git@9a4eb15e4021b67b12c460c7057d642626897ec8
+utils3d@git+https://github.com/EasternJournalist/utils3d.git#egg=9a4eb15
 clip@git+https://github.com/openai/CLIP.git
 kolors@git+https://github.com/Kwai-Kolors/Kolors.git#egg=038818d
 segment-anything@git+https://github.com/facebookresearch/segment-anything.git#egg=dca509f

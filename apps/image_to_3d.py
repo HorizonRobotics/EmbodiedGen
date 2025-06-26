@@ -40,6 +40,8 @@ from common import (
 )
 
 with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
+    gr.HTML(image_css, visible=False)
+    gr.HTML(lighting_css, visible=False)
     gr.Markdown(
         """
         ## ***EmbodiedGen***: Image-to-3D Asset
@@ -54,21 +56,18 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
             <a href="https://github.com/HorizonRobotics/EmbodiedGen">
                 <img alt="💻 GitHub" src="https://img.shields.io/badge/GitHub-000000?logo=github">
             </a>
-            <a href="https://www.youtube.com/watch?v=SnHhzHeb_aI">
+            <a href="https://www.youtube.com/watch?v=rG4odybuJRk">
                 <img alt="🎥 Video" src="https://img.shields.io/badge/🎥-Video-red">
             </a>
         </p>
 
         🖼️ Generate physically plausible 3D asset from single input image.
-
         """.format(
             VERSION=VERSION
         ),
         elem_classes=["header"],
     )
 
-    gr.HTML(image_css)
-    gr.HTML(lighting_css)
     with gr.Row():
         with gr.Column(scale=2):
             with gr.Tabs() as input_tabs:
@@ -239,9 +238,8 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                 )
 
             gr.Markdown(
-                """ NOTE: If `Asset Attributes` are provided, the provided
-                properties will be used; otherwise, the GPT-preset properties
-                will be applied. \n
+                """ NOTE: If `Asset Attributes` are provided, it will guide
+                GPT to perform physical attributes restoration. \n
                 The `Download URDF` file is restored to the real scale and
                 has quality inspection, open with an editor to view details.
             """
@@ -279,6 +277,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                     examples_per_page=10,
                 )
         with gr.Column(scale=1):
+            gr.Markdown("<br>")
             video_output = gr.Video(
                 label="Generated 3D Asset",
                 autoplay=True,

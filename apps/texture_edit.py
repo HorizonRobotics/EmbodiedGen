@@ -50,6 +50,8 @@ def active_btn_by_content(mesh_content: gr.Model3D, text_content: gr.Textbox):
 
 
 with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
+    gr.HTML(image_css, visible=False)
+    gr.HTML(lighting_css, visible=False)
     gr.Markdown(
         """
         ## ***EmbodiedGen***: Texture Generation
@@ -64,30 +66,33 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
             <a href="https://github.com/HorizonRobotics/EmbodiedGen">
                 <img alt="💻 GitHub" src="https://img.shields.io/badge/GitHub-000000?logo=github">
             </a>
-            <a href="https://www.youtube.com/watch?v=SnHhzHeb_aI">
+            <a href="https://www.youtube.com/watch?v=rG4odybuJRk">
                 <img alt="🎥 Video" src="https://img.shields.io/badge/🎥-Video-red">
             </a>
         </p>
 
         🎨 Generate visually rich textures for 3D mesh.
-
         """.format(
             VERSION=VERSION
         ),
         elem_classes=["header"],
     )
-    gr.HTML(image_css)
-    gr.HTML(lighting_css)
+
     with gr.Row():
         with gr.Column(scale=1):
+            gr.Markdown(
+                "You can select input in `Mesh Gallery` at page bottom."
+            )
             mesh_input = gr.Model3D(
-                label="Upload Mesh File(.obj or .glb)", height=300
+                label="Upload Mesh File(.obj or .glb)", height=270
             )
             local_mesh = gr.Textbox(visible=False)
             text_prompt = gr.Textbox(
                 label="Text Prompt (Chinese or English)",
                 placeholder="Input text prompt here",
             )
+            gr.Markdown("<br>")
+
             ip_image = gr.Image(
                 label="Reference Image(optional)",
                 format="png",
@@ -97,8 +102,8 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                 elem_classes=["image_fit"],
             )
             gr.Markdown(
-                "Note: The `reference image` is optional. If provided, please "
-                "increase the `Condition Scale` in Generation Settings."
+                "Note: The `reference image` is optional. If provided, "
+                "increase `Condition Scale` in Generation Settings."
             )
 
             with gr.Accordion(label="Generation Settings", open=False):
@@ -138,12 +143,6 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                 video_size = gr.Slider(
                     512, 2048, label="Video Resolution", value=512, step=256
                 )
-
-            generate_mv_btn = gr.Button(
-                "🎨 1. Generate MV Images(~1min)",
-                variant="primary",
-                interactive=False,
-            )
 
         with gr.Column(scale=3):
             with gr.Row():
@@ -194,10 +193,10 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                     visible=False,
                 )
 
-            gr.Markdown(
-                "Note: Select samples with consistent textures from various "
-                "perspectives and no obvious reflections."
-            )
+            # gr.Markdown(
+            #     "Note: Select samples with consistent textures from various "
+            #     "perspectives and no obvious reflections."
+            # )
             with gr.Row():
                 with gr.Column(scale=1):
                     with gr.Row():
@@ -222,6 +221,11 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                         )
 
                 with gr.Column(scale=1):
+                    generate_mv_btn = gr.Button(
+                        "🎨 1. Generate MV Images(~1min)",
+                        variant="primary",
+                        interactive=False,
+                    )
                     texture_bake_btn = gr.Button(
                         "🛠️ 2. Texture Baking(~2min)",
                         variant="primary",
@@ -237,7 +241,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                 mesh_output = gr.Model3D(
                     label="Mesh Edit Result",
                     clear_color=[0.8, 0.8, 0.8, 1],
-                    height=380,
+                    height=340,
                     interactive=False,
                     elem_id="lighter_mesh",
                 )
@@ -246,7 +250,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                     label="Mesh Edit Video",
                     autoplay=True,
                     loop=True,
-                    height=380,
+                    height=340,
                 )
 
     with gr.Row():

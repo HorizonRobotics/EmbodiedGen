@@ -102,6 +102,7 @@ class URDFGenerator(object):
                 view_desc
                 + """of the 3D object asset,
                 category: {category}.
+                You are an expert in 3D object analysis and physical property estimation.
                 Give the category of this object asset (within 3 words),
                 (if category is already provided, use it directly),
                 accurately describe this 3D object asset (within 15 words),
@@ -109,9 +110,19 @@ class URDFGenerator(object):
                 weight range (unit: kilogram), the average static friction
                 coefficient of the object relative to rubber and the average
                 dynamic friction coefficient of the object relative to rubber.
-                Return response format as shown in Example.
+                Return response format as shown in Output Example.
 
-                Example:
+                IMPORTANT:
+                Inputed images are orthographic projection showing the front, left, right and back views,
+                the first image is always the front view. Use the object's pose and orientation in the
+                rendered images to estimate its **true vertical height as it appears in the image**,
+                not the real-world length or width of the object.
+                For example:
+                - A pen standing upright in the front view → vertical height: 0.15-0.2 m
+                - A pen lying horizontally in the front view → vertical height: 0.01-0.02 m
+                    (based on its thickness in the image)
+
+                Output Example:
                 Category: cup
                 Description: shiny golden cup with floral design
                 Height: 0.1-0.15 m

@@ -53,6 +53,9 @@ __all__ = [
 ]
 
 
+PROMPT_APPEND = "Full view of one {}, no cropping, centered, no occlusion, isolated product photo, matte, 3D style, on a plain clean surface"
+
+
 def download_kolors_weights(local_dir: str = "weights/Kolors") -> None:
     logger.info(f"Download kolors weights from huggingface...")
     os.makedirs(local_dir, exist_ok=True)
@@ -179,8 +182,9 @@ def text2img_gen(
     ip_image_size: int = 512,
     seed: int = None,
 ) -> list[Image.Image]:
-    prompt = "Single " + prompt + ", in the center of the image"
-    prompt += ", high quality, high resolution, best quality, white background, 3D style"  # noqa
+    # prompt = "Single " + prompt + ", in the center of the image"
+    # prompt += ", high quality, high resolution, best quality, white background, 3D style"  # noqa
+    prompt = PROMPT_APPEND.format(prompt.strip())
     logger.info(f"Processing prompt: {prompt}")
 
     generator = None

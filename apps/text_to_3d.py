@@ -40,6 +40,8 @@ from common import (
 )
 
 with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
+    gr.HTML(image_css, visible=False)
+    gr.HTML(lighting_css, visible=False)
     gr.Markdown(
         """
         ## ***EmbodiedGen***: Text-to-3D Asset
@@ -54,20 +56,18 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
             <a href="https://github.com/HorizonRobotics/EmbodiedGen">
                 <img alt="💻 GitHub" src="https://img.shields.io/badge/GitHub-000000?logo=github">
             </a>
-            <a href="https://www.youtube.com/watch?v=SnHhzHeb_aI">
+            <a href="https://www.youtube.com/watch?v=rG4odybuJRk">
                 <img alt="🎥 Video" src="https://img.shields.io/badge/🎥-Video-red">
             </a>
         </p>
 
         📝 Create 3D assets from text descriptions for a wide range of geometry and styles.
-
         """.format(
             VERSION=VERSION
         ),
         elem_classes=["header"],
     )
-    gr.HTML(image_css)
-    gr.HTML(lighting_css)
+
     with gr.Row():
         with gr.Column(scale=1):
             raw_image_cache = gr.Image(
@@ -267,8 +267,8 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                     visible=False,
                 )
             gr.Markdown(
-                "The generated image may be of poor quality due to auto "
-                "segmentation. Try adjusting the text prompt or seed."
+                "Generated image may be poor quality due to auto seg."
+                "Retry by adjusting text prompt, seed or switch seg model in `Image Gen Settings`."
             )
             with gr.Row():
                 video_output = gr.Video(
