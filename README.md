@@ -21,7 +21,7 @@
 - [🎨 Texture Generation](#texture-generation)
 - [🌍 3D Scene Generation](#3d-scene-generation)
 - [⚙️ Articulated Object Generation](#articulated-object-generation)
-- [🏞️ Layout(Interactive 3D Worlds) Generation](#layout-generation)
+- [🏞️ Layout (Interactive 3D Worlds) Generation](#layout-generation)
 
 ## 🚀 Quick Start
 
@@ -132,7 +132,7 @@ bash embodied_gen/scripts/texture_gen.sh \
 
 🚧 *Coming Soon*
 
-<img src="apps/assets/scene3d.gif" alt="scene3d" style="width: 650px;">
+<img src="apps/assets/scene3d.gif" alt="scene3d" style="width: 640px;">
 
 ---
 
@@ -141,7 +141,7 @@ bash embodied_gen/scripts/texture_gen.sh \
 
 🚧 *Coming Soon*
 
-<img src="apps/assets/articulate.gif" alt="articulate" style="width: 550px;">
+<img src="apps/assets/articulate.gif" alt="articulate" style="width: 480px;">
 
 
 ---
@@ -155,19 +155,19 @@ bash embodied_gen/scripts/texture_gen.sh \
 
 <table>
   <tr>
-    <td><img src="apps/assets/layout1.gif" alt="layout1" width="300"/></td>
-    <td><img src="apps/assets/layout2.gif" alt="layout2" width="300"/></td>
+    <td><img src="apps/assets/layout1.gif" alt="layout1" width="340"/></td>
+    <td><img src="apps/assets/layout2.gif" alt="layout2" width="340"/></td>
   </tr>
   <tr>
-    <td><img src="apps/assets/layout3.gif" alt="layout3" width="300"/></td>
-    <td><img src="apps/assets/layout4.gif" alt="layout4" width="300"/></td>
+    <td><img src="apps/assets/layout3.gif" alt="layout3" width="340"/></td>
+    <td><img src="apps/assets/layout4.gif" alt="layout4" width="340"/></td>
   </tr>
 </table>
 
 
 ### 🖼️ Generate Layout from image
 
-🚧 *Coming Soon*
+<img src="apps/assets/real2sim_mujoco.gif" alt="real2sim_mujoco" style="width: 512px;">
 
 ---
 
