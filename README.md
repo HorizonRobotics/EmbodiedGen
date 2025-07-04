@@ -155,17 +155,17 @@ bash embodied_gen/scripts/texture_gen.sh \
 
 <table>
   <tr>
-    <td><img src="apps/assets/layout1.gif" alt="layout1" width="340"/></td>
-    <td><img src="apps/assets/layout2.gif" alt="layout2" width="340"/></td>
+    <td><img src="apps/assets/layout1.gif" alt="layout1" width="360"/></td>
+    <td><img src="apps/assets/layout2.gif" alt="layout2" width="360"/></td>
   </tr>
   <tr>
-    <td><img src="apps/assets/layout3.gif" alt="layout3" width="340"/></td>
-    <td><img src="apps/assets/layout4.gif" alt="layout4" width="340"/></td>
+    <td><img src="apps/assets/layout3.gif" alt="layout3" width="360"/></td>
+    <td><img src="apps/assets/layout4.gif" alt="layout4" width="360"/></td>
   </tr>
 </table>
 
 
-### 🖼️ Generate Layout from image
+### 🖼️ Real-to-Sim Digital twin
 
 <img src="apps/assets/real2sim_mujoco.gif" alt="real2sim_mujoco" style="width: 512px;">
 
