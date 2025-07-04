@@ -165,7 +165,7 @@ bash embodied_gen/scripts/texture_gen.sh \
 </table>
 
 
-### 🖼️ Real-to-Sim Digital twin
+### 🖼️ Real-to-Sim Digital Twin
 
 <img src="apps/assets/real2sim_mujoco.gif" alt="real2sim_mujoco" style="width: 512px;">
 
