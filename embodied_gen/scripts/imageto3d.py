@@ -30,11 +30,7 @@ from embodied_gen.data.backproject_v2 import entrypoint as backproject_api
 from embodied_gen.data.utils import delete_dir, trellis_preprocess
 from embodied_gen.models.delight_model import DelightingModel
 from embodied_gen.models.gs_model import GaussianOperator
-from embodied_gen.models.segment_model import (
-    BMGG14Remover,
-    RembgRemover,
-    SAMPredictor,
-)
+from embodied_gen.models.segment_model import RembgRemover
 from embodied_gen.models.sr_model import ImageRealESRGAN
 from embodied_gen.scripts.render_gs import entrypoint as render_gs_api
 from embodied_gen.utils.gpt_clients import GPT_CLIENT
@@ -61,6 +57,19 @@ os.environ["TORCH_EXTENSIONS_DIR"] = os.path.expanduser(
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "false"
 os.environ["SPCONV_ALGO"] = "native"
 random.seed(0)
+
+logger.info("Loading Models...")
+DELIGHT = DelightingModel()
+IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
+RBG_REMOVER = RembgRemover()
+PIPELINE = TrellisImageTo3DPipeline.from_pretrained(
+    "microsoft/TRELLIS-image-large"
+)
+# PIPELINE.cuda()
+SEG_CHECKER = ImageSegChecker(GPT_CLIENT)
+GEO_CHECKER = MeshGeoChecker(GPT_CLIENT)
+AESTHETIC_CHECKER = ImageAestheticChecker()
+CHECKERS = [GEO_CHECKER, SEG_CHECKER, AESTHETIC_CHECKER]
 
 
 def parse_args():
@@ -108,19 +117,6 @@ def entrypoint(**kwargs):
     for k, v in kwargs.items():
         if hasattr(args, k) and v is not None:
             setattr(args, k, v)
-
-    logger.info("Loading Models...")
-    DELIGHT = DelightingModel()
-    IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
-    RBG_REMOVER = RembgRemover()
-    PIPELINE = TrellisImageTo3DPipeline.from_pretrained(
-        "microsoft/TRELLIS-image-large"
-    )
-    # PIPELINE.cuda()
-    SEG_CHECKER = ImageSegChecker(GPT_CLIENT)
-    GEO_CHECKER = MeshGeoChecker(GPT_CLIENT)
-    AESTHETIC_CHECKER = ImageAestheticChecker()
-    CHECKERS = [GEO_CHECKER, SEG_CHECKER, AESTHETIC_CHECKER]
 
     assert (
         args.image_path or args.image_root

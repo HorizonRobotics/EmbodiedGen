@@ -3,23 +3,6 @@ set -e
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/_utils.sh"
 
-# try_install "Installing txt2panoimg..." \
-#     "pip install txt2panoimg@git+https://github.com/HochCC/SD-T2I-360PanoImage --no-deps" \
-#     "txt2panoimg installation failed."
-
-# try_install "Installing fused-ssim..." \
-#     "pip install fused-ssim@git+https://github.com/rahul-goel/fused-ssim#egg=328dc98" \
-#     "fused-ssim installation failed."
-
-# try_install "Installing tiny-cuda-nn..." \
-#     "pip install git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch" \
-#     "tiny-cuda-nn installation failed."
-
-# try_install "Installing pytorch3d" \
-#     "pip install git+https://github.com/facebookresearch/pytorch3d.git@v0.7.7" \
-#     "pytorch3d installation failed."
-
-
 PYTHON_PACKAGES_NODEPS=(
     timm
     txt2panoimg@git+https://github.com/HochCC/SD-T2I-360PanoImage
