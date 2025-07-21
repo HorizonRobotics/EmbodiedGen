@@ -368,10 +368,10 @@ def is_image_file(filename: str) -> bool:
 def parse_text_prompts(prompts: list[str]) -> list[str]:
     if len(prompts) == 1 and prompts[0].endswith(".txt"):
         with open(prompts[0], "r") as f:
-            return [
+            prompts = [
                 line.strip()
                 for line in f
-                if line.strip() and not line.startswith("#")
+                if line.strip() and not line.strip().startswith("#")
             ]
     return prompts
 
