@@ -10,7 +10,6 @@ import torch
 import tyro
 from huggingface_hub import snapshot_download
 from packaging import version
-from scipy.spatial.transform import Rotation
 
 # Suppress warnings
 warnings.filterwarnings("ignore", category=FutureWarning)

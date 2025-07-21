@@ -24,9 +24,12 @@ from typing import Dict, Literal, Optional, Tuple
 
 import numpy as np
 import torch
+import trimesh
 from gsplat.optimizers import SelectiveAdam
+from scipy.spatial.transform import Rotation
 from sklearn.neighbors import NearestNeighbors
 from torch import Tensor
+from embodied_gen.models.gs_model import GaussianOperator
 
 __all__ = [
     "set_random_seed",
