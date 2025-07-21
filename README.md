@@ -94,7 +94,7 @@ python apps/text_to_3d.py
 
 ### ⚡ API
 Text-to-image model based on SD3.5 Medium, English prompts only.
-Usage requires agreement to the [model license(click accept)](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium), models downloaded automatically. (ps: models with more permissive licenses found in `embodied_gen/models/image_comm_model.py`)
+Usage requires agreement to the [model license(click accept)](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium), models downloaded automatically.
 
 For large-scale 3D assets generation, set `--n_pipe_retry=2` to ensure high end-to-end 3D asset usability through automatic quality check and retries. For more diverse results, do not set `--seed_img`.
 
@@ -110,6 +110,7 @@ bash embodied_gen/scripts/textto3d.sh \
     --prompts "small bronze figurine of a lion" "A globe with wooden base and latitude and longitude lines" "橙色电动手钻，有磨损细节" \
     --output_root outputs/textto3d_k
 ```
+ps: models with more permissive licenses found in `embodied_gen/models/image_comm_model.py`
 
 ---
 
