@@ -36,6 +36,7 @@ PYTHON_PACKAGES=(
     webdataset
     icecream
     open3d
+    pyequilib
     numpy==1.26.4
     triton==2.1.0
 )

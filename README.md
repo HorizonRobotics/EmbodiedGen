@@ -199,7 +199,7 @@ CUDA_VISIBLE_DEVICES=0 scene3d-cli \
 
 ## For Developer
 ```sh
-pip install .[dev] && pre-commit install
+pip install -e .[dev] && pre-commit install
 python -m pytest # Pass all unit-test are required.
 ```
 
