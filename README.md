@@ -149,7 +149,7 @@ bash embodied_gen/scripts/texture_gen.sh \
 <img src="apps/assets/scene3d.gif" alt="scene3d" style="width: 640px;">
 
 ### ⚡ API
-> Run `bash install.sh extra` to set up the extra environment if you need to use `scene3d-cli`.
+> Run `bash install.sh extra` to set up extra requirements if you need to use `scene3d-cli`.
 
 ```sh
 CUDA_VISIBLE_DEVICES=0 scene3d-cli \
