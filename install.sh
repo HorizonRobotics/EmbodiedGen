@@ -1,65 +1,28 @@
 #!/bin/bash
 set -e
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-NC='\033[0m'
+STAGE=$1 # "basic" | "extra" | "all"
+STAGE=${STAGE:-all}
 
-echo -e "${GREEN}Starting installation process...${NC}"
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+source "$SCRIPT_DIR/install/_utils.sh"
 git config --global http.postBuffer 524288000
+# Patch submodule .gitignore to ignore __pycache__, only if submodule exists
+PANO2ROOM_PATH="$SCRIPT_DIR/thirdparty/pano2room"
+if [ -d "$PANO2ROOM_PATH" ]; then
+    echo "__pycache__/" > "$PANO2ROOM_PATH/.gitignore"
+    log_info "Added .gitignore to ignore __pycache__ in $PANO2ROOM_PATH"
+fi
 
-echo -e "${GREEN}Installing flash-attn...${NC}"
-pip install flash-attn==2.7.0.post2 --no-build-isolation || {
-    echo -e "${RED}Failed to install flash-attn${NC}"
-    exit 1
-}
+log_info "===== Starting installation stage: $STAGE ====="
 
-echo -e "${GREEN}Installing dependencies from requirements.txt...${NC}"
-pip install -r requirements.txt --use-deprecated=legacy-resolver --default-timeout=60 || {
-    echo -e "${RED}Failed to install requirements${NC}"
-    exit 1
-}
+if [[ "$STAGE" == "basic" || "$STAGE" == "all" ]]; then
+    bash "$SCRIPT_DIR/install/install_basic.sh"
+fi
 
+if [[ "$STAGE" == "extra" || "$STAGE" == "all" ]]; then
+    bash "$SCRIPT_DIR/install/install_extra.sh"
+fi
 
-echo -e "${GREEN}Installing kolors from GitHub...${NC}"
-pip install kolors@git+https://github.com/Kwai-Kolors/Kolors.git#egg=038818d || {
-    echo -e "${RED}Failed to install kolors${NC}"
-    exit 1
-}
-
-
-echo -e "${GREEN}Installing kaolin from GitHub...${NC}"
-pip install kaolin@git+https://github.com/NVIDIAGameWorks/kaolin.git@v0.16.0 || {
-    echo -e "${RED}Failed to install kaolin${NC}"
-    exit 1
-}
-
-
-echo -e "${GREEN}Installing diff-gaussian-rasterization...${NC}"
-TMP_DIR="/tmp/mip-splatting"
-rm -rf "$TMP_DIR"
-git clone --recursive https://github.com/autonomousvision/mip-splatting.git "$TMP_DIR" && \
-pip install "$TMP_DIR/submodules/diff-gaussian-rasterization" && \
-rm -rf "$TMP_DIR" || {
-    echo -e "${RED}Failed to clone or install diff-gaussian-rasterization${NC}"
-    rm -rf "$TMP_DIR"
-    exit 1
-}
-
-
-echo -e "${GREEN}Installing gsplat from GitHub...${NC}"
-pip install git+https://github.com/nerfstudio-project/gsplat.git@v1.5.0 || {
-    echo -e "${RED}Failed to install gsplat${NC}"
-    exit 1
-}
-
-
-echo -e "${GREEN}Installing EmbodiedGen...${NC}"
-pip install triton==2.1.0
-pip install -e . || {
-    echo -e "${RED}Failed to install EmbodiedGen pyproject.toml${NC}"
-    exit 1
-}
-
-echo -e "${GREEN}Installation completed successfully!${NC}"
-
+log_info "===== Installation completed successfully. ====="

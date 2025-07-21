@@ -30,11 +30,11 @@
 ```sh
 git clone https://github.com/HorizonRobotics/EmbodiedGen.git
 cd EmbodiedGen
-git checkout v0.1.1
+git checkout v0.1.2
 git submodule update --init --recursive --progress
-conda create -n embodiedgen python=3.10.13 -y
+conda create -n embodiedgen python=3.10.13 -y # recommended to use a new env.
 conda activate embodiedgen
-bash install.sh
+bash install.sh basic
 ```
 
 ### ✅ Setup GPT Agent
@@ -94,7 +94,7 @@ python apps/text_to_3d.py
 
 ### ⚡ API
 Text-to-image model based on SD3.5 Medium, English prompts only.
-Usage requires agreement to the [model license(click accept)](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium), models downloaded automatically. (ps: models with more permissive licenses found in `embodied_gen/models/image_comm_model.py`)
+Usage requires agreement to the [model license(click accept)](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium), models downloaded automatically.
 
 For large-scale 3D assets generation, set `--n_pipe_retry=2` to ensure high end-to-end 3D asset usability through automatic quality check and retries. For more diverse results, do not set `--seed_img`.
 
@@ -110,6 +110,7 @@ bash embodied_gen/scripts/textto3d.sh \
     --prompts "small bronze figurine of a lion" "A globe with wooden base and latitude and longitude lines" "橙色电动手钻，有磨损细节" \
     --output_root outputs/textto3d_k
 ```
+ps: models with more permissive licenses found in `embodied_gen/models/image_comm_model.py`
 
 ---
 
@@ -146,9 +147,21 @@ bash embodied_gen/scripts/texture_gen.sh \
 
 <h2 id="3d-scene-generation">🌍 3D Scene Generation</h2>
 
-🚧 *Coming Soon*
-
 <img src="apps/assets/scene3d.gif" alt="scene3d" style="width: 640px;">
+
+### ⚡ API
+> Run `bash install.sh extra` to install additional requirements if you need to use `scene3d-cli`.
+
+It takes ~30mins to generate a color mesh and 3DGS per scene.
+
+```sh
+CUDA_VISIBLE_DEVICES=0 scene3d-cli \
+--prompts "Art studio with easel and canvas" \
+--output_dir outputs/bg_scenes/ \
+--seed 0 \
+--gs3d.max_steps 4000 \
+--disable_pano_check
+```
 
 ---
 
@@ -189,7 +202,7 @@ bash embodied_gen/scripts/texture_gen.sh \
 
 ## For Developer
 ```sh
-pip install .[dev] && pre-commit install
+pip install -e .[dev] && pre-commit install
 python -m pytest # Pass all unit-test are required.
 ```
 

@@ -19,8 +19,9 @@ import json
 import logging
 import os
 import random
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Literal, Tuple
 
+import numpy as np
 import torch
 import torch.utils.checkpoint
 from PIL import Image
@@ -36,6 +37,7 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     "Asset3dGenDataset",
+    "PanoGSplatDataset",
 ]
 
 
@@ -220,6 +222,68 @@ class Asset3dGenDataset(Dataset):
         )
 
         return data
+
+
+class PanoGSplatDataset(Dataset):
+    """A PyTorch Dataset for loading panorama-based 3D Gaussian Splatting data.
+
+    This dataset is designed to be compatible with train and eval pipelines
+    that use COLMAP-style camera conventions.
+
+    Args:
+        data_dir (str): Root directory where the dataset file is located.
+        split (str): Dataset split to use, either "train" or "eval".
+        data_name (str, optional): Name of the dataset file (default: "gs_data.pt").
+        max_sample_num (int, optional): Maximum number of samples to load. If None,
+            all available samples in the split will be used.
+    """
+
+    def __init__(
+        self,
+        data_dir: str,
+        split: str = Literal["train", "eval"],
+        data_name: str = "gs_data.pt",
+        max_sample_num: int = None,
+    ) -> None:
+        self.data_path = os.path.join(data_dir, data_name)
+        self.split = split
+        self.max_sample_num = max_sample_num
+        if not os.path.exists(self.data_path):
+            raise FileNotFoundError(
+                f"Dataset file {self.data_path} not found. Please provide the correct path."
+            )
+        self.data = torch.load(self.data_path, weights_only=False)
+        self.frames = self.data[split]
+        if max_sample_num is not None:
+            self.frames = self.frames[:max_sample_num]
+        self.points = self.data.get("points", None)
+        self.points_rgb = self.data.get("points_rgb", None)
+
+    def __len__(self) -> int:
+        return len(self.frames)
+
+    def cvt_blender_to_colmap_coord(self, c2w: np.ndarray) -> np.ndarray:
+        # change from OpenGL/Blender camera axes (Y up, Z back) to COLMAP (Y down, Z forward)
+        tranformed_c2w = np.copy(c2w)
+        tranformed_c2w[:3, 1:3] *= -1
+
+        return tranformed_c2w
+
+    def __getitem__(self, index: int) -> dict[str, any]:
+        data = self.frames[index]
+        c2w = self.cvt_blender_to_colmap_coord(data["camtoworld"])
+        item = dict(
+            camtoworld=c2w,
+            K=data["K"],
+            image_h=data["image_h"],
+            image_w=data["image_w"],
+        )
+        if "image" in data:
+            item["image"] = data["image"]
+        if "image_id" in data:
+            item["image_id"] = data["image_id"]
+
+        return item
 
 
 if __name__ == "__main__":

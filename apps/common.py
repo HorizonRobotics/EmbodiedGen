@@ -94,9 +94,6 @@ os.environ["GRADIO_ANALYTICS_ENABLED"] = "false"
 os.environ["SPCONV_ALGO"] = "native"
 
 MAX_SEED = 100000
-DELIGHT = DelightingModel()
-IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
-# IMAGESR_MODEL = ImageStableSR()
 
 
 def patched_setup_functions(self):
@@ -136,6 +133,9 @@ def patched_setup_functions(self):
 Gaussian.setup_functions = patched_setup_functions
 
 
+DELIGHT = DelightingModel()
+IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
+# IMAGESR_MODEL = ImageStableSR()
 if os.getenv("GRADIO_APP") == "imageto3d":
     RBG_REMOVER = RembgRemover()
     RBG14_REMOVER = BMGG14Remover()

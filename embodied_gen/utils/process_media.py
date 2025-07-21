@@ -17,6 +17,7 @@
 
 import logging
 import math
+import mimetypes
 import os
 import textwrap
 from glob import glob
@@ -27,10 +28,10 @@ import imageio
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
-import PIL.Image as Image
 import spaces
 from matplotlib.patches import Patch
 from moviepy.editor import VideoFileClip, clips_array
+from PIL import Image
 from embodied_gen.data.differentiable_render import entrypoint as render_api
 from embodied_gen.utils.enum import LayoutInfo, Scene3DItemEnum
 
@@ -45,6 +46,8 @@ __all__ = [
     "filter_image_small_connected_components",
     "combine_images_to_grid",
     "SceneTreeVisualizer",
+    "is_image_file",
+    "parse_text_prompts",
 ]
 
 
@@ -354,6 +357,23 @@ def load_scene_dict(file_path: str) -> dict:
             scene_dict[scene_id.strip()] = desc.strip()
 
     return scene_dict
+
+
+def is_image_file(filename: str) -> bool:
+    mime_type, _ = mimetypes.guess_type(filename)
+
+    return mime_type is not None and mime_type.startswith('image')
+
+
+def parse_text_prompts(prompts: list[str]) -> list[str]:
+    if len(prompts) == 1 and prompts[0].endswith(".txt"):
+        with open(prompts[0], "r") as f:
+            prompts = [
+                line.strip()
+                for line in f
+                if line.strip() and not line.strip().startswith("#")
+            ]
+    return prompts
 
 
 if __name__ == "__main__":

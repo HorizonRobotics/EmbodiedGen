@@ -31,6 +31,7 @@ from embodied_gen.models.text_model import (
     build_text2img_pipeline,
     text2img_gen,
 )
+from embodied_gen.utils.process_media import parse_text_prompts
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -101,14 +102,7 @@ def entrypoint(
         if hasattr(args, k) and v is not None:
             setattr(args, k, v)
 
-    prompts = args.prompts
-    if len(prompts) == 1 and prompts[0].endswith(".txt"):
-        with open(prompts[0], "r") as f:
-            prompts = f.readlines()
-            prompts = [
-                prompt.strip() for prompt in prompts if prompt.strip() != ""
-            ]
-
+    prompts = parse_text_prompts(args.prompts)
     os.makedirs(args.output_root, exist_ok=True)
 
     ip_img_paths = args.ref_image
