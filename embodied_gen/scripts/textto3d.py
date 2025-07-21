@@ -44,13 +44,6 @@ __all__ = [
     "text_to_3d",
 ]
 
-logger.info("Loading Models...")
-SEMANTIC_CHECKER = SemanticConsistChecker(GPT_CLIENT)
-SEG_CHECKER = ImageSegChecker(GPT_CLIENT)
-TXTGEN_CHECKER = TextGenAlignChecker(GPT_CLIENT)
-PIPE_IMG = build_hf_image_pipeline("sd35")
-BG_REMOVER = RembgRemover()
-
 
 def text_to_image(
     prompt: str,
@@ -120,6 +113,14 @@ def text_to_3d(**kwargs) -> dict:
     for k, v in kwargs.items():
         if hasattr(args, k) and v is not None:
             setattr(args, k, v)
+
+    logger.info("Loading Models...")
+    global SEMANTIC_CHECKER, SEG_CHECKER, TXTGEN_CHECKER, PIPE_IMG, BG_REMOVER
+    SEMANTIC_CHECKER = SemanticConsistChecker(GPT_CLIENT)
+    SEG_CHECKER = ImageSegChecker(GPT_CLIENT)
+    TXTGEN_CHECKER = TextGenAlignChecker(GPT_CLIENT)
+    PIPE_IMG = build_hf_image_pipeline(args.text_model)
+    BG_REMOVER = RembgRemover()
 
     if args.asset_names is None or len(args.asset_names) == 0:
         args.asset_names = [f"sample3d_{i}" for i in range(len(args.prompts))]
@@ -259,6 +260,11 @@ def parse_args():
         type=int,
         default=0,
         help="Random seed for 3D generation",
+    )
+    parser.add_argument(
+        "--text_model",
+        type=str,
+        default="sd35",
     )
     parser.add_argument("--keep_intermediate", action="store_true")
 

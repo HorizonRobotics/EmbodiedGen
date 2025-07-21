@@ -30,11 +30,11 @@
 ```sh
 git clone https://github.com/HorizonRobotics/EmbodiedGen.git
 cd EmbodiedGen
-git checkout v0.1.1
+git checkout v0.1.2
 git submodule update --init --recursive --progress
 conda create -n embodiedgen python=3.10.13 -y
 conda activate embodiedgen
-bash install.sh
+bash install.sh basic
 ```
 
 ### ✅ Setup GPT Agent
@@ -146,9 +146,19 @@ bash embodied_gen/scripts/texture_gen.sh \
 
 <h2 id="3d-scene-generation">🌍 3D Scene Generation</h2>
 
-🚧 *Coming Soon*
-
 <img src="apps/assets/scene3d.gif" alt="scene3d" style="width: 640px;">
+
+### ⚡ API
+> Run `bash install.sh extra` to set up the extra environment if you need to use `scene3d-cli`.
+
+```sh
+CUDA_VISIBLE_DEVICES=0 scene3d-cli \
+--prompts "Bright kitchen with large island and bar stools" \
+--output_dir outputs/bg_scenes/ \
+--seed 0 \
+--gs3d.max_steps 4000 \
+--disable_pano_check
+```
 
 ---
 

@@ -33,6 +33,9 @@ __all__ = [
     "ImageAestheticChecker",
     "SemanticConsistChecker",
     "TextGenAlignChecker",
+    "PanoImageGenChecker",
+    "PanoHeightEstimator",
+    "PanoImageOccChecker",
 ]
 
 
@@ -326,6 +329,159 @@ class TextGenAlignChecker(BaseChecker):
             text_prompt=self.prompt.format(text),
             image_base64=image,
         )
+
+
+class PanoImageGenChecker(BaseChecker):
+    """A checker class that validates the quality and realism of generated panoramic indoor images.
+
+    Attributes:
+        gpt_client (GPTclient): A GPT client instance used to query for image validation.
+        prompt (str): The instruction prompt passed to the GPT model. If None, a default prompt is used.
+        verbose (bool): Whether to print internal processing information for debugging.
+    """
+
+    def __init__(
+        self,
+        gpt_client: GPTclient,
+        prompt: str = None,
+        verbose: bool = False,
+    ) -> None:
+        super().__init__(prompt, verbose)
+        self.gpt_client = gpt_client
+        if self.prompt is None:
+            self.prompt = """
+            You are a panoramic image analyzer specializing in indoor room structure validation.
+
+            Given a generated panoramic image, assess if it meets all the criteria:
+            - Floor Space: ≥30 percent of the floor is free of objects or obstructions.
+            - Visual Clarity: Floor, walls, and ceiling are clear, with no distortion, blur, noise.
+            - Structural Continuity: Surfaces form plausible, continuous geometry
+                without breaks, floating parts, or abrupt cuts.
+            - Spatial Completeness: Full 360° coverage without missing areas,
+                seams, gaps, or stitching artifacts.
+            Instructions:
+            - If all criteria are met, reply with "YES".
+            - Otherwise, reply with "NO: <brief explanation>" (max 20 words).
+
+            Respond exactly as:
+            "YES"
+            or
+            "NO: brief explanation."
+            """
+
+    def query(self, image_paths: str | Image.Image) -> str:
+
+        return self.gpt_client.query(
+            text_prompt=self.prompt,
+            image_base64=image_paths,
+        )
+
+
+class PanoImageOccChecker(BaseChecker):
+    """Checks for physical obstacles in the bottom-center region of a panoramic image.
+
+    This class crops a specified region from the input panoramic image and uses
+    a GPT client to determine whether any physical obstacles there.
+
+    Args:
+        gpt_client (GPTclient): The GPT-based client used for visual reasoning.
+        box_hw (tuple[int, int]): The height and width of the crop box.
+        prompt (str, optional): Custom prompt for the GPT client. Defaults to a predefined one.
+        verbose (bool, optional): Whether to print verbose logs. Defaults to False.
+    """
+
+    def __init__(
+        self,
+        gpt_client: GPTclient,
+        box_hw: tuple[int, int],
+        prompt: str = None,
+        verbose: bool = False,
+    ) -> None:
+        super().__init__(prompt, verbose)
+        self.gpt_client = gpt_client
+        self.box_hw = box_hw
+        if self.prompt is None:
+            self.prompt = """
+            This image is a cropped region from the bottom-center of a panoramic view.
+            Please determine whether there is any obstacle present — such as furniture, tables, or other physical objects.
+            Ignore floor textures, rugs, carpets, shadows, and lighting effects — they do not count as obstacles.
+            Only consider real, physical objects that could block walking or movement.
+
+            Instructions:
+            - If there is no obstacle, reply: "YES".
+            - Otherwise, reply: "NO: <brief explanation>" (max 20 words).
+
+            Respond exactly as:
+            "YES"
+            or
+            "NO: brief explanation."
+            """
+
+    def query(self, image_paths: str | Image.Image) -> str:
+        if isinstance(image_paths, str):
+            image_paths = Image.open(image_paths)
+
+        w, h = image_paths.size
+        image_paths = image_paths.crop(
+            (
+                (w - self.box_hw[1]) // 2,
+                h - self.box_hw[0],
+                (w + self.box_hw[1]) // 2,
+                h,
+            )
+        )
+
+        return self.gpt_client.query(
+            text_prompt=self.prompt,
+            image_base64=image_paths,
+        )
+
+
+class PanoHeightEstimator(object):
+    """Estimate the real ceiling height of an indoor space from a 360° panoramic image.
+
+    Attributes:
+        gpt_client (GPTclient): The GPT client used to perform image-based reasoning and return height estimates.
+        default_value (float): The fallback height in meters if parsing the GPT output fails.
+        prompt (str): The textual instruction used to guide the GPT model for height estimation.
+    """
+
+    def __init__(
+        self,
+        gpt_client: GPTclient,
+        default_value: float = 3.5,
+    ) -> None:
+        self.gpt_client = gpt_client
+        self.default_value = default_value
+        self.prompt = """
+        You are an expert in building height estimation and panoramic image analysis.
+        Your task is to analyze a 360° indoor panoramic image and estimate the **actual height** of the space in meters.
+
+        Consider the following visual cues:
+        1. Ceiling visibility and reference objects (doors, windows, furniture, appliances).
+        2. Floor features or level differences.
+        3. Room type (e.g., residential, office, commercial).
+        4. Object-to-ceiling proportions (e.g., height of doors relative to ceiling).
+        5. Architectural elements (e.g., chandeliers, shelves, kitchen cabinets).
+
+        Input: A full 360° panoramic indoor photo.
+        Output: A single number in meters representing the estimated room height. Only return the number (e.g., `3.2`)
+        """
+
+    def __call__(self, image_paths: str | Image.Image) -> float:
+        result = self.gpt_client.query(
+            text_prompt=self.prompt,
+            image_base64=image_paths,
+        )
+        try:
+            result = float(result.strip())
+        except ValueError:
+            logger.error(
+                f"Parser error: failed convert {result} to float, use default value {self.default_value}."
+            )
+            result = self.default_value
+
+        return result
 
 
 class SemanticMatcher(BaseChecker):

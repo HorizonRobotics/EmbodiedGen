@@ -3,3 +3,8 @@
 	url = https://github.com/microsoft/TRELLIS.git
 	branch = main
 	shallow = true
+[submodule "thirdparty/pano2room"]
+	path = thirdparty/pano2room
+	url = https://github.com/TrickyGo/Pano2Room.git
+	branch = main
+	shallow = true

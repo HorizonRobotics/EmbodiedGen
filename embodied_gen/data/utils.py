@@ -158,8 +158,9 @@ class DiffrastRender(object):
 
         return normalized_maps
 
+    @staticmethod
     def normalize_map_by_mask(
-        self, map: torch.Tensor, mask: torch.Tensor
+        map: torch.Tensor, mask: torch.Tensor
     ) -> torch.Tensor:
         # Normalize all maps in total by mask, normalized map in [0, 1].
         foreground = (mask == 1).squeeze(dim=-1)

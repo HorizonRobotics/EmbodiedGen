@@ -62,25 +62,6 @@ os.environ["GRADIO_ANALYTICS_ENABLED"] = "false"
 os.environ["SPCONV_ALGO"] = "native"
 random.seed(0)
 
-logger.info("Loading Models...")
-DELIGHT = DelightingModel()
-IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
-
-RBG_REMOVER = RembgRemover()
-RBG14_REMOVER = BMGG14Remover()
-SAM_PREDICTOR = SAMPredictor(model_type="vit_h", device="cpu")
-PIPELINE = TrellisImageTo3DPipeline.from_pretrained(
-    "microsoft/TRELLIS-image-large"
-)
-# PIPELINE.cuda()
-SEG_CHECKER = ImageSegChecker(GPT_CLIENT)
-GEO_CHECKER = MeshGeoChecker(GPT_CLIENT)
-AESTHETIC_CHECKER = ImageAestheticChecker()
-CHECKERS = [GEO_CHECKER, SEG_CHECKER, AESTHETIC_CHECKER]
-TMP_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "sessions/imageto3d"
-)
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Image to 3D pipeline args.")
@@ -127,6 +108,19 @@ def entrypoint(**kwargs):
     for k, v in kwargs.items():
         if hasattr(args, k) and v is not None:
             setattr(args, k, v)
+
+    logger.info("Loading Models...")
+    DELIGHT = DelightingModel()
+    IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
+    RBG_REMOVER = RembgRemover()
+    PIPELINE = TrellisImageTo3DPipeline.from_pretrained(
+        "microsoft/TRELLIS-image-large"
+    )
+    # PIPELINE.cuda()
+    SEG_CHECKER = ImageSegChecker(GPT_CLIENT)
+    GEO_CHECKER = MeshGeoChecker(GPT_CLIENT)
+    AESTHETIC_CHECKER = ImageAestheticChecker()
+    CHECKERS = [GEO_CHECKER, SEG_CHECKER, AESTHETIC_CHECKER]
 
     assert (
         args.image_path or args.image_root

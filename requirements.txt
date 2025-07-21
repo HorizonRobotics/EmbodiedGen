@@ -32,6 +32,8 @@ vtk==9.3.1
 spaces
 colorlog
 json-repair
+scikit-learn
+omegaconf
 utils3d@git+https://github.com/EasternJournalist/utils3d.git#egg=9a4eb15
 clip@git+https://github.com/openai/CLIP.git
 segment-anything@git+https://github.com/facebookresearch/segment-anything.git#egg=dca509f

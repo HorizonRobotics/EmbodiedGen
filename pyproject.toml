@@ -7,7 +7,7 @@ packages = ["embodied_gen"]
 
 [project]
 name = "embodied_gen"
-version = "v0.1.1"
+version = "v0.1.2"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
@@ -31,6 +31,7 @@ drender-cli = "embodied_gen.data.differentiable_render:entrypoint"
 backproject-cli = "embodied_gen.data.backproject_v2:entrypoint"
 img3d-cli = "embodied_gen.scripts.imageto3d:entrypoint"
 text3d-cli = "embodied_gen.scripts.textto3d:text_to_3d"
+scene3d-cli = "embodied_gen.scripts.gen_scene3d:entrypoint"
 
 [tool.pydocstyle]
 match = '(?!test_).*(?!_pb2)\.py'

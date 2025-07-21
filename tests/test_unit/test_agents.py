@@ -23,6 +23,8 @@ from embodied_gen.utils.gpt_clients import GPT_CLIENT
 from embodied_gen.validators.quality_checkers import (
     ImageSegChecker,
     MeshGeoChecker,
+    PanoHeightEstimator,
+    PanoImageGenChecker,
     SemanticConsistChecker,
 )
 
@@ -91,5 +93,18 @@ def test_semantic_checker(gptclient_query_case2):
         text="pen",
         image=["dummy_path/pen.png"],
     )
+    assert isinstance(flag, (bool, type(None)))
+    assert isinstance(result, str)
+
+
+def test_panoheight_estimator():
+    checker = PanoHeightEstimator(GPT_CLIENT, default_value=3.5)
+    result = checker(image_paths="dummy_path/pano.png")
+    assert isinstance(result, float)
+
+
+def test_panogen_checker():
+    checker = PanoImageGenChecker(GPT_CLIENT)
+    flag, result = checker(image_paths="dummy_path/pano.png")
     assert isinstance(flag, (bool, type(None)))
     assert isinstance(result, str)

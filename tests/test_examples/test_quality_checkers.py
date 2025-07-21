@@ -17,6 +17,7 @@
 
 import logging
 import tempfile
+from glob import glob
 
 import pytest
 from embodied_gen.utils.gpt_clients import GPT_CLIENT
@@ -25,6 +26,9 @@ from embodied_gen.validators.quality_checkers import (
     ImageAestheticChecker,
     ImageSegChecker,
     MeshGeoChecker,
+    PanoHeightEstimator,
+    PanoImageGenChecker,
+    PanoImageOccChecker,
     SemanticConsistChecker,
     TextGenAlignChecker,
 )
@@ -55,6 +59,21 @@ def semantic_checker():
 @pytest.fixture(scope="module")
 def textalign_checker():
     return TextGenAlignChecker(GPT_CLIENT)
+
+
+@pytest.fixture(scope="module")
+def pano_checker():
+    return PanoImageGenChecker(GPT_CLIENT)
+
+
+@pytest.fixture(scope="module")
+def pano_height_estimator():
+    return PanoHeightEstimator(GPT_CLIENT)
+
+
+@pytest.fixture(scope="module")
+def panoocc_checker():
+    return PanoImageOccChecker(GPT_CLIENT, box_hw=[90, 1000])
 
 
 def test_geo_checker(geo_checker):
@@ -117,3 +136,28 @@ def test_textgen_checker(textalign_checker, mesh_path, text_desc):
         )
         flag, result = textalign_checker(text_desc, image_list)
         logger.info(f"textalign_checker: {flag}, {result}")
+
+
+def test_panoheight_estimator(pano_height_estimator):
+    image_paths = glob("outputs/bg_v3/test2/*/*.png")
+    for image_path in image_paths:
+        result = pano_height_estimator(image_path)
+        logger.info(f"{type(result)}, {result}")
+
+
+def test_pano_checker(pano_checker):
+    # image_paths = [
+    #     "outputs/bg_gen2/scene_0000/pano_image.png",
+    #     "outputs/bg_gen2/scene_0001/pano_image.png",
+    # ]
+    image_paths = glob("outputs/bg_gen/*/*.png")
+    for image_path in image_paths:
+        flag, result = pano_checker(image_path)
+        logger.info(f"{image_path} {flag}, {result}")
+
+
+def test_panoocc_checker(panoocc_checker):
+    image_paths = glob("outputs/bg_gen/*/*.png")
+    for image_path in image_paths:
+        flag, result = panoocc_checker(image_path)
+        logger.info(f"{image_path} {flag}, {result}")
