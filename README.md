@@ -150,11 +150,13 @@ bash embodied_gen/scripts/texture_gen.sh \
 <img src="apps/assets/scene3d.gif" alt="scene3d" style="width: 640px;">
 
 ### ⚡ API
-> Run `bash install.sh extra` to set up extra requirements if you need to use `scene3d-cli`.
+> Run `bash install.sh extra` to install additional requirements if you need to use `scene3d-cli`.
+
+It takes ~30mins to generate a color mesh and 3DGS per scene.
 
 ```sh
 CUDA_VISIBLE_DEVICES=0 scene3d-cli \
---prompts "Bright kitchen with large island and bar stools" \
+--prompts "Art studio with easel and canvas" \
 --output_dir outputs/bg_scenes/ \
 --seed 0 \
 --gs3d.max_steps 4000 \
