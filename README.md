@@ -200,7 +200,7 @@ We provided some sample background assets created with `scene3d-cli`. Download t
 Generating one interactive 3D scene from task description with `layout-cli` takes approximately 30 minutes.
 ```sh
 CUDA_VISIBLE_DEVICES=0 nohup layout-cli \
---task_descs "Place the pen in the mug on the desk" "Move the lamp to the left" \
+--task_descs "Place the pen in the mug on the desk" "Put the fruit on the table on the plate" \
 --bg_list "outputs/bg_scenes/scene_list.txt" --output_root "outputs/layouts_gen" > layouts_gen.log &
 ```
 
@@ -211,18 +211,18 @@ CUDA_VISIBLE_DEVICES=0 nohup layout-cli \
   </tr>
 </table>
 
+Using `compose_layout.py`, you can recompose the layout of the generated interactive 3D scenes. (Support for texture editing and augmentation will be added later.)
+```sh
+python embodied_gen/scripts/compose_layout.py \
+--layout_path "outputs/layouts_gen/task_0000/layout.json" \
+--output_dir "outputs/layouts_gen/task_0000/recompose"
+```
+
 We provide `sim-cli`, that allows users to easily load generated layouts into an interactive 3D simulation using the SAPIEN engine (will support for more simulators in future updates).
 
 ```sh
 sim-cli --layout_path "outputs/layouts_gen/task_0000/layout.json" \
 --output_dir "outputs/layouts_gen/task_0000/sapien_render"
-```
-
-Using `compose_layout.py`, you can recompose the layout of the generated interactive 3D scenes. (Support for texture editing and augmentation will be added later.)
-```sh
-python embodied_gen/scripts/compose_layout.py \
---layout_path "outputs/layouts_gen/task_0000/layout.json" \
---output_dir "outputs/layouts_gen/task_0000_recompose"
 ```
 
 ### 🖼️ Real-to-Sim Digital Twin

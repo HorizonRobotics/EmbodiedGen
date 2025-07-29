@@ -77,9 +77,10 @@ LAYOUT_DISASSEMBLE_PROMPT = f"""
     - {Scene3DItemEnum.MANIPULATED_OBJS} and {Scene3DItemEnum.DISTRACTOR_OBJS} must be common
         household or office items or furniture, not abstract concepts, not too small like needle.
     - If the input includes a plural or grouped object (e.g., "pens", "bottles", "plates", "fruit"),
-        you must decompose it into multiple individual instances (e.g., ["pen", "pen", "pen"], ["apple", "pear"]).
+        you must decompose it into multiple individual instances (e.g., ["pen", "pen"], ["apple", "pear"]).
     - Containers that hold objects (e.g., "bowl of apples", "box of tools") must
-        be separated into individual items (e.g., ["bowl", "apple", "apple", "apple"]).
+        be separated into individual items (e.g., ["bowl", "apple", "apple"]).
+    - Do not include transparent objects such as "glass", "plastic", etc.
     - The output must be in compact JSON format and use Markdown syntax, just like the output in the example below.
 
     Examples:
