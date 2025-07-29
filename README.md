@@ -199,7 +199,9 @@ We provided some sample background assets created with `scene3d-cli`. Download t
 
 Generating one interactive 3D scene from task description with `layout-cli` takes approximately 30 minutes.
 ```sh
-CUDA_VISIBLE_DEVICES=0 nohup layout-cli --task_descs "Place the pen in the mug on the desk" "Move the lamp to the left" --bg_list "outputs/bg_scenes/scene_list.txt" --output_root "outputs/layouts_gen" > layouts_gen.log &
+CUDA_VISIBLE_DEVICES=0 nohup layout-cli \
+--task_descs "Place the pen in the mug on the desk" "Move the lamp to the left" \
+--bg_list "outputs/bg_scenes/scene_list.txt" --output_root "outputs/layouts_gen" > layouts_gen.log &
 ```
 
 <table>
