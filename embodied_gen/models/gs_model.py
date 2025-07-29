@@ -51,17 +51,15 @@ class RenderResult:
 
     def __post_init__(self):
         if isinstance(self.rgb, torch.Tensor):
-            rgb = self.rgb.detach().cpu().numpy()
-            rgb = (rgb * 255).astype(np.uint8)
-            self.rgb = cv2.cvtColor(rgb, cv2.COLOR_BGR2RGB)
+            rgb = (self.rgb * 255).to(torch.uint8)
+            self.rgb = rgb.cpu().numpy()[..., ::-1]
         if isinstance(self.depth, torch.Tensor):
-            self.depth = self.depth.detach().cpu().numpy()
+            self.depth = self.depth.cpu().numpy()
         if isinstance(self.opacity, torch.Tensor):
-            opacity = self.opacity.detach().cpu().numpy()
-            opacity = (opacity * 255).astype(np.uint8)
-            self.opacity = cv2.cvtColor(opacity, cv2.COLOR_GRAY2RGB)
+            opacity = (self.opacity * 255).to(torch.uint8)
+            self.opacity = opacity.cpu().numpy()
             mask = np.where(self.opacity > self.mask_threshold, 255, 0)
-            self.mask = mask[..., 0:1].astype(np.uint8)
+            self.mask = mask.astype(np.uint8)
             self.rgba = np.concatenate([self.rgb, self.mask], axis=-1)
 
 

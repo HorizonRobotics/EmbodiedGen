@@ -617,7 +617,7 @@ class Runner:
         for rgb, depth in images_cache:
             depth_normalized = torch.clip(
                 (depth - depth_global_min)
-                / (depth_global_max - depth_global_min),
+                / (depth_global_max - depth_global_min + 1e-8),
                 0,
                 1,
             )

@@ -113,8 +113,8 @@ class MeshGeoChecker(BaseChecker):
             Your task is to evaluate the quality of the 3D asset generation,
             including geometry, structure, and appearance, based on the rendered views.
             Criteria:
-            - Is the geometry complete and well-formed, without missing parts or redundant structures?
-            - Is the geometric structure of the object complete?
+            - Is the object in the image a single, complete, and well-formed instance,
+                without truncation, missing parts, overlapping duplicates, or redundant geometry?
             - Minor flaws, asymmetries, or simplifications (e.g., less detail on sides or back,
                 soft edges) are acceptable if the object is structurally sound and recognizable.
             - Only evaluate geometry. Do not assess texture quality.
@@ -241,10 +241,11 @@ class SemanticConsistChecker(BaseChecker):
 
             Criteria:
             - The image must visually match the text description in terms of object type, structure, geometry, and color.
-            - The object must appear realistic, with reasonable geometry (e.g., a table must have a stable number of legs).
+            - The object must appear realistic, with reasonable geometry (e.g., a table must have a stable number
+                of legs with a reasonable distribution. Count the number of legs visible in the image. (strict) For tables,
+                fewer than four legs or if the legs are unevenly distributed, are not allowed. Do not assume
+                hidden legs unless they are clearly visible.)
             - Geometric completeness is required: the object must not have missing, truncated, or cropped parts.
-            - The object must be centered in the image frame with clear margins on all sides,
-                it should not touch or nearly touch any image edge.
             - The image must contain exactly one object. Multiple distinct objects are not allowed.
                 A single composite object (e.g., a chair with legs) is acceptable.
             - The object should be shown from a slightly angled (three-quarter) perspective,

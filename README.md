@@ -30,7 +30,7 @@
 ```sh
 git clone https://github.com/HorizonRobotics/EmbodiedGen.git
 cd EmbodiedGen
-git checkout v0.1.2
+git checkout v0.1.3-nightly
 git submodule update --init --recursive --progress
 conda create -n embodiedgen python=3.10.13 -y # recommended to use a new env.
 conda activate embodiedgen
@@ -180,8 +180,6 @@ CUDA_VISIBLE_DEVICES=0 scene3d-cli \
 
 ### 💬 Generate Layout from task description
 
-🚧 *Coming Soon*
-
 <table>
   <tr>
     <td><img src="apps/assets/layout1.gif" alt="layout1" width="360"/></td>
@@ -193,6 +191,37 @@ CUDA_VISIBLE_DEVICES=0 scene3d-cli \
   </tr>
 </table>
 
+Text-to-image model based on SD3.5 Medium, usage requires agreement to the [model license](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium). All models auto-downloaded at the first run.
+
+You can generate any desired room as background using `scene3d-cli`. As each scene takes approximately 30 minutes to generate, we recommend pre-generating them for efficiency and adding them to `outputs/bg_scenes/scene_list.txt`.
+
+We provided some sample background assets created with `scene3d-cli`. Download them(~4G) using `hf download xinjjj/scene3d-bg --repo-type dataset --local-dir outputs`.
+
+Generating one interactive 3D scene from task description with `layout-cli` takes approximately 30 minutes.
+```sh
+CUDA_VISIBLE_DEVICES=0 nohup layout-cli --task_descs "Place the pen in the mug on the desk" "Move the lamp to the left" --bg_list "outputs/bg_scenes/scene_list.txt" --output_root "outputs/layouts_gen" > layouts_gen.log &
+```
+
+<table>
+  <tr>
+    <td><img src="apps/assets/Iscene_demo1.gif" alt="Iscene_demo1" width="300"/></td>
+    <td><img src="apps/assets/Iscene_demo2.gif" alt="Iscene_demo2" width="300"/></td>
+  </tr>
+</table>
+
+We provide `sim-cli`, that allows users to easily load generated layouts into an interactive 3D simulation using the SAPIEN engine (will support for more simulators in future updates).
+
+```sh
+sim-cli --layout_path "outputs/layouts_gen/task_0000/layout.json" \
+--output_dir "outputs/layouts_gen/task_0000/sapien_render"
+```
+
+Using `compose_layout.py`, you can recompose the layout of the generated interactive 3D scenes. (Support for texture editing and augmentation will be added later.)
+```sh
+python embodied_gen/scripts/compose_layout.py \
+--layout_path "outputs/layouts_gen/task_0000/layout.json" \
+--output_dir "outputs/layouts_gen/task_0000_recompose"
+```
 
 ### 🖼️ Real-to-Sim Digital Twin
 

@@ -101,34 +101,32 @@ class URDFGenerator(object):
             prompt_template = (
                 view_desc
                 + """of the 3D object asset,
-                category: {category}.
-                You are an expert in 3D object analysis and physical property estimation.
-                Give the category of this object asset (within 3 words),
-                (if category is already provided, use it directly),
-                accurately describe this 3D object asset (within 15 words),
-                and give the recommended geometric height range (unit: meter),
-                weight range (unit: kilogram), the average static friction
-                coefficient of the object relative to rubber and the average
-                dynamic friction coefficient of the object relative to rubber.
-                Return response format as shown in Output Example.
+            category: {category}.
+            You are an expert in 3D object analysis and physical property estimation.
+            Give the category of this object asset (within 3 words), (if category is
+            already provided, use it directly), accurately describe this 3D object asset (within 15 words),
+            Determine the pose of the object in the first image and estimate the true vertical height range
+            of the object (in meters), i.e., how tall the object appears from top to bottom in
+            the front view (first) image. also weight range (unit: kilogram), the average static friction
+            coefficient of the object relative to rubber and the average dynamic friction coefficient
+            of the object relative to rubber. Return response format as shown in Output Example.
 
-                IMPORTANT:
-                Inputed images are orthographic projection showing the front, left, right and back views,
-                the first image is always the front view. Use the object's pose and orientation in the
-                rendered images to estimate its **true vertical height as it appears in the image**,
-                not the real-world length or width of the object.
-                For example:
-                - A pen standing upright in the front view → vertical height: 0.15-0.2 m
-                - A pen lying horizontally in the front view → vertical height: 0.01-0.02 m
-                    (based on its thickness in the image)
+            Output Example:
+            Category: cup
+            Description: shiny golden cup with floral design
+            Height: 0.1-0.15 m
+            Weight: 0.3-0.6 kg
+            Static friction coefficient: 1.1
+            Dynamic friction coefficient: 0.9
 
-                Output Example:
-                Category: cup
-                Description: shiny golden cup with floral design
-                Height: 0.1-0.15 m
-                Weight: 0.3-0.6 kg
-                Static friction coefficient: 1.1
-                Dynamic friction coefficient: 0.9
+            IMPORTANT:
+            - For flat objects like plates or disks or book, if their face is visible in the front view,
+            use the diameter as the vertical height. If the edge is visible, use the thickness instead.
+            - A pen standing upright in the front view → visual height ≈ 0.15-0.2 m
+            - A pen lying flat in the front view (showing thickness) → visual height ≈ 0.01-0.02 m
+            - Use the side and back views to help determine the object's 3D pose and orientation.
+            Assume the object is in real-world scale and estimate the approximate vertical height
+            (in meters) based on how large it appears vertically in the front view(first) image.
             """
             )
 
@@ -374,6 +372,7 @@ class URDFGenerator(object):
         )
 
         response = self.gpt_client.query(text_prompt, image_path)
+        # logger.info(response)
         if response is None:
             asset_attrs = {
                 "category": category.lower(),

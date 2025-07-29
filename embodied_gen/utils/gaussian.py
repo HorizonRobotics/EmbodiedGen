@@ -265,12 +265,12 @@ def create_splats_with_optimizers(
     return splats, optimizers
 
 
-def compute_pinhole_intrinsics(
-    image_w: int, image_h: int, fov_deg: float
+def compute_intrinsics_from_fovy(
+    image_w: int, image_h: int, fovy_deg: float
 ) -> np.ndarray:
-    fov_rad = np.deg2rad(fov_deg)
-    fx = image_w / (2 * np.tan(fov_rad / 2))
-    fy = fx  # assuming square pixels
+    fovy_rad = np.deg2rad(fovy_deg)
+    fy = image_h / (2 * np.tan(fovy_rad / 2))
+    fx = fy * (image_w / image_h)
     cx = image_w / 2
     cy = image_h / 2
     K = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])

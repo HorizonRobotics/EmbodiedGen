@@ -102,6 +102,7 @@ class LayoutInfo(DataClassJsonMixin):
     tree: dict[str, list]
     relation: dict[str, str | list[str]]
     objs_desc: dict[str, str] = field(default_factory=dict)
+    objs_mapping: dict[str, str] = field(default_factory=dict)
     assets: dict[str, str] = field(default_factory=dict)
     quality: dict[str, str] = field(default_factory=dict)
     position: dict[str, list[float]] = field(default_factory=dict)
