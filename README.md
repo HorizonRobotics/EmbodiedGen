@@ -201,10 +201,6 @@ Generating one interactive 3D scene from task description with `layout-cli` take
 ```sh
 layout-cli --task_descs "Place the pen in the mug on the desk" "Put the fruit on the table on the plate" \
 --bg_list "outputs/bg_scenes/scene_list.txt" --output_root "outputs/layouts_gen"
-
-CUDA_VISIBLE_DEVICES=0 nohup layout-cli \
---task_descs "apps/assets/example_layout/task_list.txt" \
---bg_list "outputs/bg_scenes/scene_list.txt" --output_root "outputs/layouts_gens" > layouts_gens.log &
 ```
 
 <table>
@@ -213,6 +209,13 @@ CUDA_VISIBLE_DEVICES=0 nohup layout-cli \
     <td><img src="apps/assets/Iscene_demo2.gif" alt="Iscene_demo2" width="300"/></td>
   </tr>
 </table>
+
+Run multiple tasks defined in `task_list.txt` in the backend.
+```sh
+CUDA_VISIBLE_DEVICES=0 nohup layout-cli \
+--task_descs "apps/assets/example_layout/task_list.txt" \
+--bg_list "outputs/bg_scenes/scene_list.txt" --output_root "outputs/layouts_gens" > layouts_gens.log &
+```
 
 Using `compose_layout.py`, you can recompose the layout of the generated interactive 3D scenes. (Support for texture editing and augmentation will be added later.)
 ```sh
