@@ -131,9 +131,9 @@ class URDFGenerator(object):
             Estimate the vertical projection of their real length based on its pose.
             For example:
               - A pen standing upright in the first view (aligned with the image's vertical axis)
-              full body visible in the first image: → vertical height ≈ 0.13-0.17 m
-              - A pen lying flat in the front view (showing thickness) → vertical height ≈ 0.01-0.02 m
-              - Tilted pen in the first image (e.g., ~45° angle): vertical height ≈ 0.06-0.08 m
+              full body visible in the first image: → vertical height ≈ 0.14-0.20 m
+              - A pen lying flat in the front view (showing thickness) → vertical height ≈ 0.018-0.025 m
+              - Tilted pen in the first image (e.g., ~45° angle): vertical height ≈ 0.07-0.12 m
             - Use the rest views(except the first image) to help determine the object's 3D pose and orientation.
             Assume the object is in real-world scale and estimate the approximate vertical height
             (in meters) based on how large it appears vertically in the first image.
