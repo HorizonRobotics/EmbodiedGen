@@ -34,8 +34,11 @@ class LayoutPlacementConfig:
     output_iscene: bool = False
 
 
-def entrypoint():
-    args = tyro.cli(LayoutPlacementConfig)
+def entrypoint(**kwargs):
+    if kwargs is None or len(kwargs) == 0:
+        args = tyro.cli(LayoutPlacementConfig)
+    else:
+        args = LayoutPlacementConfig(**kwargs)
 
     output_dir = (
         args.output_dir

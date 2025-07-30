@@ -28,6 +28,7 @@ import tyro
 from tqdm import tqdm
 from embodied_gen.models.gs_model import GaussianOperator
 from embodied_gen.utils.enum import LayoutInfo, Scene3DItemEnum
+from embodied_gen.utils.geometry import quaternion_multiply
 from embodied_gen.utils.log import logger
 from embodied_gen.utils.process_media import alpha_blend_rgba
 from embodied_gen.utils.simulation import SIM_COORD_ALIGN, SapienSceneManager
@@ -40,7 +41,7 @@ class SapienSimConfig:
     output_dir: str
     sim_freq: int = 250
     sim_step: int = 600
-    z_offset: float = 0.02
+    z_offset: float = 0.004
     init_quat: list[float] = field(
         default_factory=lambda: [0.7071, 0, 0, 0.7071]
     )  # xyzw
@@ -103,9 +104,10 @@ def entrypoint(**kwargs):
     if "Foreground" in cfg.render_keys:
         bg_node = layout_data.relation[Scene3DItemEnum.BACKGROUND.value]
         gs_path = f"{layout_data.assets[bg_node]}/gs_model.ply"
-
         gs_model: GaussianOperator = GaussianOperator.load_from_ply(gs_path)
-        init_pose = torch.tensor([0, 0, 0] + cfg.init_quat)
+        x, y, z, qx, qy, qz, qw = layout_data.position[bg_node]
+        qx, qy, qz, qw = quaternion_multiply([qx, qy, qz, qw], cfg.init_quat)
+        init_pose = torch.tensor([x, y, z, qx, qy, qz, qw])
         gs_model = gs_model.get_gaussians(instance_pose=init_pose)
 
         bg_images = dict()

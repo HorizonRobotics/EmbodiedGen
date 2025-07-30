@@ -36,8 +36,9 @@ def test_urdf_convertor():
         # "outputs/test_urdf/sample_12/mesh/table.obj",
         # "outputs/test_urdf/sample_13/mesh/marker.obj",
         # "outputs/layouts_gen/task_0000/asset3d/pen/result/mesh/pen.obj"
-        "outputs/layouts_gen/task_0001/asset3d/banana/result/mesh/banana.obj",
-        "outputs/layouts_gen/task_0000/asset3d/pen/result/mesh/pen.obj",
+        # "outputs/layouts_gen/task_0001/asset3d/banana/result/mesh/banana.obj",
+        # "outputs/layouts_gen/task_0000/asset3d/pen/result/mesh/pen.obj",
+        "outputs/layouts_gen2/task_0000/asset3d/notebook/result/mesh/notebook.obj",
     ]
     for idx, mesh_path in enumerate(mesh_paths):
         filename = mesh_path.split("/")[-1].split(".")[0]

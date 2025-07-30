@@ -79,9 +79,11 @@ def panoocc_checker():
 def test_geo_checker(geo_checker):
     from embodied_gen.utils.process_media import combine_images_to_grid
 
-    # image_paths = glob("outputs/layouts_sim/task_0000/asset3d/pen/result/renders/image_color/*png")
-    # image = combine_images_to_grid(image_paths)[0]
-    image = "outputs/utest_cases/geo_checker/color.png"
+    image_paths = glob(
+        "outputs/layouts_gen1/task_0004/asset3d/pen/result/renders/image_color/*png"
+    )
+    image = combine_images_to_grid(image_paths)[0]
+    # image = "outputs/utest_cases/geo_checker/color.png"
     flag, result = geo_checker(
         [
             image,

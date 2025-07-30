@@ -6,10 +6,10 @@ import numpy as np
 import sapien.core as sapien
 import torch
 from PIL import Image, ImageColor
-from pyquaternion import Quaternion
 from scipy.spatial.transform import Rotation as R
 from embodied_gen.data.utils import DiffrastRender
 from embodied_gen.utils.enum import LayoutInfo, Scene3DItemEnum
+from embodied_gen.utils.geometry import quaternion_multiply
 
 COLORMAP = list(set(ImageColor.colormap.values()))
 COLOR_PALETTE = np.array(
@@ -311,14 +311,14 @@ class SapienSceneManager:
         self,
         layout: LayoutInfo,
         z_offset: float = 0.0,
-        init_quat: List[float] = [1, 0, 0, 0],
+        init_quat: List[float] = [0, 0, 0, 1],
     ) -> None:
         """Load assets from `EmbodiedGen` layout-gen output and create actors in the scene.
 
         Args:
             layout (LayoutInfo): The layout information data.
             z_offset (float): Offset to apply to the Z-coordinate of non-context objects.
-            init_quat (List[float]): Initial quaternion (w, x, y, z) for orientation adjustment.
+            init_quat (List[float]): Initial quaternion (x, y, z, w) for orientation adjustment.
         """
         for node in layout.assets:
             file_dir = layout.assets[node]
@@ -332,21 +332,17 @@ class SapienSceneManager:
             if layout.objs_mapping[node] != Scene3DItemEnum.CONTEXT.value:
                 position[2] += z_offset
 
-            # Combine initial quaternion with object quaternion
-            qx, qy, qz, qw = init_quat
-            q1 = Quaternion(w=qw, x=qx, y=qy, z=qz)
-            x, y, z, qx, qy, qz, qw = position
-            q2 = Quaternion(w=qw, x=qx, y=qy, z=qz)
-            quat = q2 * q1
-
             use_static = (
                 layout.relation.get(Scene3DItemEnum.CONTEXT.value, None)
                 == node
             )
 
+            # Combine initial quaternion with object quaternion
+            x, y, z, qx, qy, qz, qw = position
+            qx, qy, qz, qw = quaternion_multiply([qx, qy, qz, qw], init_quat)
             actor = self.load_actor_from_urdf(
                 urdf_file,
-                sapien.Pose(p=[x, y, z], q=[quat.w, quat.x, quat.y, quat.z]),
+                sapien.Pose(p=[x, y, z], q=[qw, qx, qy, qz]),
                 use_static=use_static,
                 update_mass=False,
             )

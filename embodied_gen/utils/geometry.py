@@ -18,10 +18,14 @@ import os
 import random
 from collections import defaultdict, deque
 from functools import wraps
+from typing import Literal
 
 import numpy as np
 import torch
 import trimesh
+from matplotlib.path import Path
+from pyquaternion import Quaternion
+from scipy.spatial import ConvexHull
 from scipy.spatial.transform import Rotation as R
 from embodied_gen.utils.enum import LayoutInfo, Scene3DItemEnum
 from embodied_gen.utils.log import logger
@@ -31,6 +35,7 @@ __all__ = [
     "with_seed",
     "matrix_to_pose",
     "pose_to_matrix",
+    "quaternion_multiply",
 ]
 
 
@@ -124,59 +129,145 @@ def with_seed(seed_attr_name: str = "seed"):
     return decorator
 
 
+def compute_convex_hull_path(
+    vertices: np.ndarray, z_threshold: float = 0.05, interp_per_edge: int = 3
+) -> Path:
+    top_vertices = vertices[
+        vertices[:, 1] > vertices[:, 1].max() - z_threshold
+    ]
+    top_xy = top_vertices[:, [0, 2]]
+
+    if len(top_xy) < 3:
+        raise ValueError("Not enough points to form a convex hull")
+
+    hull = ConvexHull(top_xy)
+    hull_points = top_xy[hull.vertices]
+    dense_points = []
+    for i in range(len(hull_points)):
+        p1 = hull_points[i]
+        p2 = hull_points[(i + 1) % len(hull_points)]
+        for t in np.linspace(0, 1, interp_per_edge, endpoint=False):
+            pt = (1 - t) * p1 + t * p2
+            dense_points.append(pt)
+
+    return Path(np.array(dense_points), closed=True)
+
+
+def find_parent_node(node: str, tree: dict) -> str | None:
+    for parent, children in tree.items():
+        if any(child[0] == node for child in children):
+            return parent
+    return None
+
+
+def all_corners_inside(hull: Path, box: list, threshold: int = 3) -> bool:
+    x1, x2, y1, y2 = box
+    corners = [[x1, y1], [x2, y1], [x1, y2], [x2, y2]]
+
+    num_inside = sum(hull.contains_point(c) for c in corners)
+    return num_inside >= threshold
+
+
+def compute_axis_rotation_quat(axis: Literal["x", "y", "z"], angle_rad: float):
+    if axis.lower() == 'x':
+        q = Quaternion(axis=[1, 0, 0], angle=angle_rad)
+    elif axis.lower() == 'y':
+        q = Quaternion(axis=[0, 1, 0], angle=angle_rad)
+    elif axis.lower() == 'z':
+        q = Quaternion(axis=[0, 0, 1], angle=angle_rad)
+    else:
+        raise ValueError(f"Unsupported axis '{axis}', must be one of x, y, z")
+
+    return [q.x, q.y, q.z, q.w]
+
+
+def quaternion_multiply(
+    init_quat: list[float], rotate_quat: list[float]
+) -> list[float]:
+    qx, qy, qz, qw = init_quat
+    q1 = Quaternion(w=qw, x=qx, y=qy, z=qz)
+    qx, qy, qz, qw = rotate_quat
+    q2 = Quaternion(w=qw, x=qx, y=qy, z=qz)
+    quat = q2 * q1
+
+    return [quat.x, quat.y, quat.z, quat.w]
+
+
 @with_seed("seed")
 def bfs_placement(
     layout_info: LayoutInfo,
     floor_margin: float = 0,
+    beside_margin: float = 0.1,
     max_attempts: int = 1000,
+    rotate_objs: bool = True,
+    rotate_bg: bool = True,
     seed: int = None,
 ) -> LayoutInfo:
     object_mapping = layout_info.objs_mapping
+    position = {}  # node: [x, y, z, qx, qy, qz, qw]
+    parent_bbox_xy = {}
+    placed_boxes_map = defaultdict(list)
+    mesh_info = defaultdict(dict)
+    for node in object_mapping:
+        if object_mapping[node] == Scene3DItemEnum.BACKGROUND.value:
+            bg_quat = (
+                compute_axis_rotation_quat(
+                    axis="y",
+                    angle_rad=np.random.uniform(0, 2 * np.pi),
+                )
+                if rotate_bg
+                else [0, 0, 0, 1]
+            )
+            continue
+
+        mesh_path = (
+            f"{layout_info.assets[node]}/mesh/{node.replace(' ', '_')}.obj"
+        )
+        mesh_info[node]["path"] = mesh_path
+        mesh = trimesh.load(mesh_path)
+        vertices = mesh.vertices
+
+        if object_mapping[node] == Scene3DItemEnum.CONTEXT.value:
+            object_quat = [0, 0, 0, 1]
+            try:
+                mesh_info[node]["surface"] = compute_convex_hull_path(vertices)
+            except Exception as e:
+                logger.warning(f"Cannot compute convex hull for {node}: {e}")
+                mesh_info[node]["surface"] = None
+        elif rotate_objs:
+            angle_rad = np.random.uniform(0, 2 * np.pi)
+            object_quat = compute_axis_rotation_quat(
+                axis="y", angle_rad=angle_rad
+            )
+            object_quat_scipy = np.roll(object_quat, 1)  # [w, x, y, z]
+            rotation = R.from_quat(object_quat_scipy).as_matrix()
+            vertices = np.dot(mesh.vertices, rotation.T)
+
+        x1, x2, y1, y2 = compute_xy_bbox(vertices)
+        z1 = np.percentile(vertices[:, 1], 1)
+        z2 = np.percentile(vertices[:, 1], 99)
+        mesh_info[node]["pose"] = [x1, x2, y1, y2, z1, z2, *object_quat]
+        mesh_info[node]["area"] = max(1e-5, (x2 - x1) * (y2 - y1))
 
     root = list(layout_info.tree.keys())[0]
     queue = deque([((root, None), layout_info.tree.get(root, []))])
-    position = {}  # node: [x, y, z, qx, qy, qz, qw]
-    default_quat = [0, 0, 0, 1]
-    parent_bbox_xy = {}
-    placed_boxes_map = defaultdict(list)
-
     while queue:
         (node, relation), children = queue.popleft()
         if node not in object_mapping:
             continue
 
         if object_mapping[node] == Scene3DItemEnum.BACKGROUND.value:
-            position[node] = [0, 0, -floor_margin, *default_quat]
+            position[node] = [0, 0, floor_margin, *bg_quat]
         else:
-            try:
-                mesh_path = f"{layout_info.assets[node]}/mesh/{node.replace(' ', '_')}.obj"
-                mesh = trimesh.load(mesh_path)
-            except Exception as e:
-                logger.error(f"{node} mesh loading failed: {e}, skip.")
-                continue
-
-            z1 = np.percentile(mesh.vertices[:, 1], 1)
-            z2 = np.percentile(mesh.vertices[:, 1], 99)
-            x1, x2, y1, y2 = compute_xy_bbox(mesh.vertices)
-
+            x1, x2, y1, y2, z1, z2, qx, qy, qz, qw = mesh_info[node]["pose"]
             if object_mapping[node] == Scene3DItemEnum.CONTEXT.value:
-                position[node] = [0, 0, -round(z1, 4), *default_quat]
+                position[node] = [0, 0, -round(z1, 4), qx, qy, qz, qw]
                 parent_bbox_xy[node] = [x1, x2, y1, y2, z1, z2]
             elif object_mapping[node] in [
                 Scene3DItemEnum.MANIPULATED_OBJS.value,
                 Scene3DItemEnum.DISTRACTOR_OBJS.value,
             ]:
-                parent_node = next(
-                    (
-                        p
-                        for p, c in layout_info.tree.items()
-                        if any(cc[0] == node for cc in c)
-                    ),
-                    None,
-                )
-                if parent_node is None:
-                    continue
-
+                parent_node = find_parent_node(node, layout_info.tree)
                 parent_pos = position[parent_node]
                 (
                     p_x1,
@@ -189,31 +280,31 @@ def bfs_placement(
 
                 obj_dx = x2 - x1
                 obj_dy = y2 - y1
-
+                hull_path = mesh_info[parent_node].get("surface")
                 for _ in range(max_attempts):
-                    node_x1 = random.uniform(
-                        p_x1 + obj_dx * 1.0, p_x2 - obj_dx * 1.0
-                    )
-                    node_y1 = random.uniform(
-                        p_y1 + obj_dy * 1.0, p_y2 - obj_dy * 1.0
-                    )
+                    node_x1 = random.uniform(p_x1, p_x2 - obj_dx)
+                    node_y1 = random.uniform(p_y1, p_y2 - obj_dy)
                     node_box = [
                         node_x1,
                         node_x1 + obj_dx,
                         node_y1,
                         node_y1 + obj_dy,
                     ]
-                    z_offset = 0
+                    if hull_path and not all_corners_inside(
+                        hull_path, node_box
+                    ):
+                        continue
+
                     if not has_iou_conflict(
                         node_box, placed_boxes_map[parent_node]
                     ):
+                        z_offset = 0
                         break
                 else:
                     logger.warning(
                         f"Cannot place {node} on {parent_node} without overlap"
                         f" after {max_attempts} attempts, place beside {parent_node}."
                     )
-                    beside_margin = 0.1
                     for _ in range(max_attempts):
                         node_x1 = random.choice(
                             [
@@ -252,12 +343,15 @@ def bfs_placement(
                 abs_cz = parent_pos[2] + p_z2 - z1 + z_offset
                 position[node] = [
                     round(v, 4)
-                    for v in [abs_cx, abs_cy, abs_cz, *default_quat]
+                    for v in [abs_cx, abs_cy, abs_cz, qx, qy, qz, qw]
                 ]
                 parent_bbox_xy[node] = [x1, x2, y1, y2, z1, z2]
 
-        for child, relation in children:
-            queue.append(((child, relation), layout_info.tree.get(child, [])))
+        sorted_children = sorted(
+            children, key=lambda x: -mesh_info[x[0]].get("area", 0)
+        )
+        for child, rel in sorted_children:
+            queue.append(((child, rel), layout_info.tree.get(child, [])))
 
     layout_info.position = position
 
