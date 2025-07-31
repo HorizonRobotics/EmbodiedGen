@@ -48,6 +48,7 @@ __all__ = [
     "SceneTreeVisualizer",
     "is_image_file",
     "parse_text_prompts",
+    "check_object_edge_truncated",
 ]
 
 
@@ -374,6 +375,28 @@ def parse_text_prompts(prompts: list[str]) -> list[str]:
                 if line.strip() and not line.strip().startswith("#")
             ]
     return prompts
+
+
+def check_object_edge_truncated(
+    mask: np.ndarray, edge_threshold: int = 5
+) -> bool:
+    """Checks if a binary object mask is truncated at the image edges.
+
+    Args:
+        mask: A 2D binary NumPy array where nonzero values indicate the object region.
+        edge_threshold: Number of pixels from each image edge to consider for truncation.
+            Defaults to 5.
+
+    Returns:
+        True if the object is fully enclosed (not truncated).
+        False if the object touches or crosses any image boundary.
+    """
+    top = mask[:edge_threshold, :].any()
+    bottom = mask[-edge_threshold:, :].any()
+    left = mask[:, :edge_threshold].any()
+    right = mask[:, -edge_threshold:].any()
+
+    return not (top or bottom or left or right)
 
 
 if __name__ == "__main__":

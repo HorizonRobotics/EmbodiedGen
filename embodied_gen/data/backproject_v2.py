@@ -251,6 +251,7 @@ class TextureBacker:
             during rendering. Defaults to 0.5.
         smooth_texture (bool, optional): If True, apply post-processing (e.g.,
             blurring) to the final texture. Defaults to True.
+        inpaint_smooth (bool, optional): If True, apply inpainting to smooth.
     """
 
     def __init__(
@@ -262,6 +263,7 @@ class TextureBacker:
         bake_angle_thresh: int = 75,
         mask_thresh: float = 0.5,
         smooth_texture: bool = True,
+        inpaint_smooth: bool = False,
     ) -> None:
         self.camera_params = camera_params
         self.renderer = None
@@ -271,6 +273,7 @@ class TextureBacker:
         self.texture_wh = texture_wh
         self.mask_thresh = mask_thresh
         self.smooth_texture = smooth_texture
+        self.inpaint_smooth = inpaint_smooth
 
         self.bake_angle_thresh = bake_angle_thresh
         self.bake_unreliable_kernel_size = int(
@@ -446,11 +449,12 @@ class TextureBacker:
     def uv_inpaint(
         self, mesh: trimesh.Trimesh, texture: np.ndarray, mask: np.ndarray
     ) -> np.ndarray:
-        vertices, faces, uv_map = self.get_mesh_np_attrs(mesh)
+        if self.inpaint_smooth:
+            vertices, faces, uv_map = self.get_mesh_np_attrs(mesh)
+            texture, mask = _texture_inpaint_smooth(
+                texture, mask, vertices, faces, uv_map
+            )
 
-        texture, mask = _texture_inpaint_smooth(
-            texture, mask, vertices, faces, uv_map
-        )
         texture = texture.clip(0, 1)
         texture = cv2.inpaint(
             (texture * 255).astype(np.uint8),
