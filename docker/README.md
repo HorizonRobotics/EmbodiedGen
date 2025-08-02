@@ -13,7 +13,9 @@ docker exec -it ${CONTAINER} bash
 # ref `EmbodiedGen/README.md` to get start.
 ```
 
-**Note**: Model checkpoints are not included in the image (auto-download on the first run), and you still need to configure the GPT agent. Refer to the [Setup GPT Agent](https://github.com/HorizonRobotics/EmbodiedGen?tab=readme-ov-file#-setup-gpt-agent) section for detailed instructions.
+> **Note**: Model checkpoints are not included in the default image, they will be automatically downloaded on first run. Also, you still need to configure the GPT agent manually. See the [Setup GPT Agent](https://github.com/HorizonRobotics/EmbodiedGen?tab=readme-ov-file#-setup-gpt-agent) section for detailed instructions.
+
+If you prefer an image with all model checkpoints, you can use `wangxinjie/embodiedgen:v0.1.x`. However, please note that this image is significantly larger. We recommend using the lighter image and allowing the models to download on demand.
 
 
 ## Getting Started with Building from the Dockerfile
