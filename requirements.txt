@@ -1,5 +1,5 @@
-torch==2.4.0+cu118
-torchvision==0.19.0+cu118
+torch==2.4.0
+torchvision==0.19.0
 xformers==0.0.27.post2
 pytorch-lightning==2.4.0
 spconv-cu120==2.3.6
@@ -35,7 +35,7 @@ json-repair
 scikit-learn
 omegaconf
 tyro
-utils3d@git+https://github.com/EasternJournalist/utils3d.git#egg=9a4eb15
-clip@git+https://github.com/openai/CLIP.git
-segment-anything@git+https://github.com/facebookresearch/segment-anything.git#egg=dca509f
-nvdiffrast@git+https://github.com/NVlabs/nvdiffrast.git#egg=729261d
+pyquaternion
+shapely
+sapien==3.0.0b1
+typing_extensions==4.14.1

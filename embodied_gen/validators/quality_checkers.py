@@ -476,9 +476,9 @@ class PanoHeightEstimator(object):
         )
         try:
             result = float(result.strip())
-        except ValueError:
+        except Exception as e:
             logger.error(
-                f"Parser error: failed convert {result} to float, use default value {self.default_value}."
+                f"Parser error: failed convert {result} to float, {e}, use default value {self.default_value}."
             )
             result = self.default_value
 

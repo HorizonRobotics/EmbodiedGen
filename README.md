@@ -37,6 +37,18 @@ conda activate embodiedgen
 bash install.sh basic
 ```
 
+### ✅ Starting from Docker
+
+We provide pre-built Docker image on [Docker Hub](https://hub.docker.com/repository/docker/wangxinjie/embodiedgen) that includes a configured environment for your convenience (NOTE: without model checkpoints, will auto-downloaded at the first run). More details in [Docker docs](https://github.com/HorizonRobotics/EmbodiedGen/docker/README.md)
+
+```sh
+IMAGE=wangxinjie/embodiedgen:env_v0.1.x
+CONTAINER=EmbodiedGen-docker-${USER}
+docker pull ${IMAGE}
+docker run -itd --shm-size="64g" --gpus all --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --privileged --net=host --name ${CONTAINER} ${IMAGE}
+docker exec -it ${CONTAINER} bash
+```
+
 ### ✅ Setup GPT Agent
 
 Update the API key in file: `embodied_gen/utils/gpt_config.yaml`.
@@ -52,7 +64,7 @@ You can choose between two backends for the GPT agent:
 <h2 id="image-to-3d">🖼️ Image-to-3D</h2>
 
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Image_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Image-to-3D) Generate physically plausible 3D asset URDF from single input image, offering high-quality support for digital twin systems.
-
+(HF space is a simplified demonstration. For the full functionality, please refer to `img3d-cli`.)
 <img src="apps/assets/image_to_3d.jpg" alt="Image to 3D" width="900">
 
 ### ☁️ Service
@@ -79,7 +91,7 @@ img3d-cli --image_path apps/assets/example_image/sample_04.jpg apps/assets/examp
 
 <h2 id="text-to-3d">📝 Text-to-3D</h2>
 
-[![🤗 Hugging Face](https://img.shields.io/badge/🤗-Text_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D) Create 3D assets from text descriptions for a wide range of geometry and styles.
+[![🤗 Hugging Face](https://img.shields.io/badge/🤗-Text_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D) Create 3D assets from text descriptions for a wide range of geometry and styles. (HF space is a simplified demonstration. For the full functionality, please refer to `text3d-cli`.)
 
 <img src="apps/assets/text_to_3d.jpg" alt="Text to 3D" width="900">
 
