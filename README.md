@@ -39,7 +39,9 @@ bash install.sh basic
 
 ### ✅ Starting from Docker
 
-We provide pre-built Docker image on [Docker Hub](https://hub.docker.com/repository/docker/wangxinjie/embodiedgen) that includes a configured environment for your convenience (NOTE: without model checkpoints, will auto-downloaded at the first run). More details in [Docker docs](https://github.com/HorizonRobotics/EmbodiedGen/docker/README.md)
+We provide a pre-built Docker image on [Docker Hub](https://hub.docker.com/repository/docker/wangxinjie/embodiedgen) with a configured environment for your convenience. For more details, please refer to [Docker documentation](https://github.com/HorizonRobotics/EmbodiedGen/docker/README.md).
+
+> **Note:** Model checkpoints are not included in the image, they will be automatically downloaded on first run. You still need to set up the GPT Agent manually.
 
 ```sh
 IMAGE=wangxinjie/embodiedgen:env_v0.1.x

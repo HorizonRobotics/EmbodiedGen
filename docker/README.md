@@ -2,7 +2,7 @@
 
 ## Getting Started with Our Pre-built Docker Image
 
-We provide pre-built Docker image on [Docker Hub](https://hub.docker.com/repository/docker/wangxinjie/embodiedgen) that includes a configured environment for your convenience (NOTE: without model checkpoints, will auto-downloaded at the first run).
+We provide pre-built Docker image on [Docker Hub](https://hub.docker.com/repository/docker/wangxinjie/embodiedgen) that includes a configured environment for your convenience.
 
 ```sh
 IMAGE=wangxinjie/embodiedgen:env_v0.1.x
@@ -13,7 +13,7 @@ docker exec -it ${CONTAINER} bash
 # ref `EmbodiedGen/README.md` to get start.
 ```
 
-**Note**: You still need to configure the GPT agent. Refer to the [Setup GPT Agent](https://github.com/HorizonRobotics/EmbodiedGen?tab=readme-ov-file#-setup-gpt-agent) section for detailed instructions.
+**Note**: Model checkpoints are not included in the image (auto-download on the first run), and you still need to configure the GPT agent. Refer to the [Setup GPT Agent](https://github.com/HorizonRobotics/EmbodiedGen?tab=readme-ov-file#-setup-gpt-agent) section for detailed instructions.
 
 
 ## Getting Started with Building from the Dockerfile
