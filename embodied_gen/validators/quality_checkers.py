@@ -109,7 +109,7 @@ class MeshGeoChecker(BaseChecker):
         if self.prompt is None:
             self.prompt = """
             You are an expert in evaluating the geometry quality of generated 3D asset.
-            You will be given rendered views of a generated 3D asset with black background.
+            You will be given rendered views of a generated 3D asset, type {}, with black background.
             Your task is to evaluate the quality of the 3D asset generation,
             including geometry, structure, and appearance, based on the rendered views.
             Criteria:
@@ -130,10 +130,13 @@ class MeshGeoChecker(BaseChecker):
             Image shows a chair with simplified back legs and soft edges → YES
             """
 
-    def query(self, image_paths: list[str | Image.Image]) -> str:
+    def query(
+        self, image_paths: list[str | Image.Image], text: str = "unknown"
+    ) -> str:
+        input_prompt = self.prompt.format(text)
 
         return self.gpt_client.query(
-            text_prompt=self.prompt,
+            text_prompt=input_prompt,
             image_base64=image_paths,
         )
 

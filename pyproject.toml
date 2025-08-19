@@ -32,6 +32,8 @@ backproject-cli = "embodied_gen.data.backproject_v2:entrypoint"
 img3d-cli = "embodied_gen.scripts.imageto3d:entrypoint"
 text3d-cli = "embodied_gen.scripts.textto3d:text_to_3d"
 scene3d-cli = "embodied_gen.scripts.gen_scene3d:entrypoint"
+layout-cli = "embodied_gen.scripts.gen_layout:entrypoint"
+sim-cli = "embodied_gen.scripts.simulate_sapien:entrypoint"
 
 [tool.pydocstyle]
 match = '(?!test_).*(?!_pb2)\.py'

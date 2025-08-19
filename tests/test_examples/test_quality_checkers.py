@@ -77,10 +77,18 @@ def panoocc_checker():
 
 
 def test_geo_checker(geo_checker):
+    from embodied_gen.utils.process_media import combine_images_to_grid
+
+    image_paths = glob(
+        "outputs/layouts_gens3/task_0000/asset3d/pen/result/renders/image_color/*png"
+    )
+    image = combine_images_to_grid(image_paths)[0]
+    # image = "outputs/utest_cases/geo_checker/color.png"
     flag, result = geo_checker(
         [
-            "apps/assets/example_image/sample_02.jpg",
-        ]
+            image,
+        ],
+        text="pen",
     )
     logger.info(f"geo_checker: {flag}, {result}")
     assert isinstance(flag, bool)
@@ -107,13 +115,42 @@ def test_seg_checker(seg_checker):
 
 
 def test_semantic_checker(semantic_checker):
-    flag, result = semantic_checker(
-        text="can",
-        image=["apps/assets/example_image/sample_02.jpg"],
-    )
-    logger.info(f"semantic_checker: {flag}, {result}")
-    assert isinstance(flag, bool)
-    assert isinstance(result, str)
+    test_cases = [
+        ("table", "outputs/utest_cases/semantic_checker/task_0001_table.png"),
+        ("table", "outputs/utest_cases/semantic_checker/task_0002_table.png"),
+        (
+            "banana",
+            "outputs/utest_cases/semantic_checker/task_0002_banana.png",
+        ),
+        (
+            "napkin",
+            "outputs/utest_cases/semantic_checker/task_0003_napkin.png",
+        ),
+        ("table", "outputs/utest_cases/semantic_checker/task_0003_table.png"),
+        ("fork", "outputs/utest_cases/semantic_checker/task_0005_fork.png"),
+        ("spoon", "outputs/utest_cases/semantic_checker/task_0005_spoon.png"),
+        ("table", "outputs/utest_cases/semantic_checker/task_0007_table.png"),
+        ("table", "outputs/utest_cases/semantic_checker/task_0008_table.png"),
+        ("table", "outputs/utest_cases/semantic_checker/task_0009_table.png"),
+        ("table", "outputs/utest_cases/semantic_checker/task_0011_table.png"),
+        ("desk", "outputs/utest_cases/semantic_checker/task_0012_desk.png"),
+        (
+            "laptop",
+            "outputs/utest_cases/semantic_checker/task_0012_laptop.png",
+        ),
+        ("table", "outputs/utest_cases/semantic_checker/task_0014_table.png"),
+        ("desk", "outputs/utest_cases/semantic_checker/task_0016_desk.png"),
+        ("shelf", "outputs/utest_cases/semantic_checker/task_0018_shelf.png"),
+        ("table", "outputs/utest_cases/semantic_checker/task_0000_table.png"),
+    ]
+    for test_case in test_cases:
+        flag, result = semantic_checker(
+            text=test_case[0],
+            image=[test_case[1]],
+        )
+        logger.info(f"semantic_checker: {flag}, {result}, {test_case[1]}")
+        assert isinstance(flag, bool)
+        assert isinstance(result, str)
 
 
 @pytest.mark.parametrize(
@@ -139,25 +176,21 @@ def test_textgen_checker(textalign_checker, mesh_path, text_desc):
 
 
 def test_panoheight_estimator(pano_height_estimator):
-    image_paths = glob("outputs/bg_v3/test2/*/*.png")
+    image_paths = glob("outputs/bg_scenes/*/*.png")
     for image_path in image_paths:
         result = pano_height_estimator(image_path)
         logger.info(f"{type(result)}, {result}")
 
 
 def test_pano_checker(pano_checker):
-    # image_paths = [
-    #     "outputs/bg_gen2/scene_0000/pano_image.png",
-    #     "outputs/bg_gen2/scene_0001/pano_image.png",
-    # ]
-    image_paths = glob("outputs/bg_gen/*/*.png")
+    image_paths = glob("outputs/bg_scenes/*/*.png")
     for image_path in image_paths:
         flag, result = pano_checker(image_path)
         logger.info(f"{image_path} {flag}, {result}")
 
 
 def test_panoocc_checker(panoocc_checker):
-    image_paths = glob("outputs/bg_gen/*/*.png")
+    image_paths = glob("outputs/bg_scenes/*/*.png")
     for image_path in image_paths:
         flag, result = panoocc_checker(image_path)
         logger.info(f"{image_path} {flag}, {result}")

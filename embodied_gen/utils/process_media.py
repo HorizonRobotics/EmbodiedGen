@@ -166,7 +166,7 @@ def combine_images_to_grid(
     images: list[str | Image.Image],
     cat_row_col: tuple[int, int] = None,
     target_wh: tuple[int, int] = (512, 512),
-) -> list[str | Image.Image]:
+) -> list[Image.Image]:
     n_images = len(images)
     if n_images == 1:
         return images
@@ -377,6 +377,42 @@ def parse_text_prompts(prompts: list[str]) -> list[str]:
     return prompts
 
 
+def alpha_blend_rgba(
+    fg_image: Union[str, Image.Image, np.ndarray],
+    bg_image: Union[str, Image.Image, np.ndarray],
+) -> Image.Image:
+    """Alpha blends a foreground RGBA image over a background RGBA image.
+
+    Args:
+        fg_image: Foreground image. Can be a file path (str), a PIL Image,
+            or a NumPy ndarray.
+        bg_image: Background image. Can be a file path (str), a PIL Image,
+            or a NumPy ndarray.
+
+    Returns:
+        A PIL Image representing the alpha-blended result in RGBA mode.
+    """
+    if isinstance(fg_image, str):
+        fg_image = Image.open(fg_image)
+    elif isinstance(fg_image, np.ndarray):
+        fg_image = Image.fromarray(fg_image)
+
+    if isinstance(bg_image, str):
+        bg_image = Image.open(bg_image)
+    elif isinstance(bg_image, np.ndarray):
+        bg_image = Image.fromarray(bg_image)
+
+    if fg_image.size != bg_image.size:
+        raise ValueError(
+            f"Image sizes not match {fg_image.size} v.s. {bg_image.size}."
+        )
+
+    fg = fg_image.convert("RGBA")
+    bg = bg_image.convert("RGBA")
+
+    return Image.alpha_composite(bg, fg)
+
+
 def check_object_edge_truncated(
     mask: np.ndarray, edge_threshold: int = 5
 ) -> bool:
@@ -400,8 +436,15 @@ def check_object_edge_truncated(
 
 
 if __name__ == "__main__":
-    merge_video_video(
-        "outputs/imageto3d/room_bottle7/room_bottle_007/URDF_room_bottle_007/mesh_glo_normal.mp4",  # noqa
-        "outputs/imageto3d/room_bottle7/room_bottle_007/URDF_room_bottle_007/mesh.mp4",  # noqa
-        "merge.mp4",
-    )
+    image_paths = [
+        "outputs/layouts_sim/task_0000/images/pen.png",
+        "outputs/layouts_sim/task_0000/images/notebook.png",
+        "outputs/layouts_sim/task_0000/images/mug.png",
+        "outputs/layouts_sim/task_0000/images/lamp.png",
+        "outputs/layouts_sim2/task_0014/images/cloth.png",  # TODO
+    ]
+    for image_path in image_paths:
+        image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
+        mask = image[..., -1]
+        flag = check_object_edge_truncated(mask)
+        print(flag, image_path)

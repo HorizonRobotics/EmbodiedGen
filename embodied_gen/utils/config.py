@@ -17,13 +17,25 @@
 from dataclasses import dataclass, field
 from typing import List, Optional, Union
 
+from dataclasses_json import DataClassJsonMixin
 from gsplat.strategy import DefaultStrategy, MCMCStrategy
 from typing_extensions import Literal, assert_never
 
 __all__ = [
+    "GptParamsConfig",
     "Pano2MeshSRConfig",
     "GsplatTrainConfig",
 ]
+
+
+@dataclass
+class GptParamsConfig(DataClassJsonMixin):
+    temperature: float = 0.1
+    top_p: float = 0.1
+    frequency_penalty: float = 0.0
+    presence_penalty: float = 0.0
+    stop: int | None = None
+    max_tokens: int = 500
 
 
 @dataclass

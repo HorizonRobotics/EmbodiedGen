@@ -81,6 +81,7 @@ done
 
 
 # Step 1: Text-to-Image
+echo ${prompt_args}
 eval python3 embodied_gen/scripts/text2image.py \
     --prompts ${prompt_args} \
     --output_root "${output_root}/images" \

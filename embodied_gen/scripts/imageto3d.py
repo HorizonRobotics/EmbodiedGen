@@ -151,6 +151,9 @@ def entrypoint(**kwargs):
             seg_image.save(seg_path)
 
             seed = args.seed
+            asset_node = "unknown"
+            if isinstance(args.asset_type, list) and args.asset_type[idx]:
+                asset_node = args.asset_type[idx]
             for try_idx in range(args.n_retry):
                 logger.info(
                     f"Try: {try_idx + 1}/{args.n_retry}, Seed: {seed}, Prompt: {seg_path}"
@@ -207,7 +210,9 @@ def entrypoint(**kwargs):
                 color_path = os.path.join(output_root, "color.png")
                 render_gs_api(aligned_gs_path, color_path)
 
-                geo_flag, geo_result = GEO_CHECKER([color_path])
+                geo_flag, geo_result = GEO_CHECKER(
+                    [color_path], text=asset_node
+                )
                 logger.warning(
                     f"{GEO_CHECKER.__class__.__name__}: {geo_result} for {seg_path}"
                 )

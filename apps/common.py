@@ -189,7 +189,7 @@ os.makedirs(TMP_DIR, exist_ok=True)
 lighting_css = """
 <style>
 #lighter_mesh canvas {
-    filter: brightness(1.8) !important;
+    filter: brightness(1.9) !important;
 }
 </style>
 """
