@@ -35,7 +35,6 @@ __all__ = [
     "set_random_seed",
     "export_splats",
     "create_splats_with_optimizers",
-    "compute_pinhole_intrinsics",
     "resize_pinhole_intrinsics",
     "restore_scene_scale_and_position",
 ]

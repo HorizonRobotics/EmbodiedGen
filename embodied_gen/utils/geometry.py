@@ -37,6 +37,10 @@ __all__ = [
     "matrix_to_pose",
     "pose_to_matrix",
     "quaternion_multiply",
+    "check_reachable",
+    "bfs_placement",
+    "compose_mesh_scene",
+    "compute_pinhole_intrinsics",
 ]
 
 
@@ -439,3 +443,16 @@ def compose_mesh_scene(
     logger.info(f"Composed interactive 3D layout saved in {out_scene_path}")
 
     return
+
+
+def compute_pinhole_intrinsics(
+    image_w: int, image_h: int, fov_deg: float
+) -> np.ndarray:
+    fov_rad = np.deg2rad(fov_deg)
+    fx = image_w / (2 * np.tan(fov_rad / 2))
+    fy = fx  # assuming square pixels
+    cx = image_w / 2
+    cy = image_h / 2
+    K = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
+
+    return K
