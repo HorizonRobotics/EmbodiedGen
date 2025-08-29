@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0).
 
+## [0.1.4] - 2025-08-29
+### Feature
+- Supports importing the output of the EmbodiedGen Layout Generation module with a single `gym.make` command to create multiple parallel simulation environments and interactive 3D worlds.
+- Supports coacd-based mesh decomposition for better efficiency and accuracy in physical simulations.
+
 ## [0.1.3] - 2025-08-19
 ### Feature
 - Release `layout-cli` 🏞️ Layout(Interactive 3D Worlds) Generation, generate interactive 3D scene from task description.
