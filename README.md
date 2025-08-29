@@ -67,6 +67,7 @@ You can choose between two backends for the GPT agent:
 
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Image_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Image-to-3D) Generate physically plausible 3D asset URDF from single input image, offering high-quality support for digital twin systems.
 (HF space is a simplified demonstration. For the full functionality, please refer to `img3d-cli`.)
+
 <img src="apps/assets/image_to_3d.jpg" alt="Image to 3D" width="700">
 
 ### ☁️ Service
@@ -247,14 +248,8 @@ sim-cli --layout_path "outputs/layouts_gen/task_0000/layout.json" \
 --output_dir "outputs/layouts_gen/task_0000/sapien_render" --insert_robot
 ```
 
-Create multiple parallel interactive 3D envs from layout generation output into simulator with `gym.make`.
-```py
-env = gym.make(
-    "PickEmbodiedGen-v1",
-    num_envs=20,
-    layout_file="output_from_layout_generation.json",
-)
-```
+Example: generate multiple parallel simulation envs with `gym.make` and record sensor and trajectory data.
+
 <table>
   <tr>
     <td><img src="apps/assets/parallel_sim.gif" alt="parallel_sim1" width="290"/></td>
