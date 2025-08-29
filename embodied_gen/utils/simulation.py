@@ -73,8 +73,17 @@ def load_actor_from_urdf(
     root = tree.getroot()
     node_name = root.get("name")
     file_dir = os.path.dirname(file_path)
-    visual_file = root.find('.//visual/geometry/mesh').get("filename")
-    collision_file = root.find('.//collision/geometry/mesh').get("filename")
+
+    visual_mesh = root.find('.//visual/geometry/mesh')
+    visual_file = visual_mesh.get("filename")
+    visual_scale = visual_mesh.get("scale", "1.0 1.0 1.0")
+    visual_scale = np.array([float(x) for x in visual_scale.split()])
+
+    collision_mesh = root.find('.//collision/geometry/mesh')
+    collision_file = collision_mesh.get("filename")
+    collision_scale = collision_mesh.get("scale", "1.0 1.0 1.0")
+    collision_scale = np.array([float(x) for x in collision_scale.split()])
+
     visual_file = os.path.join(file_dir, visual_file)
     collision_file = os.path.join(file_dir, collision_file)
     static_fric = root.find('.//collision/gazebo/mu1').text
@@ -92,13 +101,14 @@ def load_actor_from_urdf(
     builder.add_multiple_convex_collisions_from_file(
         collision_file if body_type == "dynamic" else visual_file,
         material=material,
+        scale=collision_scale if body_type == "dynamic" else visual_scale,
         # decomposition="coacd",
         # decomposition_params=dict(
         #     threshold=0.05, max_convex_hull=64, verbose=False
         # ),
     )
 
-    builder.add_visual_from_file(visual_file)
+    builder.add_visual_from_file(visual_file, scale=visual_scale)
     builder.set_initial_pose(pose)
     if isinstance(scene, ManiSkillScene) and env_idx is not None:
         builder.set_scene_idxs([env_idx])
