@@ -137,7 +137,7 @@ def entrypoint() -> None:
         sim_cli(
             layout_path=layout_path,
             output_dir=output_root,
-            robot_name="franka" if args.insert_robot else None,
+            insert_robot=args.insert_robot,
         )
 
         torch.cuda.empty_cache()

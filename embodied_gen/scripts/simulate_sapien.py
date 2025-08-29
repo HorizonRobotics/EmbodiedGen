@@ -156,14 +156,15 @@ def entrypoint(**kwargs):
         bg_images[camera.name] = result.rgb[..., ::-1]
 
     video_frames = []
-    for camera in scene_manager.cameras:
+    for idx, camera in enumerate(scene_manager.cameras):
         # Scene rendering
-        for step in range(image_cnt):
-            rgba = alpha_blend_rgba(
-                frames[camera.name][step]["Foreground"],
-                bg_images[camera.name],
-            )
-            video_frames.append(np.array(rgba))
+        if idx == 0:
+            for step in range(image_cnt):
+                rgba = alpha_blend_rgba(
+                    frames[camera.name][step]["Foreground"],
+                    bg_images[camera.name],
+                )
+                video_frames.append(np.array(rgba))
 
         # Grasp rendering
         for node in actions:

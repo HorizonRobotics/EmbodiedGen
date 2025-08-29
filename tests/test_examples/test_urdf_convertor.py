@@ -39,6 +39,7 @@ def test_urdf_convertor():
         "outputs/test_urdf/notebook/result/mesh/notebook.obj",
         "outputs/test_urdf/marker/result/mesh/marker.obj",
         "outputs/test_urdf/pen2/result/mesh/pen.obj",
+        "outputs/test_urdf/pen3/result/mesh/pen.obj",
     ]
     for idx, mesh_path in enumerate(mesh_paths):
         filename = mesh_path.split("/")[-1].split(".")[0]
@@ -62,6 +63,6 @@ def test_decompose_convex_mesh():
         filename = mesh_path.split("/")[-1].split(".")[0]
         urdf_path = urdf_gen(
             mesh_path=mesh_path,
-            output_root=f"outputs/test_urdf2/sample_{idx}",
+            output_root=f"outputs/test_urdf3/sample_{idx}",
             category=filename,
         )

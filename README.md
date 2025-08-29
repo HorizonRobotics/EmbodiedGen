@@ -30,7 +30,7 @@
 ```sh
 git clone https://github.com/HorizonRobotics/EmbodiedGen.git
 cd EmbodiedGen
-git checkout v0.1.3
+git checkout v0.1.4
 git submodule update --init --recursive --progress
 conda create -n embodiedgen python=3.10.13 -y # recommended to use a new env.
 conda activate embodiedgen
