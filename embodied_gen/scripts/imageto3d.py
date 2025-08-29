@@ -58,7 +58,7 @@ os.environ["GRADIO_ANALYTICS_ENABLED"] = "false"
 os.environ["SPCONV_ALGO"] = "native"
 random.seed(0)
 
-logger.info("Loading Models...")
+logger.info("Loading Image3D Models...")
 DELIGHT = DelightingModel()
 IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
 RBG_REMOVER = RembgRemover()
@@ -107,6 +107,7 @@ def parse_args():
         type=int,
         default=2,
     )
+    parser.add_argument("--disable_decompose_convex", action="store_true")
     args, unknown = parser.parse_known_args()
 
     return args
@@ -251,7 +252,11 @@ def entrypoint(**kwargs):
             mesh_glb_path = os.path.join(output_root, f"{filename}.glb")
             mesh.export(mesh_glb_path)
 
-            urdf_convertor = URDFGenerator(GPT_CLIENT, render_view_num=4)
+            urdf_convertor = URDFGenerator(
+                GPT_CLIENT,
+                render_view_num=4,
+                decompose_convex=not args.disable_decompose_convex,
+            )
             asset_attrs = {
                 "version": VERSION,
                 "gs_model": f"{urdf_convertor.output_mesh_dir}/{filename}_gs.ply",

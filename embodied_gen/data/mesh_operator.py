@@ -16,13 +16,17 @@
 
 
 import logging
+import multiprocessing as mp
+import os
 from typing import Tuple, Union
 
+import coacd
 import igraph
 import numpy as np
 import pyvista as pv
 import spaces
 import torch
+import trimesh
 import utils3d
 from pymeshfix import _meshfix
 from tqdm import tqdm
@@ -33,7 +37,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-__all__ = ["MeshFixer"]
+__all__ = [
+    "MeshFixer",
+]
 
 
 def _radical_inverse(base, n):

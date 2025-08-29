@@ -42,7 +42,7 @@ from embodied_gen.validators.quality_checkers import (
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 random.seed(0)
 
-logger.info("Loading Models...")
+logger.info("Loading TEXT2IMG_MODEL...")
 SEMANTIC_CHECKER = SemanticConsistChecker(GPT_CLIENT)
 SEG_CHECKER = ImageSegChecker(GPT_CLIENT)
 TXTGEN_CHECKER = TextGenAlignChecker(GPT_CLIENT)
@@ -170,6 +170,7 @@ def text_to_3d(**kwargs) -> dict:
                 seed=random.randint(0, 100000) if seed_3d is None else seed_3d,
                 n_retry=args.n_asset_retry,
                 keep_intermediate=args.keep_intermediate,
+                disable_decompose_convex=args.disable_decompose_convex,
             )
             mesh_path = f"{node_save_dir}/result/mesh/{save_node}.obj"
             image_path = render_asset3d(
@@ -270,6 +271,7 @@ def parse_args():
         help="Random seed for 3D generation",
     )
     parser.add_argument("--keep_intermediate", action="store_true")
+    parser.add_argument("--disable_decompose_convex", action="store_true")
 
     args, unknown = parser.parse_known_args()
 

@@ -35,6 +35,9 @@ from embodied_gen.utils.simulation import (
     SIM_COORD_ALIGN,
     FrankaPandaGrasper,
     SapienSceneManager,
+    load_assets_from_layout_file,
+    load_mani_skill_robot,
+    render_images,
 )
 
 
@@ -50,8 +53,8 @@ class SapienSimConfig:
         default_factory=lambda: [0.7071, 0, 0, 0.7071]
     )  # xyzw
     device: str = "cuda"
-    robot_name: str | None = None
-    control_freq: int = 40
+    control_freq: int = 50
+    insert_robot: bool = False
     # Camera settings.
     render_interval: int = 10
     num_cameras: int = 3
@@ -91,48 +94,41 @@ def entrypoint(**kwargs):
         layout_data = json.load(f)
         layout_data: LayoutInfo = LayoutInfo.from_dict(layout_data)
 
-    scene_manager.load_assets_from_layout_file(
+    actors = load_assets_from_layout_file(
+        scene_manager.scene,
         layout_data,
         cfg.z_offset,
         cfg.init_quat,
-        cfg.robot_name,
-        cfg.control_freq,
+    )
+    agent = load_mani_skill_robot(
+        scene_manager.scene, layout_data, cfg.control_freq
     )
 
     frames = defaultdict(list)
     image_cnt = 0
     for step in tqdm(range(cfg.sim_step), desc="Simulation"):
         scene_manager.scene.step()
-        if cfg.robot_name is not None:
-            scene_manager.robot.reset(scene_manager.robot.init_qpos)
+        agent.reset(agent.init_qpos)
         if step % cfg.render_interval != 0:
             continue
         scene_manager.scene.update_render()
         image_cnt += 1
         for camera in scene_manager.cameras:
             camera.take_picture()
-            images = scene_manager.render_images(
-                camera, render_keys=cfg.render_keys
-            )
+            images = render_images(camera, cfg.render_keys)
             frames[camera.name].append(images)
 
-    grasp_frames = defaultdict(dict)
-    if cfg.robot_name is not None:
-        sim_steps_per_control = cfg.sim_freq // cfg.control_freq
-        control_timestep = 1.0 / cfg.control_freq
+    actions = dict()
+    if cfg.insert_robot:
         grasper = FrankaPandaGrasper(
-            scene_manager.robot,
-            scene_manager,
-            sim_steps_per_control,
-            control_timestep,
+            agent,
+            cfg.control_freq,
         )
         for node in layout_data.relation[
             Scene3DItemEnum.MANIPULATED_OBJS.value
         ]:
-            grasp_frames[node] = grasper.render_grasp(
-                scene_manager.actors[node],
-                scene_manager.cameras,
-                cfg.render_keys,
+            actions[node] = grasper.compute_grasp_action(
+                actor=actors[node], reach_target_only=True
             )
 
     if "Foreground" not in cfg.render_keys:
@@ -162,19 +158,32 @@ def entrypoint(**kwargs):
     video_frames = []
     for camera in scene_manager.cameras:
         # Scene rendering
-        for step in tqdm(range(image_cnt), desc="Rendering"):
+        for step in range(image_cnt):
             rgba = alpha_blend_rgba(
                 frames[camera.name][step]["Foreground"],
                 bg_images[camera.name],
             )
             video_frames.append(np.array(rgba))
+
         # Grasp rendering
-        for node in grasp_frames:
-            for frame in grasp_frames[node][camera.name]:
+        for node in actions:
+            if actions[node] is None:
+                continue
+            for action in tqdm(actions[node]):
+                grasp_frames = scene_manager.step_action(
+                    agent,
+                    torch.Tensor(action[None, ...]),
+                    scene_manager.cameras,
+                    cfg.render_keys,
+                    sim_steps_per_control=cfg.sim_freq // cfg.control_freq,
+                )
                 rgba = alpha_blend_rgba(
-                    frame["Foreground"], bg_images[camera.name]
+                    grasp_frames[camera.name][0]["Foreground"],
+                    bg_images[camera.name],
                 )
                 video_frames.append(np.array(rgba))
+
+            agent.reset(agent.init_qpos)
 
     os.makedirs(cfg.output_dir, exist_ok=True)
     video_path = f"{cfg.output_dir}/Iscene.mp4"

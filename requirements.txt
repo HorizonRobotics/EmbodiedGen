@@ -38,5 +38,6 @@ tyro
 pyquaternion
 shapely
 sapien==3.0.0b1
+coacd
 mani_skill==3.0.0b21
 typing_extensions==4.14.1

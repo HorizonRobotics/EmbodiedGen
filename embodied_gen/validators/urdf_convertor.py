@@ -24,6 +24,7 @@ from xml.dom.minidom import parseString
 
 import numpy as np
 import trimesh
+from embodied_gen.data.convex_decomposer import decompose_convex_mesh
 from embodied_gen.utils.gpt_clients import GPT_CLIENT, GPTclient
 from embodied_gen.utils.process_media import render_asset3d
 from embodied_gen.utils.tags import VERSION
@@ -84,6 +85,7 @@ class URDFGenerator(object):
         attrs_name: list[str] = None,
         render_dir: str = "urdf_renders",
         render_view_num: int = 4,
+        decompose_convex: bool = False,
     ) -> None:
         if mesh_file_list is None:
             mesh_file_list = []
@@ -156,6 +158,7 @@ class URDFGenerator(object):
                 "gs_model",
             ]
         self.attrs_name = attrs_name
+        self.decompose_convex = decompose_convex
 
     def parse_response(self, response: str) -> dict[str, any]:
         lines = response.split("\n")
@@ -258,9 +261,24 @@ class URDFGenerator(object):
         # Update collision geometry
         collision = link.find("collision/geometry/mesh")
         if collision is not None:
-            collision.set(
-                "filename", os.path.join(self.output_mesh_dir, obj_name)
-            )
+            collision_mesh = os.path.join(self.output_mesh_dir, obj_name)
+            if self.decompose_convex:
+                try:
+                    d_params = dict(
+                        threshold=0.05, max_convex_hull=64, verbose=False
+                    )
+                    filename = f"{os.path.splitext(obj_name)[0]}_collision.ply"
+                    output_path = os.path.join(mesh_folder, filename)
+                    decompose_convex_mesh(
+                        mesh_output_path, output_path, **d_params
+                    )
+                    collision_mesh = f"{self.output_mesh_dir}/{filename}"
+                except Exception as e:
+                    logger.warning(
+                        f"Convex decomposition failed for {output_path}, {e}."
+                        "Use original mesh for collision computation."
+                    )
+            collision.set("filename", collision_mesh)
             collision.set("scale", "1.0 1.0 1.0")
 
         # Update friction coefficients

@@ -49,3 +49,19 @@ def test_urdf_convertor():
             # min_height=1.0,
             # max_height=1.2,
         )
+
+
+def test_decompose_convex_mesh():
+    urdf_gen = URDFGenerator(GPT_CLIENT, decompose_convex=True)
+    mesh_paths = [
+        "outputs/test_urdf/sample_0/mesh/pen.obj",
+        "outputs/test_urdf/sample_1/mesh/notepad.obj",
+        "outputs/test_urdf/sample_2/mesh/plate.obj",
+    ]
+    for idx, mesh_path in enumerate(mesh_paths):
+        filename = mesh_path.split("/")[-1].split(".")[0]
+        urdf_path = urdf_gen(
+            mesh_path=mesh_path,
+            output_root=f"outputs/test_urdf2/sample_{idx}",
+            category=filename,
+        )

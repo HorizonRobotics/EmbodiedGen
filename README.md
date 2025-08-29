@@ -67,7 +67,7 @@ You can choose between two backends for the GPT agent:
 
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Image_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Image-to-3D) Generate physically plausible 3D asset URDF from single input image, offering high-quality support for digital twin systems.
 (HF space is a simplified demonstration. For the full functionality, please refer to `img3d-cli`.)
-<img src="apps/assets/image_to_3d.jpg" alt="Image to 3D" width="900">
+<img src="apps/assets/image_to_3d.jpg" alt="Image to 3D" width="700">
 
 ### ☁️ Service
 Run the image-to-3D generation service locally.
@@ -95,7 +95,7 @@ img3d-cli --image_path apps/assets/example_image/sample_04.jpg apps/assets/examp
 
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Text_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D) Create 3D assets from text descriptions for a wide range of geometry and styles. (HF space is a simplified demonstration. For the full functionality, please refer to `text3d-cli`.)
 
-<img src="apps/assets/text_to_3d.jpg" alt="Text to 3D" width="900">
+<img src="apps/assets/text_to_3d.jpg" alt="Text to 3D" width="700">
 
 ### ☁️ Service
 Deploy the text-to-3D generation service locally.
@@ -133,7 +133,7 @@ ps: models with more permissive licenses found in `embodied_gen/models/image_com
 
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Texture_Gen_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Texture-Gen) Generate visually rich textures for 3D mesh.
 
-<img src="apps/assets/texture_gen.jpg" alt="Texture Gen" width="900">
+<img src="apps/assets/texture_gen.jpg" alt="Texture Gen" width="700">
 
 
 ### ☁️ Service
@@ -161,7 +161,7 @@ bash embodied_gen/scripts/texture_gen.sh \
 
 <h2 id="3d-scene-generation">🌍 3D Scene Generation</h2>
 
-<img src="apps/assets/scene3d.gif" alt="scene3d" style="width: 640px;">
+<img src="apps/assets/scene3d.gif" alt="scene3d" style="width: 600px;">
 
 ### ⚡ API
 > Run `bash install.sh extra` to install additional requirements if you need to use `scene3d-cli`.
@@ -184,7 +184,7 @@ CUDA_VISIBLE_DEVICES=0 scene3d-cli \
 
 🚧 *Coming Soon*
 
-<img src="apps/assets/articulate.gif" alt="articulate" style="width: 480px;">
+<img src="apps/assets/articulate.gif" alt="articulate" style="width: 430px;">
 
 
 ---
@@ -196,12 +196,12 @@ CUDA_VISIBLE_DEVICES=0 scene3d-cli \
 
 <table>
   <tr>
-    <td><img src="apps/assets/layout1.gif" alt="layout1" width="360"/></td>
-    <td><img src="apps/assets/layout2.gif" alt="layout2" width="360"/></td>
+    <td><img src="apps/assets/layout1.gif" alt="layout1" width="320"/></td>
+    <td><img src="apps/assets/layout2.gif" alt="layout2" width="320"/></td>
   </tr>
   <tr>
-    <td><img src="apps/assets/layout3.gif" alt="layout3" width="360"/></td>
-    <td><img src="apps/assets/layout4.gif" alt="layout4" width="360"/></td>
+    <td><img src="apps/assets/layout3.gif" alt="layout3" width="320"/></td>
+    <td><img src="apps/assets/layout4.gif" alt="layout4" width="320"/></td>
   </tr>
 </table>
 
@@ -219,8 +219,8 @@ layout-cli --task_descs "Place the pen in the mug on the desk" "Put the fruit on
 
 <table>
   <tr>
-    <td><img src="apps/assets/Iscene_demo1.gif" alt="Iscene_demo1" width="300"/></td>
-    <td><img src="apps/assets/Iscene_demo2.gif" alt="Iscene_demo2" width="450"/></td>
+    <td><img src="apps/assets/Iscene_demo1.gif" alt="Iscene_demo1" width="234"/></td>
+    <td><img src="apps/assets/Iscene_demo2.gif" alt="Iscene_demo2" width="350"/></td>
   </tr>
 </table>
 
@@ -233,7 +233,7 @@ CUDA_VISIBLE_DEVICES=0 nohup layout-cli \
 --output_root "outputs/layouts_gens" --insert_robot > layouts_gens.log &
 ```
 
-Using `compose_layout.py`, you can recompose the layout of the generated interactive 3D scenes. (Support for texture editing and augmentation will be added later.)
+Using `compose_layout.py`, you can recompose the layout of the generated interactive 3D scenes.
 ```sh
 python embodied_gen/scripts/compose_layout.py \
 --layout_path "outputs/layouts_gens/task_0000/layout.json" \
@@ -243,13 +243,35 @@ python embodied_gen/scripts/compose_layout.py \
 We provide `sim-cli`, that allows users to easily load generated layouts into an interactive 3D simulation using the SAPIEN engine (will support for more simulators in future updates).
 
 ```sh
-sim-cli --layout_path "outputs/layouts_gens/task_0000/recompose/layout.json" \
---output_dir "outputs/layouts_gens/task_0000/recompose/sapien_render" --robot_name "franka"
+sim-cli --layout_path "outputs/layouts_gen/task_0000/layout.json" \
+--output_dir "outputs/layouts_gen/task_0000/sapien_render" --insert_robot
+```
+
+Create multiple parallel interactive 3D envs from layout generation output into simulator with `gym.make`.
+```py
+env = gym.make(
+    "PickEmbodiedGen-v1",
+    num_envs=20,
+    layout_file="output_from_layout_generation.json",
+)
+```
+<table>
+  <tr>
+    <td><img src="apps/assets/parallel_sim.gif" alt="parallel_sim1" width="290"/></td>
+    <td><img src="apps/assets/parallel_sim2.gif" alt="parallel_sim2" width="290"/></td>
+  </tr>
+</table>
+
+```sh
+python embodied_gen/scripts/parallel_sim.py \
+--layout_file "outputs/layouts_gen/task_0000/layout.json" \
+--output_dir "outputs/parallel_sim/task_0000" \
+--num_envs 20
 ```
 
 ### 🖼️ Real-to-Sim Digital Twin
 
-<img src="apps/assets/real2sim_mujoco.gif" alt="real2sim_mujoco" style="width: 512px;">
+<img src="apps/assets/real2sim_mujoco.gif" alt="real2sim_mujoco" width="400">
 
 ---
 
@@ -280,7 +302,7 @@ If you use EmbodiedGen in your research or projects, please cite:
 ## 🙌 Acknowledgement
 
 EmbodiedGen builds upon the following amazing projects and models:
-🌟 [Trellis](https://github.com/microsoft/TRELLIS) | 🌟 [Hunyuan-Delight](https://huggingface.co/tencent/Hunyuan3D-2/tree/main/hunyuan3d-delight-v2-0) | 🌟 [Segment Anything](https://github.com/facebookresearch/segment-anything) | 🌟 [Rembg](https://github.com/danielgatis/rembg) | 🌟 [RMBG-1.4](https://huggingface.co/briaai/RMBG-1.4) | 🌟 [Stable Diffusion x4](https://huggingface.co/stabilityai/stable-diffusion-x4-upscaler) | 🌟 [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) | 🌟 [Kolors](https://github.com/Kwai-Kolors/Kolors) | 🌟 [ChatGLM3](https://github.com/THUDM/ChatGLM3) | 🌟 [Aesthetic Score](http://captions.christoph-schuhmann.de/aesthetic_viz_laion_sac+logos+ava1-l14-linearMSE-en-2.37B.html) | 🌟 [Pano2Room](https://github.com/TrickyGo/Pano2Room) | 🌟 [Diffusion360](https://github.com/ArcherFMY/SD-T2I-360PanoImage) | 🌟 [Kaolin](https://github.com/NVIDIAGameWorks/kaolin) | 🌟 [diffusers](https://github.com/huggingface/diffusers) | 🌟 [gsplat](https://github.com/nerfstudio-project/gsplat) | 🌟 [QWEN-2.5VL](https://github.com/QwenLM/Qwen2.5-VL) | 🌟 [GPT4o](https://platform.openai.com/docs/models/gpt-4o) | 🌟 [SD3.5](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium)
+🌟 [Trellis](https://github.com/microsoft/TRELLIS) | 🌟 [Hunyuan-Delight](https://huggingface.co/tencent/Hunyuan3D-2/tree/main/hunyuan3d-delight-v2-0) | 🌟 [Segment Anything](https://github.com/facebookresearch/segment-anything) | 🌟 [Rembg](https://github.com/danielgatis/rembg) | 🌟 [RMBG-1.4](https://huggingface.co/briaai/RMBG-1.4) | 🌟 [Stable Diffusion x4](https://huggingface.co/stabilityai/stable-diffusion-x4-upscaler) | 🌟 [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) | 🌟 [Kolors](https://github.com/Kwai-Kolors/Kolors) | 🌟 [ChatGLM3](https://github.com/THUDM/ChatGLM3) | 🌟 [Aesthetic Score](http://captions.christoph-schuhmann.de/aesthetic_viz_laion_sac+logos+ava1-l14-linearMSE-en-2.37B.html) | 🌟 [Pano2Room](https://github.com/TrickyGo/Pano2Room) | 🌟 [Diffusion360](https://github.com/ArcherFMY/SD-T2I-360PanoImage) | 🌟 [Kaolin](https://github.com/NVIDIAGameWorks/kaolin) | 🌟 [diffusers](https://github.com/huggingface/diffusers) | 🌟 [gsplat](https://github.com/nerfstudio-project/gsplat) | 🌟 [QWEN-2.5VL](https://github.com/QwenLM/Qwen2.5-VL) | 🌟 [GPT4o](https://platform.openai.com/docs/models/gpt-4o) | 🌟 [SD3.5](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium) | 🌟 [ManiSkill](https://github.com/haosulab/ManiSkill)
 
 ---
 

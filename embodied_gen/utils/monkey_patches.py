@@ -18,6 +18,7 @@ import os
 import sys
 import zipfile
 
+import numpy as np
 import torch
 from huggingface_hub import hf_hub_download
 from omegaconf import OmegaConf
@@ -150,3 +151,68 @@ def monkey_patch_pano2room():
         self.inpaint_pipe = pipe
 
     SDFTInpainter.__init__ = patched_sd_inpaint_init
+
+
+def monkey_patch_maniskill():
+    from mani_skill.envs.scene import ManiSkillScene
+
+    def get_sensor_images(
+        self, obs: dict[str, any]
+    ) -> dict[str, dict[str, torch.Tensor]]:
+        sensor_data = dict()
+        for name, sensor in self.sensors.items():
+            sensor_data[name] = sensor.get_images(obs[name])
+        return sensor_data
+
+    def get_human_render_camera_images(
+        self, camera_name: str = None, return_alpha: bool = False
+    ) -> dict[str, torch.Tensor]:
+        def get_rgba_tensor(camera, return_alpha):
+            color = camera.get_obs(
+                rgb=True, depth=False, segmentation=False, position=False
+            )["rgb"]
+            if return_alpha:
+                seg_labels = camera.get_obs(
+                    rgb=False, depth=False, segmentation=True, position=False
+                )["segmentation"]
+                masks = np.where((seg_labels.cpu() > 0), 255, 0).astype(
+                    np.uint8
+                )
+                masks = torch.tensor(masks).to(color.device)
+                color = torch.concat([color, masks], dim=-1)
+
+            return color
+
+        image_data = dict()
+        if self.gpu_sim_enabled:
+            if self.parallel_in_single_scene:
+                for name, camera in self.human_render_cameras.items():
+                    camera.camera._render_cameras[0].take_picture()
+                    rgba = get_rgba_tensor(camera, return_alpha)
+                    image_data[name] = rgba
+            else:
+                for name, camera in self.human_render_cameras.items():
+                    if camera_name is not None and name != camera_name:
+                        continue
+                    assert camera.config.shader_config.shader_pack not in [
+                        "rt",
+                        "rt-fast",
+                        "rt-med",
+                    ], "ray tracing shaders do not work with parallel rendering"
+                    camera.capture()
+                    rgba = get_rgba_tensor(camera, return_alpha)
+                    image_data[name] = rgba
+        else:
+            for name, camera in self.human_render_cameras.items():
+                if camera_name is not None and name != camera_name:
+                    continue
+                camera.capture()
+                rgba = get_rgba_tensor(camera, return_alpha)
+                image_data[name] = rgba
+
+        return image_data
+
+    ManiSkillScene.get_sensor_images = get_sensor_images
+    ManiSkillScene.get_human_render_camera_images = (
+        get_human_render_camera_images
+    )

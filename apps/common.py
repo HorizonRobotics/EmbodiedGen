@@ -547,7 +547,9 @@ def extract_urdf(
 
     # Convert to URDF and recover attrs by GPT.
     filename = "sample"
-    urdf_convertor = URDFGenerator(GPT_CLIENT, render_view_num=4)
+    urdf_convertor = URDFGenerator(
+        GPT_CLIENT, render_view_num=4, decompose_convex=True
+    )
     asset_attrs = {
         "version": VERSION,
         "gs_model": f"{urdf_convertor.output_mesh_dir}/{filename}_gs.ply",
