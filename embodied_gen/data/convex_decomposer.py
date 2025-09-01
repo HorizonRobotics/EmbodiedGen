@@ -19,6 +19,7 @@ import multiprocessing as mp
 import os
 
 import coacd
+import numpy as np
 import trimesh
 
 logger = logging.getLogger(__name__)
@@ -31,7 +32,11 @@ __all__ = [
 
 
 def decompose_convex_coacd(
-    filename: str, outfile: str, params: dict, verbose: bool = False
+    filename: str,
+    outfile: str,
+    params: dict,
+    verbose: bool = False,
+    auto_scale: bool = True,
 ) -> None:
     coacd.set_log_level("info" if verbose else "warn")
 
@@ -40,6 +45,14 @@ def decompose_convex_coacd(
 
     result = coacd.run_coacd(mesh, **params)
     combined = sum([trimesh.Trimesh(*m) for m in result])
+
+    # Compute collision_scale because convex decomposition usually makes the mesh larger.
+    if auto_scale:
+        convex_mesh_shape = np.ptp(combined.vertices, axis=0)
+        visual_mesh_shape = np.ptp(mesh.vertices, axis=0)
+        rescale = visual_mesh_shape / convex_mesh_shape
+        combined.vertices *= rescale
+
     combined.export(outfile)
 
 
@@ -57,6 +70,7 @@ def decompose_convex_mesh(
     pca: bool = False,
     merge: bool = True,
     seed: int = 0,
+    auto_scale: bool = True,
     verbose: bool = False,
 ) -> str:
     """Decompose a mesh into convex parts using the CoACD algorithm."""
@@ -81,7 +95,7 @@ def decompose_convex_mesh(
     )
 
     try:
-        decompose_convex_coacd(filename, outfile, params, verbose)
+        decompose_convex_coacd(filename, outfile, params, verbose, auto_scale)
         if os.path.exists(outfile):
             return outfile
     except Exception as e:
@@ -91,7 +105,9 @@ def decompose_convex_mesh(
     if preprocess_mode != "on":
         try:
             params["preprocess_mode"] = "on"
-            decompose_convex_coacd(filename, outfile, params, verbose)
+            decompose_convex_coacd(
+                filename, outfile, params, verbose, auto_scale
+            )
             if os.path.exists(outfile):
                 return outfile
         except Exception as e:
@@ -118,6 +134,7 @@ def decompose_convex_mp(
     merge: bool = True,
     seed: int = 0,
     verbose: bool = False,
+    auto_scale: bool = True,
 ) -> str:
     """Decompose a mesh into convex parts using the CoACD algorithm in a separate process.
 
@@ -140,7 +157,7 @@ def decompose_convex_mp(
     ctx = mp.get_context("spawn")
     p = ctx.Process(
         target=decompose_convex_coacd,
-        args=(filename, outfile, params, verbose),
+        args=(filename, outfile, params, verbose, auto_scale),
     )
     p.start()
     p.join()
@@ -151,7 +168,7 @@ def decompose_convex_mp(
         params["preprocess_mode"] = "on"
         p = ctx.Process(
             target=decompose_convex_coacd,
-            args=(filename, outfile, params, verbose),
+            args=(filename, outfile, params, verbose, auto_scale),
         )
         p.start()
         p.join()

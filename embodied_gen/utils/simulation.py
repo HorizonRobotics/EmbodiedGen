@@ -99,9 +99,9 @@ def load_actor_from_urdf(
     body_type = "static" if use_static else "dynamic"
     builder.set_physx_body_type(body_type)
     builder.add_multiple_convex_collisions_from_file(
-        collision_file if body_type == "dynamic" else visual_file,
+        collision_file,
         material=material,
-        scale=collision_scale if body_type == "dynamic" else visual_scale,
+        scale=collision_scale,
         # decomposition="coacd",
         # decomposition_params=dict(
         #     threshold=0.05, max_convex_hull=64, verbose=False
