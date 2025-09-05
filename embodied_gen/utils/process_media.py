@@ -49,6 +49,7 @@ __all__ = [
     "is_image_file",
     "parse_text_prompts",
     "check_object_edge_truncated",
+    "vcat_pil_images",
 ]
 
 
@@ -166,6 +167,7 @@ def combine_images_to_grid(
     images: list[str | Image.Image],
     cat_row_col: tuple[int, int] = None,
     target_wh: tuple[int, int] = (512, 512),
+    image_mode: str = "RGB",
 ) -> list[Image.Image]:
     n_images = len(images)
     if n_images == 1:
@@ -178,13 +180,13 @@ def combine_images_to_grid(
         n_row, n_col = cat_row_col
 
     images = [
-        Image.open(p).convert("RGB") if isinstance(p, str) else p
+        Image.open(p).convert(image_mode) if isinstance(p, str) else p
         for p in images
     ]
     images = [img.resize(target_wh) for img in images]
 
     grid_w, grid_h = n_col * target_wh[0], n_row * target_wh[1]
-    grid = Image.new("RGB", (grid_w, grid_h), (0, 0, 0))
+    grid = Image.new(image_mode, (grid_w, grid_h), (0, 0, 0))
 
     for idx, img in enumerate(images):
         row, col = divmod(idx, n_col)
@@ -433,6 +435,21 @@ def check_object_edge_truncated(
     right = mask[:, -edge_threshold:].any()
 
     return not (top or bottom or left or right)
+
+
+def vcat_pil_images(
+    images: list[Image.Image], image_mode: str = "RGB"
+) -> Image.Image:
+    widths, heights = zip(*(img.size for img in images))
+    total_height = sum(heights)
+    max_width = max(widths)
+    new_image = Image.new(image_mode, (max_width, total_height))
+    y_offset = 0
+    for image in images:
+        new_image.paste(image, (0, y_offset))
+        y_offset += image.size[1]
+
+    return new_image
 
 
 if __name__ == "__main__":

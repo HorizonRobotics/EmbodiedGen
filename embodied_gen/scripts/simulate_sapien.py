@@ -170,7 +170,8 @@ def entrypoint(**kwargs):
         for node in actions:
             if actions[node] is None:
                 continue
-            for action in tqdm(actions[node]):
+            logger.info(f"Render SIM grasping for {node}...")
+            for action in actions[node]:
                 grasp_frames = scene_manager.step_action(
                     agent,
                     torch.Tensor(action[None, ...]),

@@ -28,7 +28,7 @@ import numpy as np
 import nvdiffrast.torch as dr
 import torch
 import torch.nn.functional as F
-from PIL import Image
+from PIL import Image, ImageEnhance
 
 try:
     from kolors.models.modeling_chatglm import ChatGLMModel
@@ -698,6 +698,8 @@ def as_list(obj):
         return obj
     elif isinstance(obj, set):
         return list(obj)
+    elif obj is None:
+        return obj
     else:
         return [obj]
 
@@ -742,6 +744,8 @@ def _compute_az_el_by_camera_params(
 ):
     num_view = camera_params.num_images // len(camera_params.elevation)
     view_interval = 2 * np.pi / num_view / 2
+    if num_view == 1:
+        view_interval = np.pi / 2
     azimuths = []
     elevations = []
     for idx, el in enumerate(camera_params.elevation):
@@ -758,8 +762,13 @@ def _compute_az_el_by_camera_params(
     return azimuths, elevations
 
 
-def init_kal_camera(camera_params: CameraSetting) -> Camera:
-    azimuths, elevations = _compute_az_el_by_camera_params(camera_params)
+def init_kal_camera(
+    camera_params: CameraSetting,
+    flip_az: bool = False,
+) -> Camera:
+    azimuths, elevations = _compute_az_el_by_camera_params(
+        camera_params, flip_az
+    )
     cam_pts = _compute_cam_pts_by_az_el(
         azimuths, elevations, camera_params.distance
     )
@@ -856,13 +865,38 @@ def get_images_from_grid(
         image = Image.open(image)
 
     view_images = np.array(image)
-    view_images = np.concatenate(
-        [view_images[:img_size, ...], view_images[img_size:, ...]], axis=1
-    )
-    images = np.split(view_images, view_images.shape[1] // img_size, axis=1)
-    images = [Image.fromarray(img) for img in images]
+    height, width, _ = view_images.shape
+    rows = height // img_size
+    cols = width // img_size
+    blocks = []
+    for i in range(rows):
+        for j in range(cols):
+            block = view_images[
+                i * img_size : (i + 1) * img_size,
+                j * img_size : (j + 1) * img_size,
+                :,
+            ]
+            blocks.append(Image.fromarray(block))
 
-    return images
+    return blocks
+
+
+def enhance_image(
+    image: Image.Image,
+    contrast_factor: float = 1.3,
+    color_factor: float = 1.2,
+    brightness_factor: float = 0.95,
+) -> Image.Image:
+    enhancer_contrast = ImageEnhance.Contrast(image)
+    img_contrasted = enhancer_contrast.enhance(contrast_factor)
+
+    enhancer_color = ImageEnhance.Color(img_contrasted)
+    img_colored = enhancer_color.enhance(color_factor)
+
+    enhancer_brightness = ImageEnhance.Brightness(img_colored)
+    enhanced_image = enhancer_brightness.enhance(brightness_factor)
+
+    return enhanced_image
 
 
 def post_process_texture(texture: np.ndarray, iter: int = 1) -> np.ndarray:
@@ -872,7 +906,14 @@ def post_process_texture(texture: np.ndarray, iter: int = 1) -> np.ndarray:
             texture, d=5, sigmaColor=20, sigmaSpace=20
         )
 
-    return texture
+    texture = enhance_image(
+        image=Image.fromarray(texture),
+        contrast_factor=1.3,
+        color_factor=1.2,
+        brightness_factor=0.95,
+    )
+
+    return np.array(texture)
 
 
 def quat_mult(q1, q2):

@@ -147,15 +147,12 @@ python apps/texture_edit.py
 ### ⚡ API
 Support Chinese and English prompts.
 ```sh
-bash embodied_gen/scripts/texture_gen.sh \
-    --mesh_path "apps/assets/example_texture/meshes/robot_text.obj" \
-    --prompt "举着牌子的写实风格机器人，大眼睛，牌子上写着“Hello”的文字" \
-    --output_root "outputs/texture_gen/robot_text"
-
-bash embodied_gen/scripts/texture_gen.sh \
-    --mesh_path "apps/assets/example_texture/meshes/horse.obj" \
-    --prompt "A gray horse head with flying mane and brown eyes" \
-    --output_root "outputs/texture_gen/gray_horse"
+texture-cli --mesh_path "apps/assets/example_texture/meshes/robot_text.obj" \
+"apps/assets/example_texture/meshes/horse.obj" \
+--prompt "举着牌子的写实风格机器人，大眼睛，牌子上写着“Hello”的文字" \
+"A gray horse head with flying mane and brown eyes" \
+--output_root "outputs/texture_gen" \
+--seed 0
 ```
 
 ---
@@ -185,7 +182,7 @@ CUDA_VISIBLE_DEVICES=0 scene3d-cli \
 
 🚧 *Coming Soon*
 
-<img src="apps/assets/articulate.gif" alt="articulate" style="width: 430px;">
+<img src="apps/assets/articulate.gif" alt="articulate" style="width: 500px;">
 
 
 ---

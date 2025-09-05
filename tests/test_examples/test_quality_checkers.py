@@ -142,6 +142,7 @@ def test_semantic_checker(semantic_checker):
         ("desk", "outputs/utest_cases/semantic_checker/task_0016_desk.png"),
         ("shelf", "outputs/utest_cases/semantic_checker/task_0018_shelf.png"),
         ("table", "outputs/utest_cases/semantic_checker/task_0000_table.png"),
+        ("pen", "outputs/layouts_gens2/task_0000/images/pen_raw.png"),
     ]
     for test_case in test_cases:
         flag, result = semantic_checker(

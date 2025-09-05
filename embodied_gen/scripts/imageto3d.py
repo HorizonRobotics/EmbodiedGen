@@ -108,6 +108,9 @@ def parse_args():
         default=2,
     )
     parser.add_argument("--disable_decompose_convex", action="store_true")
+    parser.add_argument(
+        "--texture_wh", type=int, nargs=2, default=[2048, 2048]
+    )
     args, unknown = parser.parse_known_args()
 
     return args
@@ -209,11 +212,17 @@ def entrypoint(**kwargs):
                     device="cpu",
                 )
                 color_path = os.path.join(output_root, "color.png")
-                render_gs_api(aligned_gs_path, color_path)
-
-                geo_flag, geo_result = GEO_CHECKER(
-                    [color_path], text=asset_node
+                render_gs_api(
+                    input_gs=aligned_gs_path,
+                    output_path=color_path,
+                    elevation=[20, -10, 60, -50],
+                    num_images=12,
                 )
+
+                color_img = Image.open(color_path)
+                half_height = int(color_img.height * 2 / 3)
+                crop_img = color_img.crop((0, 0, color_img.width, half_height))
+                geo_flag, geo_result = GEO_CHECKER([crop_img], text=asset_node)
                 logger.warning(
                     f"{GEO_CHECKER.__class__.__name__}: {geo_result} for {seg_path}"
                 )
@@ -246,7 +255,9 @@ def entrypoint(**kwargs):
                 output_path=mesh_obj_path,
                 skip_fix_mesh=False,
                 delight=True,
-                texture_wh=[2048, 2048],
+                texture_wh=args.texture_wh,
+                elevation=[20, -10, 60, -50],
+                num_images=12,
             )
 
             mesh_glb_path = os.path.join(output_root, f"{filename}.glb")
