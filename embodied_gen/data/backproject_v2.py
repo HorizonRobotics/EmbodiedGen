@@ -545,7 +545,7 @@ def parse_args():
         "--color_path",
         nargs="+",
         type=str,
-        help="Multiview color image in 6x512x512 file paths",
+        help="Multiview color image in grid file paths",
     )
     parser.add_argument(
         "--mesh_path",
