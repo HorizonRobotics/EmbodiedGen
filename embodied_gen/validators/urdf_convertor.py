@@ -266,7 +266,7 @@ class URDFGenerator(object):
             if self.decompose_convex:
                 try:
                     d_params = dict(
-                        threshold=0.05, max_convex_hull=64, verbose=False
+                        threshold=0.05, max_convex_hull=100, verbose=False
                     )
                     filename = f"{os.path.splitext(obj_name)[0]}_collision.ply"
                     output_path = os.path.join(mesh_folder, filename)

@@ -28,6 +28,7 @@ if [[ -z "$mesh_path" || -z "$prompt" || -z "$output_root" ]]; then
     exit 1
 fi
 
+echo "Will be deprecated, recommended to use 'texture-cli' instead."
 uuid=$(basename "$output_root")
 # Step 1: drender-cli for condition rendering
 drender-cli --mesh_path ${mesh_path} \

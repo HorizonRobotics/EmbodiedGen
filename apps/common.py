@@ -503,7 +503,12 @@ def extract_3d_representations_v2(
         device="cpu",
     )
     color_path = os.path.join(user_dir, "color.png")
-    render_gs_api(aligned_gs_path, color_path)
+    render_gs_api(
+        input_gs=aligned_gs_path,
+        output_path=color_path,
+        elevation=[20, -10, 60, -50],
+        num_images=12,
+    )
 
     mesh = trimesh.Trimesh(
         vertices=mesh_model.vertices.cpu().numpy(),
@@ -524,6 +529,8 @@ def extract_3d_representations_v2(
         skip_fix_mesh=False,
         delight=enable_delight,
         texture_wh=[texture_size, texture_size],
+        elevation=[20, -10, 60, -50],
+        num_images=12,
     )
 
     mesh_glb_path = os.path.join(user_dir, f"{filename}.glb")

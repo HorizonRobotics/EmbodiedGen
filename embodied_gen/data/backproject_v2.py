@@ -33,6 +33,7 @@ from embodied_gen.data.mesh_operator import MeshFixer
 from embodied_gen.data.utils import (
     CameraSetting,
     DiffrastRender,
+    as_list,
     get_images_from_grid,
     init_kal_camera,
     normalize_vertices_array,
@@ -41,6 +42,7 @@ from embodied_gen.data.utils import (
 )
 from embodied_gen.models.delight_model import DelightingModel
 from embodied_gen.models.sr_model import ImageRealESRGAN
+from embodied_gen.utils.process_media import vcat_pil_images
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -541,8 +543,9 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Backproject texture")
     parser.add_argument(
         "--color_path",
+        nargs="+",
         type=str,
-        help="Multiview color image in 6x512x512 file path",
+        help="Multiview color image in 6x512x512 file paths",
     )
     parser.add_argument(
         "--mesh_path",
@@ -559,7 +562,7 @@ def parse_args():
     )
     parser.add_argument(
         "--elevation",
-        nargs=2,
+        nargs="+",
         type=float,
         default=[20.0, -10.0],
         help="Elevation angles for the camera (default: [20.0, -10.0])",
@@ -647,19 +650,23 @@ def entrypoint(
         fov=math.radians(args.fov),
         device=args.device,
     )
-    view_weights = [1, 0.1, 0.02, 0.1, 1, 0.02]
 
-    color_grid = Image.open(args.color_path)
+    args.color_path = as_list(args.color_path)
+    if args.delight and delight_model is None:
+        delight_model = DelightingModel()
+
+    color_grid = [Image.open(color_path) for color_path in args.color_path]
+    color_grid = vcat_pil_images(color_grid, image_mode="RGBA")
     if args.delight:
-        if delight_model is None:
-            delight_model = DelightingModel()
-        save_dir = os.path.dirname(args.output_path)
-        os.makedirs(save_dir, exist_ok=True)
         color_grid = delight_model(color_grid)
         if not args.no_save_delight_img:
-            color_grid.save(f"{save_dir}/color_grid_delight.png")
+            save_dir = os.path.dirname(args.output_path)
+            os.makedirs(save_dir, exist_ok=True)
+            color_grid.save(f"{save_dir}/color_delight.png")
 
     multiviews = get_images_from_grid(color_grid, img_size=512)
+    view_weights = [1, 0.1, 0.02, 0.1, 1, 0.02]
+    view_weights += [0.01] * (len(multiviews) - len(view_weights))
 
     # Use RealESRGAN_x4plus for x4 (512->2048) image super resolution.
     if imagesr_model is None:
@@ -688,7 +695,7 @@ def entrypoint(
     texture_backer = TextureBacker(
         camera_params=camera_params,
         view_weights=view_weights,
-        render_wh=camera_params.resolution_hw,
+        render_wh=args.resolution_hw,
         texture_wh=args.texture_wh,
         smooth_texture=not args.no_smooth_texture,
     )

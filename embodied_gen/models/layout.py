@@ -43,7 +43,7 @@ __all__ = [
 ]
 
 
-DISTRACTOR_NUM = 3  # Maximum number of distractor objects allowed
+DISTRACTOR_NUM = 2  # Maximum number of distractor objects allowed
 LAYOUT_DISASSEMBLE_PROMPT = f"""
     You are an intelligent 3D scene planner. Given a natural language
     description of a robotic task, output a structured description of

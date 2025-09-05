@@ -18,12 +18,11 @@
 import argparse
 import logging
 import math
-import os
 
 import cv2
-import numpy as np
 import spaces
 import torch
+from PIL import Image
 from tqdm import tqdm
 from embodied_gen.data.utils import (
     CameraSetting,
@@ -31,6 +30,7 @@ from embodied_gen.data.utils import (
     normalize_vertices_array,
 )
 from embodied_gen.models.gs_model import GaussianOperator
+from embodied_gen.utils.process_media import combine_images_to_grid
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -104,7 +104,7 @@ def load_gs_model(
     # Normalize vertices to [-1, 1], center to (0, 0, 0).
     _, scale, center = normalize_vertices_array(gs_model._means)
     scale, center = float(scale), center.tolist()
-    transpose = [*[-v for v in center], *pre_quat]
+    transpose = [*[v for v in center], *pre_quat]
     instance_pose = torch.tensor(transpose).to(gs_model.device)
     gs_model = gs_model.get_gaussians(instance_pose=instance_pose)
     gs_model.rescale(scale)
@@ -113,12 +113,11 @@ def load_gs_model(
 
 
 @spaces.GPU
-def entrypoint(input_gs: str = None, output_path: str = None) -> None:
+def entrypoint(**kwargs) -> None:
     args = parse_args()
-    if isinstance(input_gs, str):
-        args.input_gs = input_gs
-    if isinstance(output_path, str):
-        args.output_path = output_path
+    for k, v in kwargs.items():
+        if hasattr(args, k) and v is not None:
+            setattr(args, k, v)
 
     # Setup camera parameters
     camera_params = CameraSetting(
@@ -129,7 +128,7 @@ def entrypoint(input_gs: str = None, output_path: str = None) -> None:
         fov=math.radians(args.fov),
         device=args.device,
     )
-    camera = init_kal_camera(camera_params)
+    camera = init_kal_camera(camera_params, flip_az=True)
     matrix_mv = camera.view_matrix()  # (n_cam 4 4) world2cam
     matrix_mv[:, :3, 3] = -matrix_mv[:, :3, 3]
     w2cs = matrix_mv.to(camera_params.device)
@@ -153,21 +152,11 @@ def entrypoint(input_gs: str = None, output_path: str = None) -> None:
             (args.image_size, args.image_size),
             interpolation=cv2.INTER_AREA,
         )
-        images.append(color)
+        color = cv2.cvtColor(color, cv2.COLOR_BGRA2RGBA)
+        images.append(Image.fromarray(color))
 
-    # Cat color images into grid image and save.
-    select_idxs = [[0, 2, 1], [5, 4, 3]]  # fix order for 6 views
-    grid_image = []
-    for row_idxs in select_idxs:
-        row_image = []
-        for row_idx in row_idxs:
-            row_image.append(images[row_idx])
-        row_image = np.concatenate(row_image, axis=1)
-        grid_image.append(row_image)
+    combine_images_to_grid(images, image_mode="RGBA")[0].save(args.output_path)
 
-    grid_image = np.concatenate(grid_image, axis=0)
-    os.makedirs(os.path.dirname(args.output_path), exist_ok=True)
-    cv2.imwrite(args.output_path, grid_image)
     logger.info(f"Saved grid image to {args.output_path}")
 
 

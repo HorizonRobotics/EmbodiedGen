@@ -249,7 +249,7 @@ class SemanticConsistChecker(BaseChecker):
                 fewer than four legs or if the legs are unevenly distributed, are not allowed. Do not assume
                 hidden legs unless they are clearly visible.)
             - Geometric completeness is required: the object must not have missing, truncated, or cropped parts.
-            - The image must contain exactly one object. Multiple distinct objects are not allowed.
+            - The image must contain exactly one object. Multiple distinct objects (e.g. multiple pens) are not allowed.
                 A single composite object (e.g., a chair with legs) is acceptable.
             - The object should be shown from a slightly angled (three-quarter) perspective,
                 not a flat, front-facing view showing only one surface.

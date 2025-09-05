@@ -503,7 +503,7 @@ def parse_args():
         help="Whether to generate global normal .mp4 rendering file.",
     )
     parser.add_argument(
-        "--prompts",
+        "--video_prompts",
         type=str,
         nargs="+",
         default=None,
@@ -579,7 +579,7 @@ def entrypoint(**kwargs) -> None:
         mesh_path=args.mesh_path,
         output_root=args.output_root,
         uuid=args.uuid,
-        prompts=args.prompts,
+        prompts=args.video_prompts,
     )
 
     return

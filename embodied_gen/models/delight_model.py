@@ -29,6 +29,7 @@ from diffusers import (
 from huggingface_hub import snapshot_download
 from PIL import Image
 from embodied_gen.models.segment_model import RembgRemover
+from embodied_gen.utils.log import logger
 
 __all__ = [
     "DelightingModel",
@@ -84,6 +85,7 @@ class DelightingModel(object):
 
     def _lazy_init_pipeline(self):
         if self.pipeline is None:
+            logger.info("Loading Delighting Model...")
             pipeline = StableDiffusionInstructPix2PixPipeline.from_pretrained(
                 self.model_path,
                 torch_dtype=torch.float16,
