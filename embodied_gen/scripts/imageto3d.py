@@ -220,8 +220,8 @@ def entrypoint(**kwargs):
                 )
 
                 color_img = Image.open(color_path)
-                half_height = int(color_img.height * 2 / 3)
-                crop_img = color_img.crop((0, 0, color_img.width, half_height))
+                keep_height = int(color_img.height * 2 / 3)
+                crop_img = color_img.crop((0, 0, color_img.width, keep_height))
                 geo_flag, geo_result = GEO_CHECKER([crop_img], text=asset_node)
                 logger.warning(
                     f"{GEO_CHECKER.__class__.__name__}: {geo_result} for {seg_path}"
