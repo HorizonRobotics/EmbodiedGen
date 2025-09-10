@@ -133,8 +133,9 @@ def entrypoint(**kwargs):
     if "Foreground" not in cfg.render_keys:
         return
 
+    asset_root = os.path.dirname(cfg.layout_path)
     bg_node = layout_data.relation[Scene3DItemEnum.BACKGROUND.value]
-    gs_path = f"{layout_data.assets[bg_node]}/gs_model.ply"
+    gs_path = f"{asset_root}/{layout_data.assets[bg_node]}/gs_model.ply"
     gs_model: GaussianOperator = GaussianOperator.load_from_ply(gs_path)
     x, y, z, qx, qy, qz, qw = layout_data.position[bg_node]
     qx, qy, qz, qw = quaternion_multiply([qx, qy, qz, qw], cfg.init_quat)
