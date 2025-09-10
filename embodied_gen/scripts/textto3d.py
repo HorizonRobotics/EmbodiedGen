@@ -187,7 +187,7 @@ def text_to_3d(**kwargs) -> dict:
             logger.warning(
                 f"Node {node}, {TXTGEN_CHECKER.__class__.__name__}: {qa_result}"
             )
-            results["assets"][node] = f"{node_save_dir}/result"
+            results["assets"][node] = f"asset3d/{save_node}/result"
             results["quality"][node] = qa_result
 
             if qa_flag is None or qa_flag is True:

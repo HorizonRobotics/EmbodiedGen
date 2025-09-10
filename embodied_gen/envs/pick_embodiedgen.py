@@ -16,7 +16,6 @@
 
 import json
 import os
-from copy import deepcopy
 
 import numpy as np
 import sapien
@@ -26,6 +25,7 @@ from mani_skill.envs.sapien_env import BaseEnv
 from mani_skill.sensors.camera import CameraConfig
 from mani_skill.utils import sapien_utils
 from mani_skill.utils.building import actors
+from mani_skill.utils.building.ground import build_ground
 from mani_skill.utils.registration import register_env
 from mani_skill.utils.structs.actor import Actor
 from mani_skill.utils.structs.pose import Pose
@@ -78,6 +78,14 @@ class PickEmbodiedGen(BaseEnv):
         # Add small offset in z-axis to avoid collision.
         self.objs_z_offset = kwargs.pop("objs_z_offset", 0.002)
         self.robot_z_offset = kwargs.pop("robot_z_offset", 0.002)
+        self.camera_cfg = kwargs.pop("camera_cfg", None)
+        if self.camera_cfg is None:
+            self.camera_cfg = dict(
+                camera_eye=[0.9, 0.0, 1.1],
+                camera_target_pt=[0.0, 0.0, 0.9],
+                image_hw=[256, 256],
+                fovy_deg=75,
+            )
 
         self.layouts = self.init_env_layouts(
             layout_file, num_envs, replace_objs
@@ -106,22 +114,30 @@ class PickEmbodiedGen(BaseEnv):
     def init_env_layouts(
         layout_file: str, num_envs: int, replace_objs: bool
     ) -> list[LayoutInfo]:
-        layout = LayoutInfo.from_dict(json.load(open(layout_file, "r")))
         layouts = []
         for env_idx in range(num_envs):
             if replace_objs and env_idx > 0:
-                layout = bfs_placement(deepcopy(layout))
-            layouts.append(layout)
+                layout_info = bfs_placement(layout_file)
+            else:
+                layout_info = json.load(open(layout_file, "r"))
+                layout_info = LayoutInfo.from_dict(layout_info)
+
+            layout_path = layout_file.replace(".json", f"_env{env_idx}.json")
+            with open(layout_path, "w") as f:
+                json.dump(layout_info.to_dict(), f, indent=4)
+
+            layouts.append(layout_path)
 
         return layouts
 
     @staticmethod
     def compute_robot_init_pose(
-        layouts: list[LayoutInfo], num_envs: int, z_offset: float = 0.0
+        layouts: list[str], num_envs: int, z_offset: float = 0.0
     ) -> list[list[float]]:
         robot_pose = []
         for env_idx in range(num_envs):
-            layout = layouts[env_idx]
+            layout = json.load(open(layouts[env_idx], "r"))
+            layout = LayoutInfo.from_dict(layout)
             robot_node = layout.relation[Scene3DItemEnum.ROBOT.value]
             x, y, z, qx, qy, qz, qw = layout.position[robot_node]
             robot_pose.append([x, y, z + z_offset, qw, qx, qy, qz])
@@ -154,19 +170,27 @@ class PickEmbodiedGen(BaseEnv):
     @property
     def _default_human_render_camera_configs(self):
         pose = sapien_utils.look_at(
-            eye=[0.9, 0.0, 1.1], target=[0.0, 0.0, 0.9]
+            eye=self.camera_cfg["camera_eye"],
+            target=self.camera_cfg["camera_target_pt"],
         )
 
         return CameraConfig(
-            "render_camera", pose, 256, 256, np.deg2rad(75), 0.01, 100
+            "render_camera",
+            pose,
+            self.camera_cfg["image_hw"][1],
+            self.camera_cfg["image_hw"][0],
+            np.deg2rad(self.camera_cfg["fovy_deg"]),
+            0.01,
+            100,
         )
 
     def _load_agent(self, options: dict):
+        self.ground = build_ground(self.scene)
         super()._load_agent(options, sapien.Pose(p=[-10, 0, 10]))
 
     def _load_scene(self, options: dict):
         all_objects = []
-        logger.info(f"Loading assets and decomposition mesh collisions...")
+        logger.info(f"Loading EmbodiedGen assets...")
         for env_idx in range(self.num_envs):
             env_actors = load_assets_from_layout_file(
                 self.scene,
@@ -229,7 +253,7 @@ class PickEmbodiedGen(BaseEnv):
             self.agent.controller.controllers["gripper"].reset()
 
     def render_gs3d_images(
-        self, layouts: list[LayoutInfo], num_envs: int, init_quat: list[float]
+        self, layouts: list[str], num_envs: int, init_quat: list[float]
     ) -> dict[str, np.ndarray]:
         sim_coord_align = (
             torch.tensor(SIM_COORD_ALIGN).to(torch.float32).to(self.device)
@@ -237,12 +261,18 @@ class PickEmbodiedGen(BaseEnv):
         cameras = self.scene.sensors.copy()
         cameras.update(self.scene.human_render_cameras)
 
-        bg_node = layouts[0].relation[Scene3DItemEnum.BACKGROUND.value]
-        gs_path = os.path.join(layouts[0].assets[bg_node], "gs_model.ply")
+        # Preload the background Gaussian Splatting model.
+        asset_root = os.path.dirname(layouts[0])
+        layout = LayoutInfo.from_dict(json.load(open(layouts[0], "r")))
+        bg_node = layout.relation[Scene3DItemEnum.BACKGROUND.value]
+        gs_path = os.path.join(
+            asset_root, layout.assets[bg_node], "gs_model.ply"
+        )
         raw_gs: GaussianOperator = GaussianOperator.load_from_ply(gs_path)
         bg_images = dict()
         for env_idx in tqdm(range(num_envs), desc="Pre-rendering Background"):
-            layout = layouts[env_idx]
+            layout = json.load(open(layouts[env_idx], "r"))
+            layout = LayoutInfo.from_dict(layout)
             x, y, z, qx, qy, qz, qw = layout.position[bg_node]
             qx, qy, qz, qw = quaternion_multiply([qx, qy, qz, qw], init_quat)
             init_pose = torch.tensor([x, y, z, qx, qy, qz, qw])

@@ -119,11 +119,15 @@ def entrypoint() -> None:
         match_scene_path = f"{os.path.dirname(args.bg_list)}/{match_key}"
         bg_save_dir = os.path.join(output_root, "background")
         copytree(match_scene_path, bg_save_dir, dirs_exist_ok=True)
-        layout_info.assets[bg_node] = bg_save_dir
+        layout_info.assets[bg_node] = "background"
 
         # BFS layout placement.
+        layout_path = f"{output_root}/layout.json"
+        with open(layout_path, "w") as f:
+            json.dump(layout_info.to_dict(), f, indent=4)
+
         layout_info = bfs_placement(
-            layout_info,
+            layout_path,
             limit_reach_range=True if args.insert_robot else False,
             seed=args.seed_layout,
         )

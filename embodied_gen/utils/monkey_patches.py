@@ -175,7 +175,7 @@ def monkey_patch_maniskill():
                 seg_labels = camera.get_obs(
                     rgb=False, depth=False, segmentation=True, position=False
                 )["segmentation"]
-                masks = np.where((seg_labels.cpu() > 0), 255, 0).astype(
+                masks = np.where((seg_labels.cpu() > 1), 255, 0).astype(
                     np.uint8
                 )
                 masks = torch.tensor(masks).to(color.device)

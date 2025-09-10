@@ -20,7 +20,7 @@ from embodied_gen.utils.monkey_patches import monkey_patch_maniskill
 monkey_patch_maniskill()
 import json
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
 import gymnasium as gym
@@ -69,6 +69,18 @@ class ParallelSimConfig:
     reach_target_only: bool = True
     """Whether to only reach target without full action"""
 
+    # Camera settings
+    camera_eye: list[float] = field(default_factory=lambda: [0.9, 0.0, 1.1])
+    """Camera eye position [x, y, z] in global coordiante system"""
+    camera_target_pt: list[float] = field(
+        default_factory=lambda: [0.0, 0.0, 0.9]
+    )
+    """Camera target(look-at) point [x, y, z] in global coordiante system"""
+    image_hw: list[int] = field(default_factory=lambda: [512, 512])
+    """Rendered image height and width [height, width]"""
+    fovy_deg: float = 75
+    """Camera vertical field of view in degrees"""
+
 
 def entrypoint(**kwargs):
     if kwargs is None or len(kwargs) == 0:
@@ -83,6 +95,12 @@ def entrypoint(**kwargs):
         enable_shadow=cfg.enable_shadow,
         layout_file=cfg.layout_file,
         control_mode=cfg.control_mode,
+        camera_cfg=dict(
+            camera_eye=cfg.camera_eye,
+            camera_target_pt=cfg.camera_target_pt,
+            image_hw=cfg.image_hw,
+            fovy_deg=cfg.fovy_deg,
+        ),
     )
     env = RecordEpisode(
         env,

@@ -50,10 +50,7 @@ def entrypoint(**kwargs):
     out_scene_path = f"{output_dir}/Iscene.glb"
     out_layout_path = f"{output_dir}/layout.json"
 
-    with open(args.layout_path, "r") as f:
-        layout_info = LayoutInfo.from_dict(json.load(f))
-
-    layout_info = bfs_placement(layout_info, seed=args.seed)
+    layout_info = bfs_placement(args.layout_path, seed=args.seed)
     with open(out_layout_path, "w") as f:
         json.dump(layout_info.to_dict(), f, indent=4)
 

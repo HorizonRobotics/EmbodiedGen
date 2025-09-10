@@ -14,6 +14,7 @@
 # implied. See the License for the specific language governing
 # permissions and limitations under the License.
 
+import json
 import os
 import random
 from collections import defaultdict, deque
@@ -32,7 +33,6 @@ from embodied_gen.utils.enum import LayoutInfo, Scene3DItemEnum
 from embodied_gen.utils.log import logger
 
 __all__ = [
-    "bfs_placement",
     "with_seed",
     "matrix_to_pose",
     "pose_to_matrix",
@@ -222,7 +222,7 @@ def check_reachable(
 
 @with_seed("seed")
 def bfs_placement(
-    layout_info: LayoutInfo,
+    layout_file: str,
     floor_margin: float = 0,
     beside_margin: float = 0.1,
     max_attempts: int = 3000,
@@ -232,6 +232,8 @@ def bfs_placement(
     robot_dim: float = 0.12,
     seed: int = None,
 ) -> LayoutInfo:
+    layout_info = LayoutInfo.from_dict(json.load(open(layout_file, "r")))
+    asset_dir = os.path.dirname(layout_file)
     object_mapping = layout_info.objs_mapping
     position = {}  # node: [x, y, z, qx, qy, qz, qw]
     parent_bbox_xy = {}
@@ -254,6 +256,7 @@ def bfs_placement(
         mesh_path = (
             f"{layout_info.assets[node]}/mesh/{node.replace(' ', '_')}.obj"
         )
+        mesh_path = os.path.join(asset_dir, mesh_path)
         mesh_info[node]["path"] = mesh_path
         mesh = trimesh.load(mesh_path)
         vertices = mesh.vertices

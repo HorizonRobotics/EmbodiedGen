@@ -258,7 +258,7 @@ Example: generate multiple parallel simulation envs with `gym.make` and record s
 python embodied_gen/scripts/parallel_sim.py \
 --layout_file "outputs/layouts_gen/task_0000/layout.json" \
 --output_dir "outputs/parallel_sim/task_0000" \
---num_envs 20
+--num_envs 16
 ```
 
 ### 🖼️ Real-to-Sim Digital Twin

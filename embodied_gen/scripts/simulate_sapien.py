@@ -91,17 +91,16 @@ def entrypoint(**kwargs):
         fovy_deg=cfg.fovy_deg,
     )
     with open(cfg.layout_path, "r") as f:
-        layout_data = json.load(f)
-        layout_data: LayoutInfo = LayoutInfo.from_dict(layout_data)
+        layout_data: LayoutInfo = LayoutInfo.from_dict(json.load(f))
 
     actors = load_assets_from_layout_file(
         scene_manager.scene,
-        layout_data,
+        cfg.layout_path,
         cfg.z_offset,
         cfg.init_quat,
     )
     agent = load_mani_skill_robot(
-        scene_manager.scene, layout_data, cfg.control_freq
+        scene_manager.scene, cfg.layout_path, cfg.control_freq
     )
 
     frames = defaultdict(list)

@@ -124,7 +124,7 @@ def load_actor_from_urdf(
 
 def load_assets_from_layout_file(
     scene: ManiSkillScene | sapien.Scene,
-    layout: LayoutInfo | str,
+    layout: str,
     z_offset: float = 0.0,
     init_quat: list[float] = [0, 0, 0, 1],
     env_idx: int = None,
@@ -133,19 +133,18 @@ def load_assets_from_layout_file(
 
     Args:
         scene (sapien.Scene | ManiSkillScene): The SAPIEN or ManiSkill scene to load assets into.
-        layout (LayoutInfo): The layout information data.
+        layout (str): The layout file path.
         z_offset (float): Offset to apply to the Z-coordinate of non-context objects.
         init_quat (List[float]): Initial quaternion (x, y, z, w) for orientation adjustment.
         env_idx (int): Environment index for multi-environment setup.
     """
-    if isinstance(layout, str) and layout.endswith(".json"):
-        layout = LayoutInfo.from_dict(json.load(open(layout, "r")))
-
+    asset_root = os.path.dirname(layout)
+    layout = LayoutInfo.from_dict(json.load(open(layout, "r")))
     actors = dict()
     for node in layout.assets:
         file_dir = layout.assets[node]
         file_name = f"{node.replace(' ', '_')}.urdf"
-        urdf_file = os.path.join(file_dir, file_name)
+        urdf_file = os.path.join(asset_root, file_dir, file_name)
 
         if layout.objs_mapping[node] == Scene3DItemEnum.BACKGROUND.value:
             continue
