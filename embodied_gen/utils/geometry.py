@@ -285,10 +285,9 @@ def bfs_placement(
             # For manipulated and distractor objects, apply random rotation
             angle_rad = np.random.uniform(0, 2 * np.pi)
             object_quat = compute_axis_rotation_quat(
-                axis="y", angle_rad=angle_rad
+                axis="z", angle_rad=angle_rad
             )
-            object_quat_scipy = np.roll(object_quat, 1)  # [w, x, y, z]
-            rotation = R.from_quat(object_quat_scipy).as_matrix()
+            rotation = R.from_quat(object_quat).as_matrix()
             vertices = np.dot(mesh.vertices, rotation.T)
             z1 = np.percentile(vertices[:, 1], 1)
             z2 = np.percentile(vertices[:, 1], 99)

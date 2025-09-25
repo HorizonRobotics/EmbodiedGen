@@ -9,6 +9,7 @@ PYTHON_PACKAGES_NODEPS=(
 )
 
 PYTHON_PACKAGES=(
+    "ninja"
     "fused-ssim@git+https://github.com/rahul-goel/fused-ssim#egg=328dc98"
     "git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch"
     "git+https://github.com/facebookresearch/pytorch3d.git@stable"
@@ -19,8 +20,6 @@ PYTHON_PACKAGES=(
     "icecream"
     "open3d"
     "pyequilib"
-    "numpy==1.26.4"
-    "triton==2.1.0"
 )
 
 for pkg in "${PYTHON_PACKAGES_NODEPS[@]}"; do

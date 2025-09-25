@@ -5,10 +5,10 @@ source "$SCRIPT_DIR/_utils.sh"
 
 PIP_INSTALL_PACKAGES=(
     "pip==22.3.1"
-    "torch==2.4.0+cu118 torchvision==0.19.0+cu118 --index-url https://download.pytorch.org/whl/cu118"
+    "torch==2.4.0 torchvision==0.19.0 --index-url https://download.pytorch.org/whl/cu118"
     "xformers==0.0.27.post2 --index-url https://download.pytorch.org/whl/cu118"
-    "flash-attn==2.7.0.post2 --no-build-isolation"
     "-r requirements.txt --use-deprecated=legacy-resolver"
+    "flash-attn==2.7.0.post2"
     "utils3d@git+https://github.com/EasternJournalist/utils3d.git@9a4eb15"
     "clip@git+https://github.com/openai/CLIP.git"
     "segment-anything@git+https://github.com/facebookresearch/segment-anything.git@dca509f"
@@ -32,5 +32,5 @@ pip install "$TMP_DIR/submodules/diff-gaussian-rasterization"
 rm -rf "$TMP_DIR"
 
 try_install "Installing EmbodiedGen..." \
-    "pip install triton==2.1.0 --no-deps && pip install -e ." \
+    "pip install -e .[dev]" \
     "EmbodiedGen installation failed."

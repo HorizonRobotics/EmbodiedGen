@@ -97,7 +97,6 @@ def entrypoint(**kwargs):
         scene_manager.scene,
         cfg.layout_path,
         cfg.z_offset,
-        cfg.init_quat,
     )
     agent = load_mani_skill_robot(
         scene_manager.scene, cfg.layout_path, cfg.control_freq

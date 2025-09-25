@@ -76,7 +76,7 @@ class ParallelSimConfig:
         default_factory=lambda: [0.0, 0.0, 0.9]
     )
     """Camera target(look-at) point [x, y, z] in global coordiante system"""
-    image_hw: list[int] = field(default_factory=lambda: [512, 512])
+    image_hw: list[int] = field(default_factory=lambda: [256, 256])
     """Rendered image height and width [height, width]"""
     fovy_deg: float = 75
     """Camera vertical field of view in degrees"""

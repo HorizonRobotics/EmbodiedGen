@@ -625,7 +625,7 @@ def parse_args():
         action="store_true",
         help="Disable saving delight image",
     )
-
+    parser.add_argument("--n_max_faces", type=int, default=30000)
     args, unknown = parser.parse_known_args()
 
     return args
@@ -687,6 +687,14 @@ def entrypoint(
             num_views=1000,
             norm_mesh_ratio=0.5,
         )
+        if len(mesh.faces) > args.n_max_faces:
+            mesh.vertices, mesh.faces = mesh_fixer(
+                filter_ratio=0.8,
+                max_hole_size=0.04,
+                resolution=1024,
+                num_views=1000,
+                norm_mesh_ratio=0.5,
+            )
         # Restore scale.
         mesh.vertices = mesh.vertices / scale
         mesh.vertices = mesh.vertices + center

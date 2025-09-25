@@ -196,7 +196,6 @@ class PickEmbodiedGen(BaseEnv):
                 self.scene,
                 self.layouts[env_idx],
                 z_offset=self.objs_z_offset,
-                init_quat=self.init_quat,
                 env_idx=env_idx,
             )
             self.env_actors[f"env{env_idx}"] = env_actors

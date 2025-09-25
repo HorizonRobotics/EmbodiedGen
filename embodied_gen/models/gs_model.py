@@ -39,6 +39,8 @@ __all__ = [
     "GaussianOperator",
 ]
 
+SH_C0 = 0.2820947917738781
+
 
 @dataclass
 class RenderResult:
@@ -210,9 +212,7 @@ class GaussianBase:
             device=device,
         )
 
-    def save_to_ply(
-        self, path: str, colors: torch.Tensor = None, enable_mask: bool = False
-    ):
+    def save_to_ply(self, path: str, enable_mask: bool = False) -> None:
         os.makedirs(os.path.dirname(path), exist_ok=True)
         numpy_data = self.get_numpy_data()
         means = numpy_data["_means"]
@@ -249,7 +249,6 @@ class GaussianBase:
             shN = shN[~invalid_mask]
 
         num_points = means.shape[0]
-
         with open(path, "wb") as f:
             # Write PLY header
             f.write(b"ply\n")
@@ -258,18 +257,11 @@ class GaussianBase:
             f.write(b"property float x\n")
             f.write(b"property float y\n")
             f.write(b"property float z\n")
-            f.write(b"property float nx\n")
-            f.write(b"property float ny\n")
-            f.write(b"property float nz\n")
 
-            if colors is not None:
-                for j in range(colors.shape[1]):
-                    f.write(f"property float f_dc_{j}\n".encode())
-            else:
-                for i, data in enumerate([sh0, shN]):
-                    prefix = "f_dc" if i == 0 else "f_rest"
-                    for j in range(data.shape[1]):
-                        f.write(f"property float {prefix}_{j}\n".encode())
+            for i, data in enumerate([sh0, shN]):
+                prefix = "f_dc" if i == 0 else "f_rest"
+                for j in range(data.shape[1]):
+                    f.write(f"property float {prefix}_{j}\n".encode())
 
             f.write(b"property float opacity\n")
 
@@ -283,23 +275,18 @@ class GaussianBase:
             # Write vertex data
             for i in range(num_points):
                 f.write(struct.pack("<fff", *means[i]))  # x, y, z
-                f.write(struct.pack("<fff", 0, 0, 0))  # nx, ny, nz (zeros)
 
-                if colors is not None:
-                    color = colors.detach().cpu().numpy()
-                    for j in range(color.shape[1]):
-                        f_dc = (color[i, j] - 0.5) / 0.2820947917738781
-                        f.write(struct.pack("<f", f_dc))
-                else:
-                    for data in [sh0, shN]:
-                        for j in range(data.shape[1]):
-                            f.write(struct.pack("<f", data[i, j]))
+                for data in [sh0, shN]:
+                    for j in range(data.shape[1]):
+                        f.write(struct.pack("<f", data[i, j]))
 
-                f.write(struct.pack("<f", opacities[i]))  # opacity
+                f.write(struct.pack("<f", opacities[i].item()))  # opacity
 
                 for data in [scales, quats]:
                     for j in range(data.shape[1]):
                         f.write(struct.pack("<f", data[i, j]))
+
+        return
 
 
 @dataclass
@@ -508,8 +495,8 @@ class GaussianOperator(GaussianBase):
 
 
 if __name__ == "__main__":
-    input_gs = "outputs/test/debug.ply"
-    output_gs = "./debug_v3.ply"
+    input_gs = "outputs/layouts_gens_demo/task_0000/background/gs_model.ply"
+    output_gs = "./gs_model.ply"
     gs_model: GaussianOperator = GaussianOperator.load_from_ply(input_gs)
 
     # 绕 x 轴旋转 180°

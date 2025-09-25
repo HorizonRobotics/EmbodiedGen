@@ -60,7 +60,7 @@ def entrypoint(**kwargs):
     sim_cli(
         layout_path=out_layout_path,
         output_dir=output_dir,
-        robot_name="franka" if args.insert_robot else None,
+        insert_robot=args.insert_robot,
     )
 
     logger.info(f"Layout placement completed in {output_dir}")

@@ -26,4 +26,6 @@ if [[ "$STAGE" == "extra" || "$STAGE" == "all" ]]; then
     bash "$SCRIPT_DIR/install/install_extra.sh"
 fi
 
+pip install triton==2.1.0 numpy==1.26.4
+
 log_info "===== Installation completed successfully. ====="

@@ -24,6 +24,7 @@ from xml.dom.minidom import parseString
 
 import numpy as np
 import trimesh
+from scipy.spatial.transform import Rotation
 from embodied_gen.data.convex_decomposer import decompose_convex_mesh
 from embodied_gen.utils.gpt_clients import GPT_CLIENT, GPTclient
 from embodied_gen.utils.process_media import render_asset3d
@@ -40,11 +41,13 @@ URDF_TEMPLATE = """
 <robot name="template_robot">
     <link name="template_link">
         <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
                 <mesh filename="mesh.obj" scale="1.0 1.0 1.0"/>
             </geometry>
         </visual>
         <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
                 <mesh filename="mesh.obj" scale="1.0 1.0 1.0"/>
             </geometry>
@@ -86,6 +89,7 @@ class URDFGenerator(object):
         render_dir: str = "urdf_renders",
         render_view_num: int = 4,
         decompose_convex: bool = False,
+        rotate_xyzw: list[float] = (0.7071, 0, 0, 0.7071),
     ) -> None:
         if mesh_file_list is None:
             mesh_file_list = []
@@ -160,6 +164,8 @@ class URDFGenerator(object):
             ]
         self.attrs_name = attrs_name
         self.decompose_convex = decompose_convex
+        # Rotate 90 degrees around the X-axis from blender to align with simulators.
+        self.rotate_xyzw = rotate_xyzw
 
     def parse_response(self, response: str) -> dict[str, any]:
         lines = response.split("\n")
@@ -251,6 +257,14 @@ class URDFGenerator(object):
             raise ValueError("URDF template is missing 'link' element.")
         link.set("name", output_name)
 
+        if self.rotate_xyzw is not None:
+            rpy = Rotation.from_quat(self.rotate_xyzw).as_euler(
+                "xyz", degrees=False
+            )
+            rpy = [str(round(num, 4)) for num in rpy]
+            link.find("visual/origin").set("rpy", " ".join(rpy))
+            link.find("collision/origin").set("rpy", " ".join(rpy))
+
         # Update visual geometry
         visual = link.find("visual/geometry/mesh")
         if visual is not None:
@@ -273,7 +287,11 @@ class URDFGenerator(object):
                     decompose_convex_mesh(
                         mesh_output_path, output_path, **d_params
                     )
-                    collision_mesh = f"{self.output_mesh_dir}/{filename}"
+                    obj_filename = filename.replace(".ply", ".obj")
+                    trimesh.load(output_path).export(
+                        f"{mesh_folder}/{obj_filename}"
+                    )
+                    collision_mesh = f"{self.output_mesh_dir}/{obj_filename}"
                 except Exception as e:
                     logger.warning(
                         f"Convex decomposition failed for {output_path}, {e}."
@@ -436,6 +454,7 @@ class URDFGenerator(object):
 
 
 if __name__ == "__main__":
+    # Rotate 90 degrees around the X-axis to align with simulators.
     urdf_gen = URDFGenerator(GPT_CLIENT, render_view_num=4)
     urdf_path = urdf_gen(
         mesh_path="outputs/layout2/asset3d/marker/result/mesh/marker.obj",

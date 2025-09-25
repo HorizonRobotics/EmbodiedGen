@@ -15,7 +15,6 @@
 # permissions and limitations under the License.
 
 import json
-import logging
 import os
 import xml.etree.ElementTree as ET
 from collections import defaultdict
@@ -62,32 +61,48 @@ __all__ = [
 
 
 def load_actor_from_urdf(
-    scene: ManiSkillScene | sapien.Scene,
+    scene: sapien.Scene | ManiSkillScene,
     file_path: str,
-    pose: sapien.Pose,
+    pose: sapien.Pose | None = None,
     env_idx: int = None,
     use_static: bool = False,
     update_mass: bool = False,
+    scale: float | np.ndarray = 1.0,
 ) -> sapien.pysapien.Entity:
+    def _get_local_pose(origin_tag: ET.Element | None) -> sapien.Pose:
+        local_pose = sapien.Pose(p=[0, 0, 0], q=[1, 0, 0, 0])
+        if origin_tag is not None:
+            xyz = list(map(float, origin_tag.get("xyz", "0 0 0").split()))
+            rpy = list(map(float, origin_tag.get("rpy", "0 0 0").split()))
+            qx, qy, qz, qw = R.from_euler("xyz", rpy, degrees=False).as_quat()
+            local_pose = sapien.Pose(p=xyz, q=[qw, qx, qy, qz])
+
+        return local_pose
+
     tree = ET.parse(file_path)
     root = tree.getroot()
     node_name = root.get("name")
     file_dir = os.path.dirname(file_path)
 
-    visual_mesh = root.find('.//visual/geometry/mesh')
+    visual_mesh = root.find(".//visual/geometry/mesh")
     visual_file = visual_mesh.get("filename")
     visual_scale = visual_mesh.get("scale", "1.0 1.0 1.0")
     visual_scale = np.array([float(x) for x in visual_scale.split()])
+    visual_scale *= np.array(scale)
 
-    collision_mesh = root.find('.//collision/geometry/mesh')
+    collision_mesh = root.find(".//collision/geometry/mesh")
     collision_file = collision_mesh.get("filename")
     collision_scale = collision_mesh.get("scale", "1.0 1.0 1.0")
     collision_scale = np.array([float(x) for x in collision_scale.split()])
+    collision_scale *= np.array(scale)
+
+    visual_pose = _get_local_pose(root.find(".//visual/origin"))
+    collision_pose = _get_local_pose(root.find(".//collision/origin"))
 
     visual_file = os.path.join(file_dir, visual_file)
     collision_file = os.path.join(file_dir, collision_file)
-    static_fric = root.find('.//collision/gazebo/mu1').text
-    dynamic_fric = root.find('.//collision/gazebo/mu2').text
+    static_fric = root.find(".//collision/gazebo/mu1").text
+    dynamic_fric = root.find(".//collision/gazebo/mu2").text
 
     material = physx.PhysxMaterial(
         static_friction=np.clip(float(static_fric), 0.1, 0.7),
@@ -106,17 +121,27 @@ def load_actor_from_urdf(
         # decomposition_params=dict(
         #     threshold=0.05, max_convex_hull=64, verbose=False
         # ),
+        pose=collision_pose,
     )
 
-    builder.add_visual_from_file(visual_file, scale=visual_scale)
+    builder.add_visual_from_file(
+        visual_file,
+        scale=visual_scale,
+        pose=visual_pose,
+    )
+    if pose is None:
+        pose = sapien.Pose(p=[0, 0, 0], q=[1, 0, 0, 0])
+
     builder.set_initial_pose(pose)
     if isinstance(scene, ManiSkillScene) and env_idx is not None:
         builder.set_scene_idxs([env_idx])
 
-    actor = builder.build(name=f"{node_name}-{env_idx}")
+    actor = builder.build(
+        name=node_name if env_idx is None else f"{node_name}-{env_idx}"
+    )
 
     if update_mass and hasattr(actor.components[1], "mass"):
-        node_mass = float(root.find('.//inertial/mass').get("value"))
+        node_mass = float(root.find(".//inertial/mass").get("value"))
         actor.components[1].set_mass(node_mass)
 
     return actor
