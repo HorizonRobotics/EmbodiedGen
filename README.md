@@ -281,7 +281,7 @@ Example in `tests/test_examples/test_asset_converter.py`.
 | [genesis](https://github.com/Genesis-Embodied-AI/Genesis) / [sapien](https://github.com/haosulab/SAPIEN) / [isaacgym](https://github.com/isaac-sim/IsaacGymEnvs) / [pybullet](https://github.com/bulletphysics/bullet3) | EmbodiedGen generated .urdf can be used directly |
 
 
-<img src="apps/assets/simulators_collision.jpg" alt="simulators_collision" width="600">
+<img src="apps/assets/simulators_collision.jpg" alt="simulators_collision" width="500">
 
 ---
 
