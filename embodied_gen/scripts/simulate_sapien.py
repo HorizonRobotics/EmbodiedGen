@@ -49,7 +49,7 @@ class SapienSimConfig:
     sim_freq: int = 200
     sim_step: int = 400
     z_offset: float = 0.004
-    init_quat: list[float] = field(
+    init_3dgs_quat: list[float] = field(
         default_factory=lambda: [0.7071, 0, 0, 0.7071]
     )  # xyzw
     device: str = "cuda"
@@ -137,7 +137,7 @@ def entrypoint(**kwargs):
     gs_path = f"{asset_root}/{layout_data.assets[bg_node]}/gs_model.ply"
     gs_model: GaussianOperator = GaussianOperator.load_from_ply(gs_path)
     x, y, z, qx, qy, qz, qw = layout_data.position[bg_node]
-    qx, qy, qz, qw = quaternion_multiply([qx, qy, qz, qw], cfg.init_quat)
+    qx, qy, qz, qw = quaternion_multiply([qx, qy, qz, qw], cfg.init_3dgs_quat)
     init_pose = torch.tensor([x, y, z, qx, qy, qz, qw])
     gs_model = gs_model.get_gaussians(instance_pose=init_pose)
 

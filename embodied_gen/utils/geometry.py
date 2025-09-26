@@ -80,7 +80,7 @@ def pose_to_matrix(pose: list[float]) -> np.ndarray:
 
 
 def compute_xy_bbox(
-    vertices: np.ndarray, col_x: int = 0, col_y: int = 2
+    vertices: np.ndarray, col_x: int = 0, col_y: int = 1
 ) -> list[float]:
     x_vals = vertices[:, col_x]
     y_vals = vertices[:, col_y]
@@ -139,11 +139,14 @@ def compute_convex_hull_path(
     z_threshold: float = 0.05,
     interp_per_edge: int = 3,
     margin: float = -0.02,
+    x_axis: int = 0,
+    y_axis: int = 1,
+    z_axis: int = 2,
 ) -> Path:
     top_vertices = vertices[
-        vertices[:, 1] > vertices[:, 1].max() - z_threshold
+        vertices[:, z_axis] > vertices[:, z_axis].max() - z_threshold
     ]
-    top_xy = top_vertices[:, [0, 2]]
+    top_xy = top_vertices[:, [x_axis, y_axis]]
 
     if len(top_xy) < 3:
         raise ValueError("Not enough points to form a convex hull")
@@ -184,11 +187,11 @@ def all_corners_inside(hull: Path, box: list, threshold: int = 3) -> bool:
 def compute_axis_rotation_quat(
     axis: Literal["x", "y", "z"], angle_rad: float
 ) -> list[float]:
-    if axis.lower() == 'x':
+    if axis.lower() == "x":
         q = Quaternion(axis=[1, 0, 0], angle=angle_rad)
-    elif axis.lower() == 'y':
+    elif axis.lower() == "y":
         q = Quaternion(axis=[0, 1, 0], angle=angle_rad)
-    elif axis.lower() == 'z':
+    elif axis.lower() == "z":
         q = Quaternion(axis=[0, 0, 1], angle=angle_rad)
     else:
         raise ValueError(f"Unsupported axis '{axis}', must be one of x, y, z")
@@ -226,12 +229,34 @@ def bfs_placement(
     floor_margin: float = 0,
     beside_margin: float = 0.1,
     max_attempts: int = 3000,
+    init_rpy: tuple = (1.5708, 0.0, 0.0),
     rotate_objs: bool = True,
     rotate_bg: bool = True,
+    rotate_context: bool = True,
     limit_reach_range: bool = True,
     robot_dim: float = 0.12,
     seed: int = None,
 ) -> LayoutInfo:
+    """Place objects in the layout using BFS traversal.
+
+    Args:
+        layout_file: Path to the JSON file defining the layout structure and assets.
+        floor_margin: Z-offset for the background object, typically for objects placed on the floor.
+        beside_margin: Minimum margin for objects placed 'beside' their parent, used when 'on' placement fails.
+        max_attempts: Maximum number of attempts to find a non-overlapping position for an object.
+        init_rpy: Initial Roll-Pitch-Yaw rotation rad applied to all object meshes to align the mesh's
+            coordinate system with the world's (e.g., Z-up).
+        rotate_objs: If True, apply a random rotation around the Z-axis for manipulated and distractor objects.
+        rotate_bg: If True, apply a random rotation around the Y-axis for the background object.
+        rotate_context: If True, apply a random rotation around the Z-axis for the context object.
+        limit_reach_range: If True, enforce a check that manipulated objects are within the robot's reach.
+        robot_dim: The approximate dimension (e.g., diameter) of the robot for box representation.
+        seed: Random seed for reproducible placement.
+
+    Returns:
+        A :class:`LayoutInfo` object containing the objects and their final computed 7D poses
+        ([x, y, z, qx, qy, qz, qw]).
+    """
     layout_info = LayoutInfo.from_dict(json.load(open(layout_file, "r")))
     asset_dir = os.path.dirname(layout_file)
     object_mapping = layout_info.objs_mapping
@@ -259,13 +284,23 @@ def bfs_placement(
         mesh_path = os.path.join(asset_dir, mesh_path)
         mesh_info[node]["path"] = mesh_path
         mesh = trimesh.load(mesh_path)
-        vertices = mesh.vertices
-        z1 = np.percentile(vertices[:, 1], 1)
-        z2 = np.percentile(vertices[:, 1], 99)
+        rotation = R.from_euler("xyz", init_rpy, degrees=False)
+        vertices = mesh.vertices @ rotation.as_matrix().T
+        z1 = np.percentile(vertices[:, 2], 1)
+        z2 = np.percentile(vertices[:, 2], 99)
 
         if object_mapping[node] == Scene3DItemEnum.CONTEXT.value:
             object_quat = [0, 0, 0, 1]
+            if rotate_context:
+                angle_rad = np.random.uniform(0, 2 * np.pi)
+                object_quat = compute_axis_rotation_quat(
+                    axis="z", angle_rad=angle_rad
+                )
+                rotation = R.from_quat(object_quat).as_matrix()
+                vertices = vertices @ rotation.T
+
             mesh_info[node]["surface"] = compute_convex_hull_path(vertices)
+
             # Put robot in the CONTEXT edge.
             x, y = random.choice(mesh_info[node]["surface"].vertices)
             theta = np.arctan2(y, x)
@@ -288,9 +323,7 @@ def bfs_placement(
                 axis="z", angle_rad=angle_rad
             )
             rotation = R.from_quat(object_quat).as_matrix()
-            vertices = np.dot(mesh.vertices, rotation.T)
-            z1 = np.percentile(vertices[:, 1], 1)
-            z2 = np.percentile(vertices[:, 1], 99)
+            vertices = vertices @ rotation.T
 
         x1, x2, y1, y2 = compute_xy_bbox(vertices)
         mesh_info[node]["pose"] = [x1, x2, y1, y2, z1, z2, *object_quat]

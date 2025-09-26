@@ -74,7 +74,9 @@ class PickEmbodiedGen(BaseEnv):
         layout_file = kwargs.pop("layout_file", None)
         replace_objs = kwargs.pop("replace_objs", True)
         self.enable_grasp = kwargs.pop("enable_grasp", False)
-        self.init_quat = kwargs.pop("init_quat", [0.7071, 0, 0, 0.7071])
+        self.init_3dgs_quat = kwargs.pop(
+            "init_3dgs_quat", [0.7071, 0, 0, 0.7071]
+        )
         # Add small offset in z-axis to avoid collision.
         self.objs_z_offset = kwargs.pop("objs_z_offset", 0.002)
         self.robot_z_offset = kwargs.pop("robot_z_offset", 0.002)
@@ -107,7 +109,7 @@ class PickEmbodiedGen(BaseEnv):
         self.bg_images = dict()
         if self.render_mode == "hybrid":
             self.bg_images = self.render_gs3d_images(
-                self.layouts, num_envs, self.init_quat
+                self.layouts, num_envs, self.init_3dgs_quat
             )
 
     @staticmethod

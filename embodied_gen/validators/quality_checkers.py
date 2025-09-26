@@ -552,9 +552,8 @@ class SemanticMatcher(BaseChecker):
 
 
 def test_semantic_matcher(
-    bg_file: str = "outputs/bg_scenes/bg_scene_list.txt",
+    bg_file: str = "outputs/bg_scenes/scene_list.txt",
 ):
-    bg_file = "outputs/bg_scenes/bg_scene_list.txt"
     scene_dict = {}
     with open(bg_file, "r") as f:
         for line in f:

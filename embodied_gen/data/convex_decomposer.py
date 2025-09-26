@@ -37,6 +37,7 @@ def decompose_convex_coacd(
     params: dict,
     verbose: bool = False,
     auto_scale: bool = True,
+    scale_factor: float = 1.0,
 ) -> None:
     coacd.set_log_level("info" if verbose else "warn")
 
@@ -53,6 +54,7 @@ def decompose_convex_coacd(
         rescale = visual_mesh_shape / convex_mesh_shape
         combined.vertices *= rescale
 
+    combined.vertices *= scale_factor
     combined.export(outfile)
 
 
@@ -71,6 +73,7 @@ def decompose_convex_mesh(
     merge: bool = True,
     seed: int = 0,
     auto_scale: bool = True,
+    scale_factor: float = 1.005,
     verbose: bool = False,
 ) -> str:
     """Decompose a mesh into convex parts using the CoACD algorithm."""
@@ -95,7 +98,9 @@ def decompose_convex_mesh(
     )
 
     try:
-        decompose_convex_coacd(filename, outfile, params, verbose, auto_scale)
+        decompose_convex_coacd(
+            filename, outfile, params, verbose, auto_scale, scale_factor
+        )
         if os.path.exists(outfile):
             return outfile
     except Exception as e:
@@ -106,7 +111,7 @@ def decompose_convex_mesh(
         try:
             params["preprocess_mode"] = "on"
             decompose_convex_coacd(
-                filename, outfile, params, verbose, auto_scale
+                filename, outfile, params, verbose, auto_scale, scale_factor
             )
             if os.path.exists(outfile):
                 return outfile
