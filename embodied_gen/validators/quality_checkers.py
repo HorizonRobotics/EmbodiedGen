@@ -574,7 +574,7 @@ def test_semantic_matcher(
     #     "presence_penalty": 0.3,
     # }
     gpt_params = None
-    match_key = SCENE_MATCHER.query(text, str(scene_dict))
+    match_key = SCENE_MATCHER.query(text, str(scene_dict), params=gpt_params)
     print(match_key, ",", scene_dict[match_key])
 
 

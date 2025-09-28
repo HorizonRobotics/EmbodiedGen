@@ -115,7 +115,9 @@ def entrypoint() -> None:
         # Background GEN (for efficiency, temp use retrieval instead)
         bg_node = layout_info.relation[Scene3DItemEnum.BACKGROUND.value]
         text = layout_info.objs_desc[bg_node]
-        match_key = SCENE_MATCHER.query(text, str(scene_dict))
+        match_key = SCENE_MATCHER.query(
+            text, str(scene_dict), params=gpt_params
+        )
         match_scene_path = f"{os.path.dirname(args.bg_list)}/{match_key}"
         bg_save_dir = os.path.join(output_root, "background")
         copytree(match_scene_path, bg_save_dir, dirs_exist_ok=True)

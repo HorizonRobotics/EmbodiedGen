@@ -9,8 +9,8 @@ text3d-cli --prompts "small bronze figurine of a lion" \
     --n_image_retry 2 --n_asset_retry 2 --n_pipe_retry 1 --seed_img 0 \
     --output_root ${output_dir}/textto3d
 
-texture-cli --mesh_path "apps/assets/example_texture/meshes/robot_text.obj" \
---prompt "举着牌子的写实风格机器人，大眼睛，牌子上写着“Hello”的文字" \
+texture-cli --mesh_path "apps/assets/example_texture/meshes/horse.obj" \
+--prompt "A gray horse head with flying mane and brown eyes" \
 --output_root "${output_dir}/texture_gen" \
 --seed 0
 

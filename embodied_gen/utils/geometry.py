@@ -137,7 +137,7 @@ def with_seed(seed_attr_name: str = "seed"):
 def compute_convex_hull_path(
     vertices: np.ndarray,
     z_threshold: float = 0.05,
-    interp_per_edge: int = 3,
+    interp_per_edge: int = 10,
     margin: float = -0.02,
     x_axis: int = 0,
     y_axis: int = 1,
