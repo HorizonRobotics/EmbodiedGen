@@ -128,7 +128,6 @@ def entrypoint() -> None:
 
         layout_info = bfs_placement(
             layout_path,
-            limit_reach_range=True if args.insert_robot else False,
             seed=args.seed_layout,
         )
         layout_path = f"{output_root}/layout.json"

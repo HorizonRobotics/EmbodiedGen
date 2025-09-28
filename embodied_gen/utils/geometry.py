@@ -233,7 +233,8 @@ def bfs_placement(
     rotate_objs: bool = True,
     rotate_bg: bool = True,
     rotate_context: bool = True,
-    limit_reach_range: bool = True,
+    limit_reach_range: tuple[float, float] | None = (0.20, 0.85),
+    max_orient_diff: float | None = 60,
     robot_dim: float = 0.12,
     seed: int = None,
 ) -> LayoutInfo:
@@ -249,7 +250,8 @@ def bfs_placement(
         rotate_objs: If True, apply a random rotation around the Z-axis for manipulated and distractor objects.
         rotate_bg: If True, apply a random rotation around the Y-axis for the background object.
         rotate_context: If True, apply a random rotation around the Z-axis for the context object.
-        limit_reach_range: If True, enforce a check that manipulated objects are within the robot's reach.
+        limit_reach_range: If set, enforce a check that manipulated objects are within the robot's reach range, in meter.
+        max_orient_diff: If set, enforce a check that manipulated objects are within the robot's orientation range, in degree.
         robot_dim: The approximate dimension (e.g., diameter) of the robot for box representation.
         seed: Random seed for reproducible placement.
 
@@ -376,18 +378,38 @@ def bfs_placement(
                         continue
                     # Make sure the manipulated object is reachable by robot.
                     if (
-                        limit_reach_range
+                        limit_reach_range is not None
                         and object_mapping[node]
                         == Scene3DItemEnum.MANIPULATED_OBJS.value
                     ):
                         cx = parent_pos[0] + node_box[0] + obj_dx / 2
                         cy = parent_pos[1] + node_box[2] + obj_dy / 2
                         cz = parent_pos[2] + p_z2 - z1
-                        robot_pose = position[robot_node][:3]
+                        robot_pos = position[robot_node][:3]
                         if not check_reachable(
-                            base_xyz=np.array(robot_pose),
+                            base_xyz=np.array(robot_pos),
                             reach_xyz=np.array([cx, cy, cz]),
+                            min_reach=limit_reach_range[0],
+                            max_reach=limit_reach_range[1],
                         ):
+                            continue
+
+                    # Make sure the manipulated object is inside the robot's orientation.
+                    if (
+                        max_orient_diff is not None
+                        and object_mapping[node]
+                        == Scene3DItemEnum.MANIPULATED_OBJS.value
+                    ):
+                        cx = parent_pos[0] + node_box[0] + obj_dx / 2
+                        cy = parent_pos[1] + node_box[2] + obj_dy / 2
+                        cx2, cy2 = position[robot_node][:2]
+                        v1 = np.array([-cx2, -cy2])
+                        v2 = np.array([cx - cx2, cy - cy2])
+                        dot = np.dot(v1, v2)
+                        norms = np.linalg.norm(v1) * np.linalg.norm(v2)
+                        theta = np.arccos(np.clip(dot / norms, -1.0, 1.0))
+                        theta = np.rad2deg(theta)
+                        if theta > max_orient_diff:
                             continue
 
                     if not has_iou_conflict(
