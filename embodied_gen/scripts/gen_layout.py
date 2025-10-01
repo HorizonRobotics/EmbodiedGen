@@ -118,6 +118,16 @@ def entrypoint() -> None:
         match_key = SCENE_MATCHER.query(
             text, str(scene_dict), params=gpt_params
         )
+        n_max_attempt = 10
+        while match_key not in scene_dict and n_max_attempt > 0:
+            logger.error(
+                f"Cannot find matched scene {match_key}, retrying left {n_max_attempt}..."
+            )
+            match_key = SCENE_MATCHER.query(
+                text, str(scene_dict), params=gpt_params
+            )
+            n_max_attempt -= 1
+
         match_scene_path = f"{os.path.dirname(args.bg_list)}/{match_key}"
         bg_save_dir = os.path.join(output_root, "background")
         copytree(match_scene_path, bg_save_dir, dirs_exist_ok=True)

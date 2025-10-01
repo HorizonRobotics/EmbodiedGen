@@ -403,6 +403,7 @@ class MeshFixer(object):
         )
         mesh.clean(inplace=True)
         mesh.clear_data()
+        mesh = mesh.triangulate()
         mesh = mesh.decimate(ratio, progress_bar=True)
 
         # Update vertices and faces

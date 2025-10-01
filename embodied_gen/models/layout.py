@@ -81,6 +81,7 @@ LAYOUT_DISASSEMBLE_PROMPT = f"""
     - Containers that hold objects (e.g., "bowl of apples", "box of tools") must
         be separated into individual items (e.g., ["bowl", "apple1", "apple2"]).
     - Do not include transparent objects such as "glass", "plastic", etc.
+    - All {Scene3DItemEnum.MANIPULATED_OBJS} and {Scene3DItemEnum.DISTRACTOR_OBJS} must be child node of {Scene3DItemEnum.CONTEXT}.
     - The output must be in compact JSON format and use Markdown syntax, just like the output in the example below.
 
     Examples:

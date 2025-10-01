@@ -513,21 +513,23 @@ class SemanticMatcher(BaseChecker):
             - If there are fewer than <return_num> distinct relevant matches, repeat the closest ones to make a list of <return_num>.
             - Only output the list of <return_num> scene IDs, sorted from most to less similar.
             - Do NOT use markdown, JSON code blocks, or any formatting syntax, only return a plain list like ["id1", ...].
+            - The returned scene ID must exist in the dictionary and be in exactly the same format. For example,
+                if the key in the dictionary is "scene_0040", return "scene_0040"; if it is "scene_040", return "scene_040".
 
             Input example:
             Dictionary:
             "{{
-            "t_scene_008": "A study room with full bookshelves and a lamp in the corner.",
+            "t_scene_0008": "A study room with full bookshelves and a lamp in the corner.",
             "t_scene_019": "A child's bedroom with pink walls and a small desk.",
             "t_scene_020": "A living room with a wooden floor.",
             "t_scene_021": "A living room with toys scattered on the floor.",
             ...
-            "t_scene_office_001": "A very spacious, modern open-plan office with wide desks and no people, panoramic view."
+            "t_scene_office_0001": "A very spacious, modern open-plan office with wide desks and no people, panoramic view."
             }}"
             Text:
             "A traditional indoor room"
             Output:
-            '["t_scene_office_001", ...]'
+            '["t_scene_office_0001", ...]'
 
             Input:
             Dictionary:
