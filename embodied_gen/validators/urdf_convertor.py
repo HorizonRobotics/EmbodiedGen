@@ -282,16 +282,12 @@ class URDFGenerator(object):
                     d_params = dict(
                         threshold=0.05, max_convex_hull=100, verbose=False
                     )
-                    filename = f"{os.path.splitext(obj_name)[0]}_collision.ply"
+                    filename = f"{os.path.splitext(obj_name)[0]}_collision.obj"
                     output_path = os.path.join(mesh_folder, filename)
                     decompose_convex_mesh(
                         mesh_output_path, output_path, **d_params
                     )
-                    obj_filename = filename.replace(".ply", ".obj")
-                    trimesh.load(output_path).export(
-                        f"{mesh_folder}/{obj_filename}"
-                    )
-                    collision_mesh = f"{self.output_mesh_dir}/{obj_filename}"
+                    collision_mesh = f"{self.output_mesh_dir}/{filename}"
                 except Exception as e:
                     logger.warning(
                         f"Convex decomposition failed for {output_path}, {e}."

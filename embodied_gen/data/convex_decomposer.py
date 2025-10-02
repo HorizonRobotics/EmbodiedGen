@@ -45,16 +45,23 @@ def decompose_convex_coacd(
     mesh = coacd.Mesh(mesh.vertices, mesh.faces)
 
     result = coacd.run_coacd(mesh, **params)
-    combined = sum([trimesh.Trimesh(*m) for m in result])
+
+    meshes = []
+    for v, f in result:
+        meshes.append(trimesh.Trimesh(v, f))
 
     # Compute collision_scale because convex decomposition usually makes the mesh larger.
     if auto_scale:
-        convex_mesh_shape = np.ptp(combined.vertices, axis=0)
+        all_mesh = sum([trimesh.Trimesh(*m) for m in result])
+        convex_mesh_shape = np.ptp(all_mesh.vertices, axis=0)
         visual_mesh_shape = np.ptp(mesh.vertices, axis=0)
-        rescale = visual_mesh_shape / convex_mesh_shape
-        combined.vertices *= rescale
+        scale_factor *= visual_mesh_shape / convex_mesh_shape
 
-    combined.vertices *= scale_factor
+    combined = trimesh.Scene()
+    for mesh_part in meshes:
+        mesh_part.vertices *= scale_factor
+        combined.add_geometry(mesh_part)
+
     combined.export(outfile)
 
 
