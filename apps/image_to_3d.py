@@ -21,18 +21,16 @@ os.environ["GRADIO_APP"] = "imageto3d"
 from glob import glob
 
 import gradio as gr
+from app_style import custom_theme, image_css, lighting_css
 from common import (
     MAX_SEED,
     VERSION,
     active_btn_by_content,
-    custom_theme,
     end_session,
     extract_3d_representations_v2,
     extract_urdf,
     get_seed,
-    image_css,
     image_to_3d,
-    lighting_css,
     preprocess_image_fn,
     preprocess_sam_image_fn,
     select_point,
