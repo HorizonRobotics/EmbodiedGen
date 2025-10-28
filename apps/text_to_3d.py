@@ -21,20 +21,18 @@ os.environ["GRADIO_APP"] = "textto3d"
 
 
 import gradio as gr
+from app_style import custom_theme, image_css, lighting_css
 from common import (
     MAX_SEED,
     VERSION,
     active_btn_by_text_content,
-    custom_theme,
     end_session,
     extract_3d_representations_v2,
     extract_urdf,
     get_cached_image,
     get_seed,
     get_selected_image,
-    image_css,
     image_to_3d,
-    lighting_css,
     start_session,
     text2image_fn,
 )

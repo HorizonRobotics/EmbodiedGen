@@ -19,18 +19,16 @@ import os
 
 os.environ["GRADIO_APP"] = "texture_edit"
 import gradio as gr
+from app_style import custom_theme, image_css, lighting_css
 from common import (
     MAX_SEED,
     VERSION,
     backproject_texture_v2,
-    custom_theme,
     end_session,
     generate_condition,
     generate_texture_mvimages,
     get_seed,
     get_selected_image,
-    image_css,
-    lighting_css,
     render_result_video,
     start_session,
 )

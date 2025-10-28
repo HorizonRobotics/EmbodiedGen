@@ -30,8 +30,6 @@ import torch
 import torch.nn.functional as F
 import trimesh
 from easydict import EasyDict as edict
-from gradio.themes import Soft
-from gradio.themes.utils.colors import gray, neutral, slate, stone, teal, zinc
 from PIL import Image
 from embodied_gen.data.backproject_v2 import entrypoint as backproject_api
 from embodied_gen.data.differentiable_render import entrypoint as render_api
@@ -151,6 +149,7 @@ if os.getenv("GRADIO_APP") == "imageto3d":
     TMP_DIR = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "sessions/imageto3d"
     )
+    os.makedirs(TMP_DIR, exist_ok=True)
 elif os.getenv("GRADIO_APP") == "textto3d":
     RBG_REMOVER = RembgRemover()
     RBG14_REMOVER = BMGG14Remover()
@@ -168,6 +167,7 @@ elif os.getenv("GRADIO_APP") == "textto3d":
     TMP_DIR = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "sessions/textto3d"
     )
+    os.makedirs(TMP_DIR, exist_ok=True)
 elif os.getenv("GRADIO_APP") == "texture_edit":
     PIPELINE_IP = build_texture_gen_pipe(
         base_ckpt_dir="./weights",
@@ -182,34 +182,7 @@ elif os.getenv("GRADIO_APP") == "texture_edit":
     TMP_DIR = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "sessions/texture_edit"
     )
-
-os.makedirs(TMP_DIR, exist_ok=True)
-
-
-lighting_css = """
-<style>
-#lighter_mesh canvas {
-    filter: brightness(1.9) !important;
-}
-</style>
-"""
-
-image_css = """
-<style>
-.image_fit .image-frame {
-object-fit: contain !important;
-height: 100% !important;
-}
-</style>
-"""
-
-custom_theme = Soft(
-    primary_hue=stone,
-    secondary_hue=gray,
-    radius_size="md",
-    text_size="sm",
-    spacing_size="sm",
-)
+    os.makedirs(TMP_DIR, exist_ok=True)
 
 
 def start_session(req: gr.Request) -> None:

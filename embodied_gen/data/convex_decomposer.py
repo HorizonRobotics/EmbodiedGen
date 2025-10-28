@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 __all__ = [
     "decompose_convex_coacd",
     "decompose_convex_mesh",
-    "decompose_convex_process",
+    "decompose_convex_mp",
 ]
 
 

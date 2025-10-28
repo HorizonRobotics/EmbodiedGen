@@ -56,6 +56,8 @@ def entrypoint(**kwargs):
     for key in layout_info.assets:
         src = f"{origin_dir}/{layout_info.assets[key]}"
         dst = f"{output_dir}/{layout_info.assets[key]}"
+        if src == dst:
+            continue
         shutil.copytree(src, dst, dirs_exist_ok=True)
 
     with open(out_layout_path, "w") as f:
