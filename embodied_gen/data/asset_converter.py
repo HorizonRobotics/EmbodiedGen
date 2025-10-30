@@ -751,7 +751,7 @@ if __name__ == "__main__":
 
     if target_asset_type == AssetType.MJCF:
         output_files = [
-            "outputs/embodiedgen_assets/demo_assets/demo_assets/remote_control/mjcf/remote_control.mjcf",
+            "outputs/embodiedgen_assets/demo_assets/demo_assets/remote_control/mjcf/remote_control.xml",
         ]
         asset_converter = AssetConverterFactory.create(
             target_type=AssetType.MJCF,
@@ -785,7 +785,7 @@ if __name__ == "__main__":
 
     # # Convert infinigen urdf to mjcf
     # urdf_path = "/home/users/xinjie.wang/xinjie/infinigen/outputs/exports/kitchen_i_urdf/export_scene/scene.urdf"
-    # output_file = "/home/users/xinjie.wang/xinjie/infinigen/outputs/exports/kitchen_i_urdf/mjcf/scene.mjcf"
+    # output_file = "/home/users/xinjie.wang/xinjie/infinigen/outputs/exports/kitchen_i_urdf/mjcf/scene.xml"
     # asset_converter = AssetConverterFactory.create(
     #     target_type=AssetType.MJCF,
     #     source_type=AssetType.URDF,

@@ -9,6 +9,9 @@
 [![中文介绍](https://img.shields.io/badge/中文介绍-07C160?logo=wechat&logoColor=white)](https://mp.weixin.qq.com/s/HH1cPBhK2xcDbyCK4BBTbw)
 
 
+[![🤗 Hugging Face](https://img.shields.io/badge/🤗-EmbodiedGen_Asset_Gallery-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Gallery-Explorer)
+
+
 > ***EmbodiedGen*** is a generative engine to create diverse and interactive 3D worlds composed of high-quality 3D assets(mesh & 3DGS) with plausible physics, leveraging generative AI to address the challenges of generalization in embodied intelligence related research.
 > It composed of six key modules: `Image-to-3D`, `Text-to-3D`, `Texture Generation`, `Articulated Object Generation`, `Scene Generation` and `Layout Generation`.
 
@@ -61,6 +64,10 @@ You can choose between two backends for the GPT agent:
 - **`gpt-4o`** (Recommended) – Use this if you have access to **Azure OpenAI**.
 - **`qwen2.5-vl`** – An alternative with free usage via OpenRouter, apply a free key [here](https://openrouter.ai/settings/keys) and update `api_key` in `embodied_gen/utils/gpt_config.yaml` (50 free requests per day)
 
+
+### 📸 Directly use EmbodiedGen All-Simulators-Ready Assets
+
+Explore EmbodiedGen generated assets in [![🤗 Hugging Face](https://img.shields.io/badge/🤗-EmbodiedGen_Asset_Gallery-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Gallery-Explorer) that are ready for simulation across any simulators (SAPIEN, Isaac Sim, MuJoCo, PyBullet, Genesis, Isaac Gym etc.). Details in chapter [any-simulators](#any-simulators).
 
 ---
 
