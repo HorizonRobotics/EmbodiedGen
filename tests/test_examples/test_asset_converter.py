@@ -23,7 +23,7 @@ def test_MeshtoMJCFConverter(data_dir):
     assert urdf_path.exists(), f"URDF not found: {urdf_path}"
 
     output_file = (
-        data_dir / "demo_assets/remote_control/mjcf/remote_control.mjcf"
+        data_dir / "demo_assets/remote_control/mjcf/remote_control.xml"
     )
     asset_converter = AssetConverterFactory.create(
         target_type=AssetType.MJCF,
