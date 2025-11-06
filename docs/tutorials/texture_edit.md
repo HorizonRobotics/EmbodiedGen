@@ -16,8 +16,19 @@
       noSwipingClass: 'swiper-no-swiping',
       watchSlidesProgress: true,
     });
+    const modelViewers = document.querySelectorAll('model-viewer');
+    let loadedCount = 0;
+    modelViewers.forEach(mv => {
+      mv.addEventListener('load', () => {
+        loadedCount++;
+        if (loadedCount === modelViewers.length) {
+          swiper.update();
+        }
+      });
+    });
   });
 </script>
+
 
 # 🎨 Texture Generation: Create Visually Rich Textures for 3D Meshes
 
