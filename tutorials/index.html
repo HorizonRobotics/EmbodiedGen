@@ -1349,6 +1349,16 @@
       noSwipingClass: 'swiper-no-swiping',
       watchSlidesProgress: true,
     });
+    const modelViewers = document.querySelectorAll('model-viewer');
+    let loadedCount = 0;
+    modelViewers.forEach(mv => {
+      mv.addEventListener('load', () => {
+        loadedCount++;
+        if (loadedCount === modelViewers.length) {
+          swiper.update();
+        }
+      });
+    });
   });
 </script>
 
@@ -1466,24 +1476,24 @@
 <hr />
 <h2 id="3d-scene-generation"><a href="scene_gen/">🌍 3D Scene Generation</a></h2>
 <p>Generate <strong>physically consistent and visually coherent 3D environments</strong> from text prompts. Typically used as <strong>background</strong> 3DGS scenes in simulators for efficient and photo-realistic rendering.</p>
-<p><img src="assets/scene3d.gif" style="width: 500px; max-width: 100%; border-radius: 12px; display: block; margin: 16px auto;"></p>
+<p><img src="/EmbodiedGen/scene3d.gif" style="width: 500px; max-width: 100%; border-radius: 12px; display: block; margin: 16px auto;"></p>
 <hr />
 <h2 id="layout-generation"><a href="layout_gen/">🏞️ Layout Generation</a></h2>
 <p>Generate diverse, physically realistic, and scalable <strong>interactive 3D scenes</strong> from natural language task descriptions, while also modeling the robot and manipulable objects.</p>
 <div align="center" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; justify-items: center; margin: 20px 0;">
-  <img src="assets/layout1.gif" alt="layout1" style="width: 400px; border-radius: 12px; display: block;">
-  <img src="assets/layout2.gif" alt="layout2" style="width: 400px; border-radius: 12px; display: block;">
-  <img src="assets/layout3.gif" alt="layout3" style="width: 400px; border-radius: 12px; display: block;">
-  <img src="assets/Iscene_demo2.gif" alt="layout4" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="/EmbodiedGen/layout1.gif" alt="layout1" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="/EmbodiedGen/layout2.gif" alt="layout2" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="/EmbodiedGen/layout3.gif" alt="layout3" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="/EmbodiedGen/Iscene_demo2.gif" alt="layout4" style="width: 400px; border-radius: 12px; display: block;">
 </div>
 
 <hr />
 <h2 id="parallel-simulation"><a href="gym_env/">🏎️ Parallel Simulation</a></h2>
 <p>Generate multiple <strong>parallel simulation environments</strong> with <code>gym.make</code> and record sensor and trajectory data.</p>
 <div style="display: flex; justify-content: center; align-items: center; gap: 16px; margin: 16px 0;">
-  <img src="assets/parallel_sim.gif" alt="parallel_sim1"
+  <img src="/EmbodiedGen/parallel_sim.gif" alt="parallel_sim1"
        style="width: 330px; max-width: 100%; border-radius: 12px; display: block;">
-  <img src="assets/parallel_sim2.gif" alt="parallel_sim2"
+  <img src="/EmbodiedGen/parallel_sim2.gif" alt="parallel_sim2"
        style="width: 330px; max-width: 100%; border-radius: 12px; display: block;">
 </div>
 
@@ -1491,12 +1501,12 @@
 <h2 id="use-in-any-simulator"><a href="any_simulators/">🎮 Use in Any Simulator</a></h2>
 <p>Seamlessly use EmbodiedGen-generated assets in major simulators like <strong>IsaacSim</strong>, <strong>MuJoCo</strong>, <strong>Genesis</strong>, <strong>PyBullet</strong>, <strong>IsaacGym</strong>, and <strong>SAPIEN</strong>, featuring <strong>accurate physical collisions</strong> and <strong>consistent visual appearance</strong>.</p>
 <div align="center">
-  <img src="assets/simulators_collision.jpg" alt="simulators_collision" style="width: 400px; max-width: 100%; border-radius: 12px; display: block; margin: 16px 0;">
+  <img src="/EmbodiedGen/simulators_collision.jpg" alt="simulators_collision" style="width: 400px; max-width: 100%; border-radius: 12px; display: block; margin: 16px 0;">
 </div>
 
 <h2 id="real-to-sim-digital-twin-creation"><a href="digital_twin/">🔧 Real-to-Sim Digital Twin Creation</a></h2>
 <div align="center">
-  <img src="assets/real2sim_mujoco.gif" alt="real2sim_mujoco" style="width: 400px; max-width: 100%; border-radius: 12px; display: block; margin: 16px 0;">
+  <img src="/EmbodiedGen/real2sim_mujoco.gif" alt="real2sim_mujoco" style="width: 400px; max-width: 100%; border-radius: 12px; display: block; margin: 16px 0;">
 </div>
 
 
@@ -1520,7 +1530,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 6, 2025 06:11:35 UTC">November 6, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 6, 2025 08:00:24 UTC">November 6, 2025</span>
   </span>
 
     
