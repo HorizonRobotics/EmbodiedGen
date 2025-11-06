@@ -69,7 +69,7 @@ You can choose between two backends for the GPT agent:
 
 ### 📸 Directly use EmbodiedGen All-Simulators-Ready Assets
 
-Explore EmbodiedGen generated assets in [![🤗 Hugging Face](https://img.shields.io/badge/🤗-EmbodiedGen_Asset_Gallery-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Gallery-Explorer) that are ready for simulation across any simulators (SAPIEN, Isaac Sim, MuJoCo, PyBullet, Genesis, Isaac Gym etc.). Details in chapter [any-simulators](#any-simulators).
+[![🤗 Hugging Face](https://img.shields.io/badge/🤗-EmbodiedGen_Asset_Gallery-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Gallery-Explorer) Explore EmbodiedGen generated assets that are ready for simulation across any simulators (SAPIEN, Isaac Sim, MuJoCo, PyBullet, Genesis, Isaac Gym etc.). Details in chapter [any-simulators](#any-simulators).
 
 ---
 
