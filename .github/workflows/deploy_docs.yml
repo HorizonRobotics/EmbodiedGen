@@ -3,7 +3,7 @@ name: Deploy MkDocs Documentation
 on:
   push:
     branches:
-      - master
+      - feat-docs-mkdoc
 
 permissions:
   contents: write
