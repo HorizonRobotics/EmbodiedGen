@@ -3,7 +3,7 @@ hide:
   - navigation
 ---
 
-# 👋 Welcome to EmbodiedGen
+# 👋 Welcome to EmbodiedGenxxxx
 
 [![🌐 Project Page](https://img.shields.io/badge/🌐-Project_Page-blue)](https://horizonrobotics.github.io/robot_lab/embodied_gen/index.html)
 [![📄 arXiv](https://img.shields.io/badge/📄-arXiv-b31b1b)](https://arxiv.org/abs/2506.10600)
