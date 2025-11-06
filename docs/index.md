@@ -3,7 +3,7 @@ hide:
   - navigation
 ---
 
-# 👋 Welcome to EmbodiedGenxxxx
+# 👋 Welcome to EmbodiedGen
 
 [![🌐 Project Page](https://img.shields.io/badge/🌐-Project_Page-blue)](https://horizonrobotics.github.io/robot_lab/embodied_gen/index.html)
 [![📄 arXiv](https://img.shields.io/badge/📄-arXiv-b31b1b)](https://arxiv.org/abs/2506.10600)
@@ -14,7 +14,7 @@ hide:
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Asset_Gallery-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Gallery-Explorer)
 [![中文介绍](https://img.shields.io/badge/中文介绍-07C160?logo=wechat&logoColor=white)](https://mp.weixin.qq.com/s/HH1cPBhK2xcDbyCK4BBTbw)
 
-*EmbodiedGen*: Towards a Generative 3D World Engine for Embodied Intelligence
+*EmbodiedGen*: Towards a Generative 3D World Engine for Embodied Intelligence.
 
 <img src="assets/overall.jpg" alt="Overall Framework" width="700"/>
 
