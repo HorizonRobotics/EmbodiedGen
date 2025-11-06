@@ -1,0 +1,3410 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://horizonrobotics.github.io/EmbodiedGen/api/models/">
+      
+      
+        <link rel="prev" href="../envs/">
+      
+      
+        <link rel="next" href="../trainer/">
+      
+      
+      <link rel="icon" href="../../assets/logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Models - Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="brown" data-md-color-accent="red">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#models-api" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Documentation" class="md-header__button md-logo" aria-label="Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Models
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="brown" data-md-color-accent="red"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="brown" data-md-color-accent="red"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/HorizonRobotics/EmbodiedGen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    EmbodiedGen
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  🏠 Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../install/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🚀 Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../services/" class="md-tabs__link">
+          
+  
+  
+  🧩 Services
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/" class="md-tabs__link">
+          
+  
+  
+  📘 Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  📚 API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../acknowledgement/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  ✨ Acknowledgement
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Documentation" class="md-nav__button md-logo" aria-label="Documentation" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/HorizonRobotics/EmbodiedGen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    EmbodiedGen
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    🏠 Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    🚀 Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    🧩 Services
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            🧩 Services
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/image_to_3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Image-to-3D
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/text_to_3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text-to-3D
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/texture_edit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Texture Generation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../services/visualize_asset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Asset Visualizer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    📘 Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            📘 Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/image_to_3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Image-to-3D
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/text_to_3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text-to-3D
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/texture_edit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Texture Generation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/scene_gen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Scene Generation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/layout_gen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Interactive 3D Scenes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/gym_env/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gym Parallel Envs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/any_simulators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Any Simulators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/digital_twin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Digital Twin Creation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    📚 API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            📚 API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Data
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../envs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Envs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Models
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Models
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.texture_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      texture_model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="texture_model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.texture_model.build_texture_gen_pipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      build_texture_gen_pipe
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.gs_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      gs_model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="gs_model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.gs_model.GaussianOperator" class="md-nav__link">
+    <span class="md-ellipsis">
+      GaussianOperator
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GaussianOperator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.gs_model.GaussianOperator.get_gaussians" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_gaussians
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      layout
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.text_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      text_model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.sr_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      sr_model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="sr_model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.sr_model.ImageRealESRGAN" class="md-nav__link">
+    <span class="md-ellipsis">
+      ImageRealESRGAN
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.sr_model.ImageStableSR" class="md-nav__link">
+    <span class="md-ellipsis">
+      ImageStableSR
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.segment_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      segment_model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="segment_model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.segment_model.SAMRemover" class="md-nav__link">
+    <span class="md-ellipsis">
+      SAMRemover
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SAMRemover">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.segment_model.SAMRemover.__call__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __call__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.image_comm_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      image_comm_model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.delight_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      delight_model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="delight_model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.delight_model.DelightingModel" class="md-nav__link">
+    <span class="md-ellipsis">
+      DelightingModel
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trainer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Trainer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Utilities
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Validators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../acknowledgement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ✨ Acknowledgement
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.texture_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      texture_model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="texture_model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.texture_model.build_texture_gen_pipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      build_texture_gen_pipe
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.gs_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      gs_model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="gs_model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.gs_model.GaussianOperator" class="md-nav__link">
+    <span class="md-ellipsis">
+      GaussianOperator
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GaussianOperator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.gs_model.GaussianOperator.get_gaussians" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_gaussians
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      layout
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.text_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      text_model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.sr_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      sr_model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="sr_model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.sr_model.ImageRealESRGAN" class="md-nav__link">
+    <span class="md-ellipsis">
+      ImageRealESRGAN
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.sr_model.ImageStableSR" class="md-nav__link">
+    <span class="md-ellipsis">
+      ImageStableSR
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.segment_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      segment_model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="segment_model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.segment_model.SAMRemover" class="md-nav__link">
+    <span class="md-ellipsis">
+      SAMRemover
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SAMRemover">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.segment_model.SAMRemover.__call__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __call__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.image_comm_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      image_comm_model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#embodied_gen.models.delight_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      delight_model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="delight_model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#embodied_gen.models.delight_model.DelightingModel" class="md-nav__link">
+    <span class="md-ellipsis">
+      DelightingModel
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/HorizonRobotics/EmbodiedGen/edit/master/docs/api/models.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="models-api">Models API</h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<h3 id="embodied_gen.models.texture_model" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">embodied_gen.models.texture_model</span>
+
+
+</h3>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="embodied_gen.models.texture_model.build_texture_gen_pipe" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">build_texture_gen_pipe</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">build_texture_gen_pipe</span><span class="p">(</span><span class="n">base_ckpt_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">controlnet_ckpt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ip_adapt_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DiffusionPipeline</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Build and initialize the Kolors + ControlNet (optional IP-Adapter) texture generation pipeline.</p>
+<p>Loads Kolors tokenizer, text encoder (ChatGLM), VAE, UNet, scheduler and (optionally)
+a ControlNet checkpoint plus IP-Adapter vision encoder. If <code>controlnet_ckpt</code> is
+not provided, the default multi-view texture ControlNet weights are downloaded
+automatically from the hub. When <code>ip_adapt_scale &gt; 0</code> an IP-Adapter vision
+encoder and its weights are also loaded and activated.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>base_ckpt_dir</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Root directory where Kolors (and optionally Kolors-IP-Adapter-Plus) weights
+are or will be stored. Required subfolders: <code>Kolors/{text_encoder,vae,unet,scheduler}</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>controlnet_ckpt</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Directory containing a ControlNet checkpoint (safetensors). If <code>None</code>,
+downloads the default <code>texture_gen_mv_v1</code> snapshot.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>ip_adapt_scale</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Strength (&gt;=0) of IP-Adapter conditioning. Set &gt;0 to enable IP-Adapter;
+typical values: 0.4-0.8. Default: 0 (disabled).</p>
+              </div>
+            </td>
+            <td>
+                  <code>0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>device</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Target device to move the pipeline to (e.g. <code>"cuda"</code>, <code>"cuda:0"</code>, <code>"cpu"</code>).
+Default: <code>"cuda"</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;cuda&#39;</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>DiffusionPipeline</code></td>            <td>
+                  <code><span title="diffusers.DiffusionPipeline">DiffusionPipeline</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A configured</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td></td>            <td>
+                  <code><span title="diffusers.DiffusionPipeline">DiffusionPipeline</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>StableDiffusionXLControlNetImg2ImgPipeline</code> ready for multi-view texture</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td></td>            <td>
+                  <code><span title="diffusers.DiffusionPipeline">DiffusionPipeline</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>generation (with optional IP-Adapter support).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <p>Initialize pipeline with IP-Adapter enabled.
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">embodied_gen.models.texture_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_texture_gen_pipe</span>
+<span class="n">ip_adapt_scale</span> <span class="o">=</span> <span class="mf">0.7</span>
+<span class="n">PIPELINE</span> <span class="o">=</span> <span class="n">build_texture_gen_pipe</span><span class="p">(</span>
+    <span class="n">base_ckpt_dir</span><span class="o">=</span><span class="s2">&quot;./weights&quot;</span><span class="p">,</span>
+    <span class="n">ip_adapt_scale</span><span class="o">=</span><span class="n">ip_adapt_scale</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">PIPELINE</span><span class="o">.</span><span class="n">set_ip_adapter_scale</span><span class="p">([</span><span class="n">ip_adapt_scale</span><span class="p">])</span>
+</code></pre></div>
+Initialize pipeline without IP-Adapter.
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">embodied_gen.models.texture_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_texture_gen_pipe</span>
+<span class="n">PIPELINE</span> <span class="o">=</span> <span class="n">build_texture_gen_pipe</span><span class="p">(</span>
+    <span class="n">base_ckpt_dir</span><span class="o">=</span><span class="s2">&quot;./weights&quot;</span><span class="p">,</span>
+    <span class="n">ip_adapt_scale</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></p>
+</details>
+
+            <details class="quote">
+              <summary>Source code in <code>embodied_gen/models/texture_model.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_texture_gen_pipe</span><span class="p">(</span>
+    <span class="n">base_ckpt_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">controlnet_ckpt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ip_adapt_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DiffusionPipeline</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build and initialize the Kolors + ControlNet (optional IP-Adapter) texture generation pipeline.</span>
+
+<span class="sd">    Loads Kolors tokenizer, text encoder (ChatGLM), VAE, UNet, scheduler and (optionally)</span>
+<span class="sd">    a ControlNet checkpoint plus IP-Adapter vision encoder. If ``controlnet_ckpt`` is</span>
+<span class="sd">    not provided, the default multi-view texture ControlNet weights are downloaded</span>
+<span class="sd">    automatically from the hub. When ``ip_adapt_scale &gt; 0`` an IP-Adapter vision</span>
+<span class="sd">    encoder and its weights are also loaded and activated.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base_ckpt_dir (str):</span>
+<span class="sd">            Root directory where Kolors (and optionally Kolors-IP-Adapter-Plus) weights</span>
+<span class="sd">            are or will be stored. Required subfolders: ``Kolors/{text_encoder,vae,unet,scheduler}``.</span>
+<span class="sd">        controlnet_ckpt (str, optional):</span>
+<span class="sd">            Directory containing a ControlNet checkpoint (safetensors). If ``None``,</span>
+<span class="sd">            downloads the default ``texture_gen_mv_v1`` snapshot.</span>
+<span class="sd">        ip_adapt_scale (float, optional):</span>
+<span class="sd">            Strength (&gt;=0) of IP-Adapter conditioning. Set &gt;0 to enable IP-Adapter;</span>
+<span class="sd">            typical values: 0.4-0.8. Default: 0 (disabled).</span>
+<span class="sd">        device (str, optional):</span>
+<span class="sd">            Target device to move the pipeline to (e.g. ``&quot;cuda&quot;``, ``&quot;cuda:0&quot;``, ``&quot;cpu&quot;``).</span>
+<span class="sd">            Default: ``&quot;cuda&quot;``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DiffusionPipeline: A configured</span>
+<span class="sd">        ``StableDiffusionXLControlNetImg2ImgPipeline`` ready for multi-view texture</span>
+<span class="sd">        generation (with optional IP-Adapter support).</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        Initialize pipeline with IP-Adapter enabled.</span>
+<span class="sd">        ```python</span>
+<span class="sd">        from embodied_gen.models.texture_model import build_texture_gen_pipe</span>
+<span class="sd">        ip_adapt_scale = 0.7</span>
+<span class="sd">        PIPELINE = build_texture_gen_pipe(</span>
+<span class="sd">            base_ckpt_dir=&quot;./weights&quot;,</span>
+<span class="sd">            ip_adapt_scale=ip_adapt_scale,</span>
+<span class="sd">            device=&quot;cuda&quot;,</span>
+<span class="sd">        )</span>
+<span class="sd">        PIPELINE.set_ip_adapter_scale([ip_adapt_scale])</span>
+<span class="sd">        ```</span>
+<span class="sd">        Initialize pipeline without IP-Adapter.</span>
+<span class="sd">        ```python</span>
+<span class="sd">        from embodied_gen.models.texture_model import build_texture_gen_pipe</span>
+<span class="sd">        PIPELINE = build_texture_gen_pipe(</span>
+<span class="sd">            base_ckpt_dir=&quot;./weights&quot;,</span>
+<span class="sd">            ip_adapt_scale=0,</span>
+<span class="sd">            device=&quot;cuda&quot;,</span>
+<span class="sd">        )</span>
+<span class="sd">        ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">download_kolors_weights</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_ckpt_dir</span><span class="si">}</span><span class="s2">/Kolors&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Load Kolors weights...&quot;</span><span class="p">)</span>
+    <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">ChatGLMTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_ckpt_dir</span><span class="si">}</span><span class="s2">/Kolors/text_encoder&quot;</span>
+    <span class="p">)</span>
+    <span class="n">text_encoder</span> <span class="o">=</span> <span class="n">ChatGLMModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_ckpt_dir</span><span class="si">}</span><span class="s2">/Kolors/text_encoder&quot;</span><span class="p">,</span> <span class="n">torch_dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">half</span><span class="p">()</span>
+    <span class="n">vae</span> <span class="o">=</span> <span class="n">AutoencoderKL</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_ckpt_dir</span><span class="si">}</span><span class="s2">/Kolors/vae&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">half</span><span class="p">()</span>
+    <span class="n">unet</span> <span class="o">=</span> <span class="n">UNet2DConditionModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_ckpt_dir</span><span class="si">}</span><span class="s2">/Kolors/unet&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">half</span><span class="p">()</span>
+    <span class="n">scheduler</span> <span class="o">=</span> <span class="n">EulerDiscreteScheduler</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_ckpt_dir</span><span class="si">}</span><span class="s2">/Kolors/scheduler&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">controlnet_ckpt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;texture_gen_mv_v1&quot;</span>  <span class="c1"># &quot;geo_cond_mv&quot;</span>
+        <span class="n">model_path</span> <span class="o">=</span> <span class="n">snapshot_download</span><span class="p">(</span>
+            <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;xinjjj/RoboAssetGen&quot;</span><span class="p">,</span> <span class="n">allow_patterns</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">/*&quot;</span>
+        <span class="p">)</span>
+        <span class="n">controlnet_ckpt</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+
+    <span class="n">controlnet</span> <span class="o">=</span> <span class="n">ControlNetModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="n">controlnet_ckpt</span><span class="p">,</span> <span class="n">use_safetensors</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">half</span><span class="p">()</span>
+
+    <span class="c1"># IP-Adapter model</span>
+    <span class="n">image_encoder</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">clip_image_processor</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">ip_adapt_scale</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">image_encoder</span> <span class="o">=</span> <span class="n">CLIPVisionModelWithProjection</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_ckpt_dir</span><span class="si">}</span><span class="s2">/Kolors-IP-Adapter-Plus/image_encoder&quot;</span><span class="p">,</span>
+            <span class="c1"># ignore_mismatched_sizes=True,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">)</span>
+        <span class="n">ip_img_size</span> <span class="o">=</span> <span class="mi">336</span>
+        <span class="n">clip_image_processor</span> <span class="o">=</span> <span class="n">CLIPImageProcessor</span><span class="p">(</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">ip_img_size</span><span class="p">,</span> <span class="n">crop_size</span><span class="o">=</span><span class="n">ip_img_size</span>
+        <span class="p">)</span>
+
+    <span class="n">pipe</span> <span class="o">=</span> <span class="n">StableDiffusionXLControlNetImg2ImgPipeline</span><span class="p">(</span>
+        <span class="n">vae</span><span class="o">=</span><span class="n">vae</span><span class="p">,</span>
+        <span class="n">controlnet</span><span class="o">=</span><span class="n">controlnet</span><span class="p">,</span>
+        <span class="n">text_encoder</span><span class="o">=</span><span class="n">text_encoder</span><span class="p">,</span>
+        <span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span>
+        <span class="n">unet</span><span class="o">=</span><span class="n">unet</span><span class="p">,</span>
+        <span class="n">scheduler</span><span class="o">=</span><span class="n">scheduler</span><span class="p">,</span>
+        <span class="n">image_encoder</span><span class="o">=</span><span class="n">image_encoder</span><span class="p">,</span>
+        <span class="n">feature_extractor</span><span class="o">=</span><span class="n">clip_image_processor</span><span class="p">,</span>
+        <span class="n">force_zeros_for_empty_prompt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ip_adapt_scale</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">unet</span><span class="p">,</span> <span class="s2">&quot;encoder_hid_proj&quot;</span><span class="p">):</span>
+            <span class="n">pipe</span><span class="o">.</span><span class="n">unet</span><span class="o">.</span><span class="n">text_encoder_hid_proj</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">unet</span><span class="o">.</span><span class="n">encoder_hid_proj</span>
+        <span class="n">pipe</span><span class="o">.</span><span class="n">load_ip_adapter</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_ckpt_dir</span><span class="si">}</span><span class="s2">/Kolors-IP-Adapter-Plus&quot;</span><span class="p">,</span>
+            <span class="n">subfolder</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">weight_name</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ip_adapter_plus_general.bin&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">pipe</span><span class="o">.</span><span class="n">set_ip_adapter_scale</span><span class="p">([</span><span class="n">ip_adapt_scale</span><span class="p">])</span>
+
+    <span class="n">pipe</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">pipe</span><span class="o">.</span><span class="n">enable_model_cpu_offload</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">pipe</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h3 id="embodied_gen.models.gs_model" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">embodied_gen.models.gs_model</span>
+
+
+</h3>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="embodied_gen.models.gs_model.GaussianOperator" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">GaussianOperator</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">GaussianOperator</span><span class="p">(</span><span class="n">_opacities</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">_means</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">_scales</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">_quats</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">_rgbs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_features_dc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_features_rest</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sh_degree</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="embodied_gen.models.gs_model.GaussianBase">GaussianBase</span></code></p>
+
+
+        <p>Gaussian Splatting operator.</p>
+<p>Supports transformation, scaling, color computation, and
+rasterization-based rendering.</p>
+
+
+<details class="inherits" open>
+  <summary>Inherits</summary>
+  <p>GaussianBase: Base class with Gaussian params (means, scales, etc.)</p>
+</details>        <p>Functionality includes:
+- Applying instance poses to transform Gaussian means and quaternions.
+- Scaling Gaussians to a real-world size.
+- Computing colors using spherical harmonics.
+- Rendering images via differentiable rasterization.
+- Exporting transformed and rescaled models to .ply format.</p>
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h5 id="embodied_gen.models.gs_model.GaussianOperator.get_gaussians" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_gaussians</span>
+
+
+</h5>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_gaussians</span><span class="p">(</span><span class="n">c2w</span><span class="p">:</span> <span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">instance_pose</span><span class="p">:</span> <span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">apply_activate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GaussianBase</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Get Gaussian data under the given instance_pose.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>embodied_gen/models/gs_model.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_gaussians</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">c2w</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">instance_pose</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">apply_activate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GaussianBase&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get Gaussian data under the given instance_pose.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">c2w</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">c2w</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">instance_pose</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># compute the transformed gs means and quats</span>
+        <span class="n">world_means</span><span class="p">,</span> <span class="n">world_quats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_transform</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_means</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quats</span><span class="p">,</span> <span class="n">instance_pose</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">world_means</span><span class="p">,</span> <span class="n">world_quats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_means</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quats</span>
+
+    <span class="c1"># get colors of gaussians</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_features_rest</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_features_dc</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_features_rest</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_features_dc</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sh_degree</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">viewdirs</span> <span class="o">=</span> <span class="n">world_means</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span> <span class="o">-</span> <span class="n">c2w</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>  <span class="c1"># (N, 3)</span>
+        <span class="n">viewdirs</span> <span class="o">=</span> <span class="n">viewdirs</span> <span class="o">/</span> <span class="n">viewdirs</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">rgbs</span> <span class="o">=</span> <span class="n">spherical_harmonics</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sh_degree</span><span class="p">,</span> <span class="n">viewdirs</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span>
+        <span class="n">rgbs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">rgbs</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rgbs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">colors</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
+
+    <span class="n">gs_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">_means</span><span class="o">=</span><span class="n">world_means</span><span class="p">,</span>
+        <span class="n">_opacities</span><span class="o">=</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_opacities</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">apply_activate</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opacities</span>
+        <span class="p">),</span>
+        <span class="n">_rgbs</span><span class="o">=</span><span class="n">rgbs</span><span class="p">,</span>
+        <span class="n">_scales</span><span class="o">=</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scales</span><span class="p">)</span> <span class="k">if</span> <span class="n">apply_activate</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scales</span>
+        <span class="p">),</span>
+        <span class="n">_quats</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quat_norm</span><span class="p">(</span><span class="n">world_quats</span><span class="p">),</span>
+        <span class="n">_features_dc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_features_dc</span><span class="p">,</span>
+        <span class="n">_features_rest</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_features_rest</span><span class="p">,</span>
+        <span class="n">sh_degree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sh_degree</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">GaussianOperator</span><span class="p">(</span><span class="o">**</span><span class="n">gs_dict</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h3 id="embodied_gen.models.layout" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">embodied_gen.models.layout</span>
+
+
+</h3>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h3 id="embodied_gen.models.text_model" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">embodied_gen.models.text_model</span>
+
+
+</h3>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h3 id="embodied_gen.models.sr_model" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">embodied_gen.models.sr_model</span>
+
+
+</h3>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="embodied_gen.models.sr_model.ImageRealESRGAN" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ImageRealESRGAN</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ImageRealESRGAN</span><span class="p">(</span><span class="n">outscale</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+        <p>A wrapper for Real-ESRGAN-based image super-resolution.</p>
+<p>This class uses the RealESRGAN model to perform image upscaling,
+typically by a factor of 4.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="embodied_gen.models.sr_model.ImageRealESRGAN.outscale">outscale</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The output image scale factor (e.g., 2, 4).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="embodied_gen.models.sr_model.ImageRealESRGAN.model_path">model_path</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to the pre-trained model weights.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+                  <details class="quote">
+                    <summary>Source code in <code>embodied_gen/models/sr_model.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outscale</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># monkey patch to support torchvision&gt;=0.16</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torchvision</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">packaging</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span>
+
+    <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">torchvision</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">version</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;0.16&quot;</span><span class="p">):</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
+
+        <span class="kn">import</span><span class="w"> </span><span class="nn">torchvision.transforms.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">TF</span>
+
+        <span class="n">functional_tensor</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">(</span>
+            <span class="s2">&quot;torchvision.transforms.functional_tensor&quot;</span>
+        <span class="p">)</span>
+        <span class="n">functional_tensor</span><span class="o">.</span><span class="n">rgb_to_grayscale</span> <span class="o">=</span> <span class="n">TF</span><span class="o">.</span><span class="n">rgb_to_grayscale</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s2">&quot;torchvision.transforms.functional_tensor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">functional_tensor</span>
+        <span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">outscale</span> <span class="o">=</span> <span class="n">outscale</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">upsampler</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">model_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;super_resolution&quot;</span>
+        <span class="n">model_path</span> <span class="o">=</span> <span class="n">snapshot_download</span><span class="p">(</span>
+            <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;xinjjj/RoboAssetGen&quot;</span><span class="p">,</span> <span class="n">allow_patterns</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">/*&quot;</span>
+        <span class="p">)</span>
+        <span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">model_path</span><span class="p">,</span> <span class="n">suffix</span><span class="p">,</span> <span class="s2">&quot;RealESRGAN_x4plus.pth&quot;</span>
+        <span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span> <span class="o">=</span> <span class="n">model_path</span>
+</code></pre></div></td></tr></table></div>
+                  </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="embodied_gen.models.sr_model.ImageStableSR" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ImageStableSR</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ImageStableSR</span><span class="p">(</span><span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;stabilityai/stable-diffusion-x4-upscaler&#39;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+        <p>Super-resolution image upscaler using Stable Diffusion x4 upscaling model from StabilityAI.</p>
+
+
+
+
+
+
+
+
+                  <details class="quote">
+                    <summary>Source code in <code>embodied_gen/models/sr_model.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stabilityai/stable-diffusion-x4-upscaler&quot;</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">diffusers</span><span class="w"> </span><span class="kn">import</span> <span class="n">StableDiffusionUpscalePipeline</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">up_pipeline_x4</span> <span class="o">=</span> <span class="n">StableDiffusionUpscalePipeline</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="n">model_path</span><span class="p">,</span>
+        <span class="n">torch_dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">up_pipeline_x4</span><span class="o">.</span><span class="n">set_progress_bar_config</span><span class="p">(</span><span class="n">disable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">up_pipeline_x4</span><span class="o">.</span><span class="n">enable_model_cpu_offload</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+                  </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h3 id="embodied_gen.models.segment_model" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">embodied_gen.models.segment_model</span>
+
+
+</h3>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="embodied_gen.models.segment_model.SAMRemover" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">SAMRemover</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">SAMRemover</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">model_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;vit_h&#39;</span><span class="p">,</span> <span class="n">area_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="object">object</span></code></p>
+
+
+        <p>Loading SAM models and performing background removal on images.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="embodied_gen.models.segment_model.SAMRemover.checkpoint">checkpoint</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to the model checkpoint.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="embodied_gen.models.segment_model.SAMRemover.model_type">model_type</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Type of the SAM model to load (default: "vit_h").</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="embodied_gen.models.segment_model.SAMRemover.area_ratio">area_ratio</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Area ratio filtering small connected components.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+                  <details class="quote">
+                    <summary>Source code in <code>embodied_gen/models/segment_model.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">checkpoint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;vit_h&quot;</span><span class="p">,</span>
+    <span class="n">area_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">=</span> <span class="n">model_type</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">area_ratio</span> <span class="o">=</span> <span class="n">area_ratio</span>
+
+    <span class="k">if</span> <span class="n">checkpoint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;sam&quot;</span>
+        <span class="n">model_path</span> <span class="o">=</span> <span class="n">snapshot_download</span><span class="p">(</span>
+            <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;xinjjj/RoboAssetGen&quot;</span><span class="p">,</span> <span class="n">allow_patterns</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">/*&quot;</span>
+        <span class="p">)</span>
+        <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">model_path</span><span class="p">,</span> <span class="n">suffix</span><span class="p">,</span> <span class="s2">&quot;sam_vit_h_4b8939.pth&quot;</span>
+        <span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">mask_generator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_sam_model</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+                  </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h5 id="embodied_gen.models.segment_model.SAMRemover.__call__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__call__</span>
+
+
+</h5>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">__call__</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">],</span> <span class="n">save_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Image</span><span class="o">.</span><span class="n">Image</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Removes the background from an image using the SAM model.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>image</code>
+            </td>
+            <td>
+                  <code><span title="typing.Union">Union</span>[<span title="str">str</span>, <span title="PIL.Image.Image">Image</span>, <span title="numpy.ndarray">ndarray</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Input image,
+can be a file path, PIL Image, or numpy array.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>save_path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to save the output image (default: None).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="PIL.Image.Image">Image</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Image.Image: The image with background removed,
+including an alpha channel.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="quote">
+              <summary>Source code in <code>embodied_gen/models/segment_model.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Image</span><span class="o">.</span><span class="n">Image</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">save_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Image</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Removes the background from an image using the SAM model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        image (Union[str, Image.Image, np.ndarray]): Input image,</span>
+<span class="sd">            can be a file path, PIL Image, or numpy array.</span>
+<span class="sd">        save_path (str): Path to save the output image (default: None).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Image.Image: The image with background removed,</span>
+<span class="sd">            including an alpha channel.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Convert input to numpy array</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">resize_pil</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">))</span>
+
+    <span class="c1"># Generate masks</span>
+    <span class="n">masks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_generator</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="n">masks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">masks</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">masks</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Segmentation failed: No mask generated, return raw image.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">output_image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;RGB&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Use the largest mask</span>
+        <span class="n">best_mask</span> <span class="o">=</span> <span class="n">masks</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;segmentation&quot;</span><span class="p">]</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">best_mask</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">filter_small_connected_components</span><span class="p">(</span>
+            <span class="n">mask</span><span class="p">,</span> <span class="n">area_ratio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">area_ratio</span>
+        <span class="p">)</span>
+        <span class="c1"># Apply the mask to remove the background</span>
+        <span class="n">background_removed</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+        <span class="n">output_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">((</span><span class="n">background_removed</span><span class="p">,</span> <span class="n">mask</span><span class="p">))</span>
+        <span class="n">output_image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">output_image</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;RGBA&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">save_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">save_path</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">output_image</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">save_path</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output_image</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h3 id="embodied_gen.models.image_comm_model" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">embodied_gen.models.image_comm_model</span>
+
+
+</h3>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h3 id="embodied_gen.models.delight_model" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">embodied_gen.models.delight_model</span>
+
+
+</h3>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="embodied_gen.models.delight_model.DelightingModel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">DelightingModel</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">DelightingModel</span><span class="p">(</span><span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_infer_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">mask_erosion_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">image_guide_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">text_guide_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="object">object</span></code></p>
+
+
+        <p>A model to remove the lighting in image space.</p>
+<p>This model is encapsulated based on the Hunyuan3D-Delight model
+from https://huggingface.co/tencent/Hunyuan3D-2/tree/main/hunyuan3d-delight-v2-0 # noqa</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="embodied_gen.models.delight_model.DelightingModel.image_guide_scale">image_guide_scale</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Weight of image guidance in diffusion process.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="embodied_gen.models.delight_model.DelightingModel.text_guide_scale">text_guide_scale</span></code></td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Weight of text (prompt) guidance in diffusion process.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="embodied_gen.models.delight_model.DelightingModel.num_infer_step">num_infer_step</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of inference steps for diffusion model.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="embodied_gen.models.delight_model.DelightingModel.mask_erosion_size">mask_erosion_size</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Size of erosion kernel for alpha mask cleanup.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="embodied_gen.models.delight_model.DelightingModel.device">device</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Device used for inference, e.g., 'cuda' or 'cpu'.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="embodied_gen.models.delight_model.DelightingModel.seed">seed</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Random seed for diffusion model reproducibility.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="embodied_gen.models.delight_model.DelightingModel.model_path">model_path</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Filesystem path to pretrained model weights.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="embodied_gen.models.delight_model.DelightingModel.pipeline">pipeline</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lazy-loaded diffusion pipeline instance.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+                  <details class="quote">
+                    <summary>Source code in <code>embodied_gen/models/delight_model.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">num_infer_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="n">mask_erosion_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="n">image_guide_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
+    <span class="n">text_guide_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">image_guide_scale</span> <span class="o">=</span> <span class="n">image_guide_scale</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">text_guide_scale</span> <span class="o">=</span> <span class="n">text_guide_scale</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">num_infer_step</span> <span class="o">=</span> <span class="n">num_infer_step</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mask_erosion_size</span> <span class="o">=</span> <span class="n">mask_erosion_size</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_erosion_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_erosion_size</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># lazy load model adapt to @spaces.GPU</span>
+
+    <span class="k">if</span> <span class="n">model_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;hunyuan3d-delight-v2-0&quot;</span>
+        <span class="n">model_path</span> <span class="o">=</span> <span class="n">snapshot_download</span><span class="p">(</span>
+            <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;tencent/Hunyuan3D-2&quot;</span><span class="p">,</span> <span class="n">allow_patterns</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">/*&quot;</span>
+        <span class="p">)</span>
+        <span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span> <span class="o">=</span> <span class="n">model_path</span>
+</code></pre></div></td></tr></table></div>
+                  </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 6, 2025 06:19:40 UTC">November 6, 2025</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 6, 2025 06:19:40 UTC">November 6, 2025</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright (c) 2025 Horizon Robotics
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://huggingface.co/collections/HorizonRobotics/embodiedgen" target="_blank" rel="noopener" title="huggingface.co" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12.025 1.13c-5.77 0-10.449 4.647-10.449 10.378 0 1.112.178 2.181.503 3.185.064-.222.203-.444.416-.577a.96.96 0 0 1 .524-.15c.293 0 .584.124.84.284.278.173.48.408.71.694.226.282.458.611.684.951v-.014c.017-.324.106-.622.264-.874s.403-.487.762-.543c.3-.047.596.06.787.203s.31.313.4.467c.15.257.212.468.233.542.01.026.653 1.552 1.657 2.54.616.605 1.01 1.223 1.082 1.912.055.537-.096 1.059-.38 1.572.637.121 1.294.187 1.967.187.657 0 1.298-.063 1.921-.178-.287-.517-.44-1.041-.384-1.581.07-.69.465-1.307 1.081-1.913 1.004-.987 1.647-2.513 1.657-2.539.021-.074.083-.285.233-.542.09-.154.208-.323.4-.467a1.08 1.08 0 0 1 .787-.203c.359.056.604.29.762.543s.247.55.265.874v.015c.225-.34.457-.67.683-.952.23-.286.432-.52.71-.694.257-.16.547-.284.84-.285a.97.97 0 0 1 .524.151c.228.143.373.388.43.625l.006.04a10.3 10.3 0 0 0 .534-3.273c0-5.731-4.678-10.378-10.449-10.378M8.327 6.583a1.5 1.5 0 0 1 .713.174 1.487 1.487 0 0 1 .617 2.013c-.183.343-.762-.214-1.102-.094-.38.134-.532.914-.917.71a1.487 1.487 0 0 1 .69-2.803m7.486 0a1.487 1.487 0 0 1 .689 2.803c-.385.204-.536-.576-.916-.71-.34-.12-.92.437-1.103.094a1.487 1.487 0 0 1 .617-2.013 1.5 1.5 0 0 1 .713-.174m-10.68 1.55a.96.96 0 1 1 0 1.921.96.96 0 0 1 0-1.92m13.838 0a.96.96 0 1 1 0 1.92.96.96 0 0 1 0-1.92M8.489 11.458c.588.01 1.965 1.157 3.572 1.164 1.607-.007 2.984-1.155 3.572-1.164.196-.003.305.12.305.454 0 .886-.424 2.328-1.563 3.202-.22-.756-1.396-1.366-1.63-1.32q-.011.001-.02.006l-.044.026-.01.008-.03.024q-.018.017-.035.036l-.032.04a1 1 0 0 0-.058.09l-.014.025q-.049.088-.11.19a1 1 0 0 1-.083.116 1.2 1.2 0 0 1-.173.18q-.035.029-.075.058a1.3 1.3 0 0 1-.251-.243 1 1 0 0 1-.076-.107c-.124-.193-.177-.363-.337-.444-.034-.016-.104-.008-.2.022q-.094.03-.216.087-.06.028-.125.063l-.13.074q-.067.04-.136.086a3 3 0 0 0-.135.096 3 3 0 0 0-.26.219 2 2 0 0 0-.12.121 2 2 0 0 0-.106.128l-.002.002a2 2 0 0 0-.09.132l-.001.001a1.2 1.2 0 0 0-.105.212q-.013.036-.024.073c-1.139-.875-1.563-2.317-1.563-3.203 0-.334.109-.457.305-.454m.836 10.354c.824-1.19.766-2.082-.365-3.194-1.13-1.112-1.789-2.738-1.789-2.738s-.246-.945-.806-.858-.97 1.499.202 2.362c1.173.864-.233 1.45-.685.64-.45-.812-1.683-2.896-2.322-3.295s-1.089-.175-.938.647 2.822 2.813 2.562 3.244-1.176-.506-1.176-.506-2.866-2.567-3.49-1.898.473 1.23 2.037 2.16c1.564.932 1.686 1.178 1.464 1.53s-3.675-2.511-4-1.297c-.323 1.214 3.524 1.567 3.287 2.405-.238.839-2.71-1.587-3.216-.642-.506.946 3.49 2.056 3.522 2.064 1.29.33 4.568 1.028 5.713-.624m5.349 0c-.824-1.19-.766-2.082.365-3.194 1.13-1.112 1.789-2.738 1.789-2.738s.246-.945.806-.858.97 1.499-.202 2.362c-1.173.864.233 1.45.685.64.451-.812 1.683-2.896 2.322-3.295s1.089-.175.938.647-2.822 2.813-2.562 3.244 1.176-.506 1.176-.506 2.866-2.567 3.49-1.898-.473 1.23-2.037 2.16c-1.564.932-1.686 1.178-1.464 1.53s3.675-2.511 4-1.297c.323 1.214-3.524 1.567-3.287 2.405.238.839 2.71-1.587 3.216-.642.506.946-3.49 2.056-3.522 2.064-1.29.33-4.568 1.028-5.713-.624"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/HorizonRobotics/EmbodiedGen" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://arxiv.org/abs/2506.10600" target="_blank" rel="noopener" title="arxiv.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.842 0a1 1 0 0 0-.922.608c-.153.369-.044.627.294 1.111l6.919 8.36-1.023 1.106a1.04 1.04 0 0 0 .003 1.423l1.23 1.313-5.44 6.444c-.28.3-.453.823-.297 1.199a1.025 1.025 0 0 0 .959.635.91.91 0 0 0 .689-.34l5.783-6.126 7.49 8.005a.85.85 0 0 0 .684.26.96.96 0 0 0 .877-.615c.158-.377-.017-.75-.306-1.14L13.73 13.9l1.064-1.13a.963.963 0 0 0 .009-1.316L4.633.464S4.26.01 3.867 0zm0 .272h.017c.218.005.487.272.564.364l.005.006.005.005 10.17 10.99a.69.69 0 0 1-.008.946l-1.066 1.133-1.498-1.772-8.6-10.39c-.328-.472-.352-.619-.26-.841a.73.73 0 0 1 .671-.44Zm14.341 1.57a.88.88 0 0 0-.655.242l-5.696 6.158 1.694 1.832 5.309-6.514c.325-.433.479-.66.325-1.029a1.12 1.12 0 0 0-.977-.689zm-7.655 12.282 1.318 1.414-5.786 6.13a.65.65 0 0 1-.496.26.75.75 0 0 1-.706-.467c-.112-.269.036-.687.244-.909l.005-.005.005-.006z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://horizonrobotics.github.io/robot_lab/embodied_gen/index.html" target="_blank" rel="noopener" title="horizonrobotics.github.io" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M351.9 280H161c2.9 64.5 17.2 123.9 37.5 167.4 11.4 24.5 23.7 41.8 35.1 52.4 11.2 10.5 18.9 12.2 22.9 12.2s11.7-1.7 22.9-12.2c11.4-10.6 23.7-28 35.1-52.4 20.3-43.5 34.6-102.9 37.5-167.4zm-191-48h190.9c-2.8-64.5-17.1-123.9-37.4-167.4-11.4-24.4-23.7-41.8-35.1-52.4C268.1 1.7 260.4 0 256.4 0s-11.7 1.7-22.9 12.2c-11.4 10.6-23.7 28-35.1 52.4-20.3 43.5-34.6 102.9-37.5 167.4m-48 0c3.5-85.6 25.6-165.1 57.9-217.3C78.7 47.3 10.9 131.2 1.5 232zM1.5 280c9.4 100.8 77.2 184.7 169.3 217.3-32.3-52.2-54.4-131.7-57.9-217.3zm398.4 0c-3.5 85.6-25.6 165.1-57.9 217.3 92.1-32.7 159.9-116.5 169.3-217.3zm111.4-48C501.9 131.2 434.1 47.3 342 14.7c32.3 52.2 54.4 131.7 57.9 217.3z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.youtube.com/watch?v=rG4odybuJRk" target="_blank" rel="noopener" title="www.youtube.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M549.7 124.1c-6.2-23.7-24.8-42.3-48.3-48.6C458.9 64 288.1 64 288.1 64S117.3 64 74.7 75.5c-23.5 6.3-42 24.9-48.3 48.6C15 167 15 256.4 15 256.4s0 89.4 11.4 132.3c6.3 23.6 24.8 41.5 48.3 47.8C117.3 448 288.1 448 288.1 448s170.8 0 213.4-11.5c23.5-6.3 42-24.2 48.3-47.8 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zM232.2 337.6V175.2l142.7 81.2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.tabs", "navigation.top", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
