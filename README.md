@@ -298,6 +298,7 @@ Example in `tests/test_examples/test_asset_converter.py`.
 pip install -e .[dev] && pre-commit install
 python -m pytest # Pass all unit-test are required.
 # mkdocs serve --dev-addr 0.0.0.0:8000
+# mkdocs gh-deploy --force
 ```
 
 ## 📚 Citation

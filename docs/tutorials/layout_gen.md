@@ -3,10 +3,10 @@
 Layout Generation enables the generation of diverse, physically realistic, and scalable **interactive 3D scenes** directly from natural language task descriptions, while also modeling the robot's pose and relationships with manipulable objects. Target objects are randomly placed within the robot's reachable range, making the scenes readily usable for downstream simulation and reinforcement learning tasks in any mainstream simulator.
 
 <div align="center" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; justify-items: center; margin: 20px 0;">
-  <img src="/assets/layout1.gif" alt="layout1" style="width: 400px; border-radius: 12px; display: block;">
-  <img src="/assets/layout2.gif" alt="layout2" style="width: 400px; border-radius: 12px; display: block;">
-  <img src="/assets/layout3.gif" alt="layout3" style="width: 400px; border-radius: 12px; display: block;">
-  <img src="/assets/Iscene_demo2.gif" alt="layout4" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="assets/layout1.gif" alt="layout1" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="assets/layout2.gif" alt="layout2" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="assets/layout3.gif" alt="layout3" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="assets/Iscene_demo2.gif" alt="layout4" style="width: 400px; border-radius: 12px; display: block;">
 </div>
 
 !!! note "Model Requirement"
@@ -44,8 +44,8 @@ layout-cli \
 
 You will get the following results:
 <div align="center" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; justify-items: center; margin: 20px 0;">
-  <img src="/assets/Iscene_demo1.gif" alt="Iscene_demo1" style="width: 320px; border-radius: 12px; display: block;">
-  <img src="/assets/Iscene_demo2.gif" alt="Iscene_demo2" style="width: 320px; border-radius: 12px; display: block;">
+  <img src="assets/Iscene_demo1.gif" alt="Iscene_demo1" style="width: 320px; border-radius: 12px; display: block;">
+  <img src="assets/Iscene_demo2.gif" alt="Iscene_demo2" style="width: 320px; border-radius: 12px; display: block;">
 </div>
 
 

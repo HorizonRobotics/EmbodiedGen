@@ -16,7 +16,7 @@ hide:
 
 *EmbodiedGen*: Towards a Generative 3D World Engine for Embodied Intelligence
 
-<img src="/assets/overall.jpg" alt="Overall Framework" width="700"/>
+<img src="assets/overall.jpg" alt="Overall Framework" width="700"/>
 
 > ***EmbodiedGen*** is a generative engine to create diverse and interactive 3D worlds composed of high-quality 3D assets(mesh & 3DGS) with plausible physics, leveraging generative AI to address the challenges of generalization in embodied intelligence related research.
 

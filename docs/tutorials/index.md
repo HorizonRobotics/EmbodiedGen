@@ -150,7 +150,7 @@ Generate **high-quality textures** for 3D meshes using **text prompts**, support
 
 Generate **physically consistent and visually coherent 3D environments** from text prompts. Typically used as **background** 3DGS scenes in simulators for efficient and photo-realistic rendering.
 
-<img src="/assets/scene3d.gif" style="width: 500px; max-width: 100%; border-radius: 12px; display: block; margin: 16px auto;">
+<img src="assets/scene3d.gif" style="width: 500px; max-width: 100%; border-radius: 12px; display: block; margin: 16px auto;">
 
 ---
 
@@ -159,10 +159,10 @@ Generate **physically consistent and visually coherent 3D environments** from te
 Generate diverse, physically realistic, and scalable **interactive 3D scenes** from natural language task descriptions, while also modeling the robot and manipulable objects.
 
 <div align="center" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; justify-items: center; margin: 20px 0;">
-  <img src="/assets/layout1.gif" alt="layout1" style="width: 400px; border-radius: 12px; display: block;">
-  <img src="/assets/layout2.gif" alt="layout2" style="width: 400px; border-radius: 12px; display: block;">
-  <img src="/assets/layout3.gif" alt="layout3" style="width: 400px; border-radius: 12px; display: block;">
-  <img src="/assets/Iscene_demo2.gif" alt="layout4" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="assets/layout1.gif" alt="layout1" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="assets/layout2.gif" alt="layout2" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="assets/layout3.gif" alt="layout3" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="assets/Iscene_demo2.gif" alt="layout4" style="width: 400px; border-radius: 12px; display: block;">
 </div>
 
 
@@ -173,9 +173,9 @@ Generate diverse, physically realistic, and scalable **interactive 3D scenes** f
 Generate multiple **parallel simulation environments** with `gym.make` and record sensor and trajectory data.
 
 <div style="display: flex; justify-content: center; align-items: center; gap: 16px; margin: 16px 0;">
-  <img src="/assets/parallel_sim.gif" alt="parallel_sim1"
+  <img src="assets/parallel_sim.gif" alt="parallel_sim1"
        style="width: 330px; max-width: 100%; border-radius: 12px; display: block;">
-  <img src="/assets/parallel_sim2.gif" alt="parallel_sim2"
+  <img src="assets/parallel_sim2.gif" alt="parallel_sim2"
        style="width: 330px; max-width: 100%; border-radius: 12px; display: block;">
 </div>
 
@@ -187,11 +187,11 @@ Generate multiple **parallel simulation environments** with `gym.make` and recor
 Seamlessly use EmbodiedGen-generated assets in major simulators like **IsaacSim**, **MuJoCo**, **Genesis**, **PyBullet**, **IsaacGym**, and **SAPIEN**, featuring **accurate physical collisions** and **consistent visual appearance**.
 
 <div align="center">
-  <img src="/assets/simulators_collision.jpg" alt="simulators_collision" style="width: 400px; max-width: 100%; border-radius: 12px; display: block; margin: 16px 0;">
+  <img src="assets/simulators_collision.jpg" alt="simulators_collision" style="width: 400px; max-width: 100%; border-radius: 12px; display: block; margin: 16px 0;">
 </div>
 
 ## [🔧 Real-to-Sim Digital Twin Creation](digital_twin.md)
 
 <div align="center">
-  <img src="/assets/real2sim_mujoco.gif" alt="real2sim_mujoco" style="width: 400px; max-width: 100%; border-radius: 12px; display: block; margin: 16px 0;">
+  <img src="assets/real2sim_mujoco.gif" alt="real2sim_mujoco" style="width: 400px; max-width: 100%; border-radius: 12px; display: block; margin: 16px 0;">
 </div>

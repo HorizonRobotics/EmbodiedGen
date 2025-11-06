@@ -58,6 +58,6 @@ dst_asset_path = cvt_embodiedgen_asset_to_anysim(
 )
 ```
 
-<img src="/assets/simulators_collision.jpg" alt="simulators_collision" width="800">
+<img src="assets/simulators_collision.jpg" alt="simulators_collision" width="800">
 
 Collision and visualization mesh across simulators, showing consistent geometry and material fidelity.
