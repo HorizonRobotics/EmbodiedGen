@@ -27,4 +27,6 @@ jobs:
           pip install mkdocs-git-revision-date-localized-plugin
 
       - name: Deploy documentation
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: mkdocs gh-deploy --force
