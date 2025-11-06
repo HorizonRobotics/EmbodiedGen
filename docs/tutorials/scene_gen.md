@@ -4,7 +4,7 @@ Generate **physically consistent and visually coherent 3D environments** from te
 
 ---
 
-<img src="/EmbodiedGen/assets/scene3d.gif" style="width: 600px; border-radius: 12px; display: block; margin: 16px auto;">
+<img src="../assets/scene3d.gif" style="width: 600px; border-radius: 12px; display: block; margin: 16px auto;">
 
 ---
 

@@ -14,9 +14,9 @@ python embodied_gen/scripts/parallel_sim.py \
 ```
 
 <div style="display: flex; justify-content: center; align-items: center; gap: 16px; margin: 16px 0;">
-  <img src="/EmbodiedGen/assets/parallel_sim.gif" alt="parallel_sim1"
+  <img src="../assets/parallel_sim.gif" alt="parallel_sim1"
        style="width: 330px; max-width: 100%; border-radius: 12px; display: block;">
-  <img src="/EmbodiedGen/assets/parallel_sim2.gif" alt="parallel_sim2"
+  <img src="../assets/parallel_sim2.gif" alt="parallel_sim2"
        style="width: 330px; max-width: 100%; border-radius: 12px; display: block;">
 </div>
 

@@ -1,34 +1,3 @@
-<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const swiper = new Swiper('.swiper1', {
-      loop: true,
-      slidesPerView: 3,
-      spaceBetween: 20,
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-      centeredSlides: false,
-      noSwiping: true,
-      noSwipingClass: 'swiper-no-swiping',
-      watchSlidesProgress: true,
-    });
-    const modelViewers = document.querySelectorAll('model-viewer');
-    let loadedCount = 0;
-    modelViewers.forEach(mv => {
-      mv.addEventListener('load', () => {
-        loadedCount++;
-        if (loadedCount === modelViewers.length) {
-          swiper.update();
-        }
-      });
-    });
-  });
-</script>
-
 # 🖼️ Image-to-3D: Physically Plausible 3D Asset Generation
 
 Generate **physically plausible 3D assets** from a single input image, supporting **digital twin** and **simulation environments**.
