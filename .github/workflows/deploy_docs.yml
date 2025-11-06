@@ -12,9 +12,8 @@ permissions:
   contents: write
 
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,18 +23,41 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: 3.10
 
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install mkdocs-material
-          pip install mkdocstrings[python]
-          pip install mkdocs-git-revision-date-localized-plugin
+          pip install mkdocs-material mkdocstrings[python] mkdocs-git-revision-date-localized-plugin
 
-      - name: Build and deploy documentation
-        env:
-          PYTHONPATH: ${{ github.workspace }}/embodied_gen
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+      - name: Build docs
+        run: mkdocs build
+
+  deploy:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.10
+
+      - name: Install dependencies
         run: |
-          mkdocs build
-          mkdocs gh-deploy --force --remote-branch gh-pages
+          pip install --upgrade pip
+          pip install mkdocs-material mkdocstrings[python] mkdocs-git-revision-date-localized-plugin
+
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+      - name: Deploy docs
+        run: mkdocs gh-deploy --force
