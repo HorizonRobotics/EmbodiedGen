@@ -3,6 +3,7 @@ site_url: https://horizonrobotics.github.io/EmbodiedGen/
 repo_name: "EmbodiedGen"
 repo_url: https://github.com/HorizonRobotics/EmbodiedGen
 copyright: "Copyright (c) 2025 Horizon Robotics"
+use_directory_urls: false
 
 nav:
   - 🏠 Home: index.md
@@ -102,6 +103,13 @@ plugins:
 
 extra_css:
   - stylesheets/extra.css
+  - https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js
+  - path: https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js
+    type: module
+  - js/model_viewer.js
 
 markdown_extensions:
   - pymdownx.highlight

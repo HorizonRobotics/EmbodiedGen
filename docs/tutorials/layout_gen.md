@@ -3,10 +3,10 @@
 Layout Generation enables the generation of diverse, physically realistic, and scalable **interactive 3D scenes** directly from natural language task descriptions, while also modeling the robot's pose and relationships with manipulable objects. Target objects are randomly placed within the robot's reachable range, making the scenes readily usable for downstream simulation and reinforcement learning tasks in any mainstream simulator.
 
 <div align="center" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; justify-items: center; margin: 20px 0;">
-  <img src="/EmbodiedGen/assets/layout1.gif" alt="layout1" style="width: 400px; border-radius: 12px; display: block;">
-  <img src="/EmbodiedGen/assets/layout2.gif" alt="layout2" style="width: 400px; border-radius: 12px; display: block;">
-  <img src="/EmbodiedGen/assets/layout3.gif" alt="layout3" style="width: 400px; border-radius: 12px; display: block;">
-  <img src="/EmbodiedGen/assets/Iscene_demo2.gif" alt="layout4" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="../assets/layout1.gif" alt="layout1" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="../assets/layout2.gif" alt="layout2" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="../assets/layout3.gif" alt="layout3" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="../assets/Iscene_demo2.gif" alt="layout4" style="width: 400px; border-radius: 12px; display: block;">
 </div>
 
 !!! note "Model Requirement"
@@ -26,7 +26,7 @@ Each scene takes approximately **30 minutes** to generate. For efficiency, we re
 hf download xinjjj/scene3d-bg --repo-type dataset --local-dir outputs
 
 # Option 2: Download a larger background set (~14 GB)
-hf download xinjjj/EmbodiedGenRLv2-BG --repo-type dataset --local-dir outputs
+hf download xinjjj..RLv2-BG --repo-type dataset --local-dir outputs
 ```
 
 ## Generate Interactive Layout Scenes
@@ -43,10 +43,13 @@ layout-cli \
 ```
 
 You will get the following results:
-<div align="center" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; justify-items: center; margin: 20px 0;">
-  <img src="/EmbodiedGen/assets/Iscene_demo1.gif" alt="Iscene_demo1" style="width: 240px; border-radius: 12px; display: block;">
-  <img src="/EmbodiedGen/assets/Iscene_demo2.gif" alt="Iscene_demo2" style="width: 480px; border-radius: 12px; display: block;">
+<div align="center" style="display: flex; justify-content: center; align-items: flex-start; gap: 24px; margin: 20px auto; flex-wrap: wrap;">
+  <img src="../assets/Iscene_demo1.gif" alt="Iscene_demo1"
+       style="height: 200px; border-radius: 12px; display: block; width: auto;">
+  <img src="../assets/Iscene_demo2.gif" alt="Iscene_demo2"
+       style="height: 200px; border-radius: 12px; display: block; width: auto;">
 </div>
+
 
 
 ### Batch Generation
