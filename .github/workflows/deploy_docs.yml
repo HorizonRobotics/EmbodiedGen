@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - '**'
   pull_request:
     branches:
       - master
@@ -13,11 +12,39 @@ permissions:
   contents: write
 
 jobs:
-  build-deploy:
+  build:
+    name: Build Documentation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install mkdocs-material
+          pip install mkdocstrings[python]
+          pip install mkdocs-git-revision-date-localized-plugin
+
+      - name: Build MkDocs site
+        run: mkdocs build
+
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
