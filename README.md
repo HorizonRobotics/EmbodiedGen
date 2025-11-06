@@ -15,7 +15,7 @@
 > ***EmbodiedGen*** is a generative engine to create diverse and interactive 3D worlds composed of high-quality 3D assets(mesh & 3DGS) with plausible physics, leveraging generative AI to address the challenges of generalization in embodied intelligence related research.
 > It composed of six key modules: `Image-to-3D`, `Text-to-3D`, `Texture Generation`, `Articulated Object Generation`, `Scene Generation` and `Layout Generation`.
 
-<img src="apps/assets/overall.jpg" alt="Overall Framework" width="700"/>
+<img src="docs/assets/overall.jpg" alt="Overall Framework" width="700"/>
 
 ---
 
@@ -76,7 +76,7 @@ Explore EmbodiedGen generated assets in [![🤗 Hugging Face](https://img.shield
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Image_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Image-to-3D) Generate physically plausible 3D asset URDF from single input image, offering high-quality support for digital twin systems.
 (HF space is a simplified demonstration. For the full functionality, please refer to `img3d-cli`.)
 
-<img src="apps/assets/image_to_3d.jpg" alt="Image to 3D" width="700">
+<img src="docs/assets/image_to_3d.jpg" alt="Image to 3D" width="700">
 
 ### ☁️ Service
 Run the image-to-3D generation service locally.
@@ -91,8 +91,8 @@ CUDA_VISIBLE_DEVICES=0 nohup python apps/image_to_3d.py > /dev/null 2>&1 &
 ### ⚡ API
 Generate physically plausible 3D assets from image input via the command-line API.
 ```sh
-img3d-cli --image_path apps/assets/example_image/sample_04.jpg apps/assets/example_image/sample_19.jpg \
-    --n_retry 2 --output_root outputs/imageto3d
+img3d-cli --image_path apps/assets/example_image/sample_00.jpg apps/assets/example_image/sample_01.jpg apps/assets/example_image/sample_19.jpg \
+--n_retry 1 --output_root outputs/imageto3d
 
 # See result(.urdf/mesh.obj/mesh.glb/gs.ply) in ${output_root}/sample_xx/result
 ```
@@ -104,7 +104,7 @@ img3d-cli --image_path apps/assets/example_image/sample_04.jpg apps/assets/examp
 
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Text_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D) Create 3D assets from text descriptions for a wide range of geometry and styles. (HF space is a simplified demonstration. For the full functionality, please refer to `text3d-cli`.)
 
-<img src="apps/assets/text_to_3d.jpg" alt="Text to 3D" width="700">
+<img src="docs/assets/text_to_3d.jpg" alt="Text to 3D" width="700">
 
 ### ☁️ Service
 Deploy the text-to-3D generation service locally.
@@ -119,11 +119,11 @@ python apps/text_to_3d.py
 Text-to-image model based on SD3.5 Medium, English prompts only.
 Usage requires agreement to the [model license(click accept)](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium), models downloaded automatically.
 
-For large-scale 3D assets generation, set `--n_pipe_retry=2` to ensure high end-to-end 3D asset usability through automatic quality check and retries. For more diverse results, do not set `--seed_img`.
+For large-scale 3D asset generation, set `--n_image_retry=4` `--n_asset_retry=3` `--n_pipe_retry=2`, slower but better, via automatic checking and retries. For more diverse results, omit `--seed_img`.
 
 ```sh
 text3d-cli --prompts "small bronze figurine of a lion" "A globe with wooden base" "wooden table with embroidery" \
-    --n_image_retry 2 --n_asset_retry 2 --n_pipe_retry 1 --seed_img 0 \
+    --n_image_retry 1 --n_asset_retry 1 --n_pipe_retry 1 --seed_img 0 \
     --output_root outputs/textto3d
 ```
 
@@ -142,7 +142,7 @@ ps: models with more permissive licenses found in `embodied_gen/models/image_com
 
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Texture_Gen_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Texture-Gen) Generate visually rich textures for 3D mesh.
 
-<img src="apps/assets/texture_gen.jpg" alt="Texture Gen" width="700">
+<img src="docs/assets/texture_gen.jpg" alt="Texture Gen" width="700">
 
 
 ### ☁️ Service
@@ -167,7 +167,7 @@ texture-cli --mesh_path "apps/assets/example_texture/meshes/robot_text.obj" \
 
 <h2 id="3d-scene-generation">🌍 3D Scene Generation</h2>
 
-<img src="apps/assets/scene3d.gif" alt="scene3d" style="width: 600px;">
+<img src="docs/assets/scene3d.gif" alt="scene3d" style="width: 600px;">
 
 ### ⚡ API
 > Run `bash install.sh extra` to install additional requirements if you need to use `scene3d-cli`.
@@ -190,7 +190,7 @@ CUDA_VISIBLE_DEVICES=0 scene3d-cli \
 
 🚧 *Coming Soon*
 
-<img src="apps/assets/articulate.gif" alt="articulate" style="width: 500px;">
+<img src="docs/assets/articulate.gif" alt="articulate" style="width: 500px;">
 
 
 ---
@@ -202,12 +202,12 @@ CUDA_VISIBLE_DEVICES=0 scene3d-cli \
 
 <table>
   <tr>
-    <td><img src="apps/assets/layout1.gif" alt="layout1" width="320"/></td>
-    <td><img src="apps/assets/layout2.gif" alt="layout2" width="320"/></td>
+    <td><img src="docs/assets/layout1.gif" alt="layout1" width="320"/></td>
+    <td><img src="docs/assets/layout2.gif" alt="layout2" width="320"/></td>
   </tr>
   <tr>
-    <td><img src="apps/assets/layout3.gif" alt="layout3" width="320"/></td>
-    <td><img src="apps/assets/layout4.gif" alt="layout4" width="320"/></td>
+    <td><img src="docs/assets/layout3.gif" alt="layout3" width="320"/></td>
+    <td><img src="docs/assets/layout4.gif" alt="layout4" width="320"/></td>
   </tr>
 </table>
 
@@ -225,8 +225,8 @@ layout-cli --task_descs "Place the pen in the mug on the desk" "Put the fruit on
 
 <table>
   <tr>
-    <td><img src="apps/assets/Iscene_demo1.gif" alt="Iscene_demo1" width="234"/></td>
-    <td><img src="apps/assets/Iscene_demo2.gif" alt="Iscene_demo2" width="350"/></td>
+    <td><img src="docs/assets/Iscene_demo1.gif" alt="Iscene_demo1" width="234"/></td>
+    <td><img src="docs/assets/Iscene_demo2.gif" alt="Iscene_demo2" width="350"/></td>
   </tr>
 </table>
 
@@ -243,7 +243,8 @@ Using `compose_layout.py`, you can recompose the layout of the generated interac
 ```sh
 python embodied_gen/scripts/compose_layout.py \
 --layout_path "outputs/layouts_gens/task_0000/layout.json" \
---output_dir "outputs/layouts_gens/task_0000/recompose" --insert_robot
+--output_dir "outputs/layouts_gens/task_0000/recompose" \
+--insert_robot
 ```
 
 We provide `sim-cli`, that allows users to easily load generated layouts into an interactive 3D simulation using the SAPIEN engine (will support for more simulators in future updates).
@@ -257,8 +258,8 @@ Example: generate multiple parallel simulation envs with `gym.make` and record s
 
 <table>
   <tr>
-    <td><img src="apps/assets/parallel_sim.gif" alt="parallel_sim1" width="290"/></td>
-    <td><img src="apps/assets/parallel_sim2.gif" alt="parallel_sim2" width="290"/></td>
+    <td><img src="docs/assets/parallel_sim.gif" alt="parallel_sim1" width="290"/></td>
+    <td><img src="docs/assets/parallel_sim2.gif" alt="parallel_sim2" width="290"/></td>
   </tr>
 </table>
 
@@ -271,7 +272,7 @@ python embodied_gen/scripts/parallel_sim.py \
 
 ### 🖼️ Real-to-Sim Digital Twin
 
-<img src="apps/assets/real2sim_mujoco.gif" alt="real2sim_mujoco" width="400">
+<img src="docs/assets/real2sim_mujoco.gif" alt="real2sim_mujoco" width="400">
 
 ---
 
@@ -284,11 +285,11 @@ Example in `tests/test_examples/test_asset_converter.py`.
 | Simulator | Conversion Class |
 |-----------|------------------|
 | [isaacsim](https://github.com/isaac-sim/IsaacSim) | MeshtoUSDConverter |
-| [mujoco](https://github.com/google-deepmind/mujoco) | MeshtoMJCFConverter |
-| [genesis](https://github.com/Genesis-Embodied-AI/Genesis) / [sapien](https://github.com/haosulab/SAPIEN) / [isaacgym](https://github.com/isaac-sim/IsaacGymEnvs) / [pybullet](https://github.com/bulletphysics/bullet3) | EmbodiedGen generated .urdf can be used directly |
+| [mujoco](https://github.com/google-deepmind/mujoco) / [genesis](https://github.com/Genesis-Embodied-AI/Genesis) | MeshtoMJCFConverter |
+| [sapien](https://github.com/haosulab/SAPIEN) / [isaacgym](https://github.com/isaac-sim/IsaacGymEnvs) / [pybullet](https://github.com/bulletphysics/bullet3) | EmbodiedGen generated .urdf can be used directly |
 
 
-<img src="apps/assets/simulators_collision.jpg" alt="simulators_collision" width="500">
+<img src="docs/assets/simulators_collision.jpg" alt="simulators_collision" width="500">
 
 ---
 
@@ -296,6 +297,8 @@ Example in `tests/test_examples/test_asset_converter.py`.
 ```sh
 pip install -e .[dev] && pre-commit install
 python -m pytest # Pass all unit-test are required.
+# mkdocs serve --dev-addr 0.0.0.0:8000
+# mkdocs gh-deploy --force
 ```
 
 ## 📚 Citation

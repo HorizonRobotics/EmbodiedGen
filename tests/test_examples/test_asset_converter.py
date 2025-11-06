@@ -1,6 +1,13 @@
+from typing import Literal
+
 import pytest
 from huggingface_hub import snapshot_download
-from embodied_gen.data.asset_converter import AssetConverterFactory, AssetType
+from embodied_gen.data.asset_converter import (
+    AssetConverterFactory,
+    AssetType,
+    SimAssetMapper,
+    cvt_embodiedgen_asset_to_anysim,
+)
 
 
 @pytest.fixture(scope="session")
@@ -56,3 +63,23 @@ def test_MeshtoUSDConverter(data_dir):
 
     assert output_file.exists(), f"Output not generated: {output_file}"
     assert output_file.stat().st_size > 0
+
+
+def test_cvt_embodiedgen_asset_to_anysim(
+    simulator_name: Literal[
+        "isaacsim",
+        "isaacgym",
+        "genesis",
+        "pybullet",
+        "sapien3",
+        "mujoco",
+    ] = "mujoco",
+):
+    dst_asset_path = cvt_embodiedgen_asset_to_anysim(
+        urdf_files=[
+            "outputs/embodiedgen_assets/demo_assets/remote_control2/result/remote_control.urdf",
+        ],
+        target_type=SimAssetMapper[simulator_name],
+        source_type=AssetType.MESH,
+        overwrite=True,
+    )

@@ -42,6 +42,56 @@ def build_texture_gen_pipe(
     ip_adapt_scale: float = 0,
     device: str = "cuda",
 ) -> DiffusionPipeline:
+    """Build and initialize the Kolors + ControlNet (optional IP-Adapter) texture generation pipeline.
+
+    Loads Kolors tokenizer, text encoder (ChatGLM), VAE, UNet, scheduler and (optionally)
+    a ControlNet checkpoint plus IP-Adapter vision encoder. If ``controlnet_ckpt`` is
+    not provided, the default multi-view texture ControlNet weights are downloaded
+    automatically from the hub. When ``ip_adapt_scale > 0`` an IP-Adapter vision
+    encoder and its weights are also loaded and activated.
+
+    Args:
+        base_ckpt_dir (str):
+            Root directory where Kolors (and optionally Kolors-IP-Adapter-Plus) weights
+            are or will be stored. Required subfolders: ``Kolors/{text_encoder,vae,unet,scheduler}``.
+        controlnet_ckpt (str, optional):
+            Directory containing a ControlNet checkpoint (safetensors). If ``None``,
+            downloads the default ``texture_gen_mv_v1`` snapshot.
+        ip_adapt_scale (float, optional):
+            Strength (>=0) of IP-Adapter conditioning. Set >0 to enable IP-Adapter;
+            typical values: 0.4-0.8. Default: 0 (disabled).
+        device (str, optional):
+            Target device to move the pipeline to (e.g. ``"cuda"``, ``"cuda:0"``, ``"cpu"``).
+            Default: ``"cuda"``.
+
+    Returns:
+        DiffusionPipeline: A configured
+        ``StableDiffusionXLControlNetImg2ImgPipeline`` ready for multi-view texture
+        generation (with optional IP-Adapter support).
+
+    Example:
+        Initialize pipeline with IP-Adapter enabled.
+        ```python
+        from embodied_gen.models.texture_model import build_texture_gen_pipe
+        ip_adapt_scale = 0.7
+        PIPELINE = build_texture_gen_pipe(
+            base_ckpt_dir="./weights",
+            ip_adapt_scale=ip_adapt_scale,
+            device="cuda",
+        )
+        PIPELINE.set_ip_adapter_scale([ip_adapt_scale])
+        ```
+        Initialize pipeline without IP-Adapter.
+        ```python
+        from embodied_gen.models.texture_model import build_texture_gen_pipe
+        PIPELINE = build_texture_gen_pipe(
+            base_ckpt_dir="./weights",
+            ip_adapt_scale=0,
+            device="cuda",
+        )
+        ```
+    """
+
     download_kolors_weights(f"{base_ckpt_dir}/Kolors")
     logger.info(f"Load Kolors weights...")
     tokenizer = ChatGLMTokenizer.from_pretrained(
