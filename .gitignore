@@ -60,3 +60,7 @@ scripts/tools/
 weights
 apps/sessions/
 apps/assets/
+
+# Larger than 1MB
+docs/assets/real2sim_mujoco.gif
+docs/assets/scene3d.gif

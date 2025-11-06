@@ -1,0 +1,110 @@
+site_name: Documentation
+site_url: https://horizonrobotics.github.io/EmbodiedGen/
+repo_name: "EmbodiedGen"
+repo_url: https://github.com/HorizonRobotics/EmbodiedGen
+copyright: "Copyright (c) 2025 Horizon Robotics"
+
+nav:
+  - 🏠 Home: index.md
+  - 🚀 Installation: install.md
+  - 🧩 Services:
+    - Overview: services/index.md
+    - Image-to-3D: services/image_to_3d.md
+    - Text-to-3D: services/text_to_3d.md
+    - Texture Generation: services/texture_edit.md
+    - Asset Visualizer: services/visualize_asset.md
+  - 📘 Tutorials:
+    - Overview: tutorials/index.md
+    - Image-to-3D: tutorials/image_to_3d.md
+    - Text-to-3D: tutorials/text_to_3d.md
+    - Texture Generation: tutorials/texture_edit.md
+    # - Articulated Object Generation: tutorials/articulated_gen.md
+    - 3D Scene Generation: tutorials/scene_gen.md
+    - Interactive 3D Scenes: tutorials/layout_gen.md
+    - Gym Parallel Envs: tutorials/gym_env.md
+    - Any Simulators: tutorials/any_simulators.md
+    - Digital Twin Creation: tutorials/digital_twin.md
+  - 📚 API Reference:
+    - Overview: api/index.md
+    - Data: api/data.md
+    - Envs: api/envs.md
+    - Models: api/models.md
+    - Trainer: api/trainer.md
+    - Utilities: api/utils.md
+    - Validators: api/validators.md
+  - ✨ Acknowledgement: acknowledgement.md
+
+extra:
+  social:
+    - icon: simple/huggingface
+      link: https://huggingface.co/collections/HorizonRobotics/embodiedgen
+    - icon: fontawesome/brands/github
+      link: https://github.com/HorizonRobotics/EmbodiedGen
+    - icon: simple/arxiv
+      link: https://arxiv.org/abs/2506.10600
+    - icon: fontawesome/solid/globe
+      link: https://horizonrobotics.github.io/robot_lab/embodied_gen/index.html
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/watch?v=rG4odybuJRk
+
+theme:
+  name: material
+  language: en
+  logo: assets/logo.png
+  favicon: assets/logo.png
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.tabs
+    - navigation.top
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: brown
+      accent: red
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: brown
+      accent: red
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [embodied_gen]
+          options:
+            show_signature_annotations: true
+            separate_signature: true
+            show_root_toc_entry: false
+            docstring_style: google
+            show_source: true
+            merge_init_into_class: true
+            show_inherited_members: true
+            show_root_heading: true
+            show_root_full_path: true
+
+  - git-revision-date-localized:
+      enable_creation_date: true
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - admonition
+

@@ -1,0 +1,22 @@
+/* Adjust the logo size */
+.md-header__button.md-logo {
+    height: 4rem;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+}
+.md-header__button.md-logo img {
+    height: 4rem;
+    width: auto;
+}
+
+.md-typeset pre code {
+    font-size: 0.7rem;
+    /* line-height: 1.5; */
+    font-family: "Fira Code", "JetBrains Mono", monospace;
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  font-size: 0.77rem;
+}
