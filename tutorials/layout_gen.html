@@ -8,28 +8,28 @@
       
       
       
-        <link rel="canonical" href="https://horizonrobotics.github.io/EmbodiedGen/tutorials/digital_twin/">
+        <link rel="canonical" href="https://horizonrobotics.github.io/EmbodiedGen/tutorials/layout_gen.html">
       
       
-        <link rel="prev" href="../any_simulators/">
+        <link rel="prev" href="scene_gen.html">
       
       
-        <link rel="next" href="../../api/">
+        <link rel="next" href="gym_env.html">
       
       
-      <link rel="icon" href="../../assets/logo.png">
+      <link rel="icon" href="../assets/logo.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
     
     
       
-        <title>Digital Twin Creation - Documentation</title>
+        <title>Interactive 3D Scenes - Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.84d31ad4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -48,11 +48,13 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../../stylesheets/extra.css">
+      <link rel="stylesheet" href="../stylesheets/extra.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -78,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#real-to-sim-digital-twin-creation" class="md-skip">
+        <a href="#layout-generation-interactive-3d-scenes" class="md-skip">
           Skip to content
         </a>
       
@@ -92,9 +94,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Documentation" class="md-header__button md-logo" aria-label="Documentation" data-md-component="logo">
+    <a href="../index.html" title="Documentation" class="md-header__button md-logo" aria-label="Documentation" data-md-component="logo">
       
-  <img src="../../assets/logo.png" alt="logo">
+  <img src="../assets/logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -111,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Digital Twin Creation
+              Interactive 3D Scenes
             
           </span>
         </div>
@@ -222,7 +224,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../index.html" class="md-tabs__link">
         
   
   
@@ -241,7 +243,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../install/" class="md-tabs__link">
+      <a href="../install.html" class="md-tabs__link">
         
   
   
@@ -262,7 +264,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../services/" class="md-tabs__link">
+        <a href="../services/index.html" class="md-tabs__link">
           
   
   
@@ -284,7 +286,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+        <a href="index.html" class="md-tabs__link">
           
   
   
@@ -304,7 +306,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api/" class="md-tabs__link">
+        <a href="../api/index.html" class="md-tabs__link">
           
   
   
@@ -322,7 +324,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../acknowledgement/" class="md-tabs__link">
+      <a href="../acknowledgement.html" class="md-tabs__link">
         
   
   
@@ -357,9 +359,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Documentation" class="md-nav__button md-logo" aria-label="Documentation" data-md-component="logo">
+    <a href="../index.html" title="Documentation" class="md-nav__button md-logo" aria-label="Documentation" data-md-component="logo">
       
-  <img src="../../assets/logo.png" alt="logo">
+  <img src="../assets/logo.png" alt="logo">
 
     </a>
     Documentation
@@ -386,7 +388,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../index.html" class="md-nav__link">
         
   
   
@@ -408,7 +410,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../install/" class="md-nav__link">
+      <a href="../install.html" class="md-nav__link">
         
   
   
@@ -471,7 +473,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../services/" class="md-nav__link">
+      <a href="../services/index.html" class="md-nav__link">
         
   
   
@@ -494,7 +496,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../services/image_to_3d/" class="md-nav__link">
+      <a href="../services/image_to_3d.html" class="md-nav__link">
         
   
   
@@ -517,7 +519,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../services/text_to_3d/" class="md-nav__link">
+      <a href="../services/text_to_3d.html" class="md-nav__link">
         
   
   
@@ -540,7 +542,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../services/texture_edit/" class="md-nav__link">
+      <a href="../services/texture_edit.html" class="md-nav__link">
         
   
   
@@ -563,7 +565,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../services/visualize_asset/" class="md-nav__link">
+      <a href="../services/visualize_asset.html" class="md-nav__link">
         
   
   
@@ -639,7 +641,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="index.html" class="md-nav__link">
         
   
   
@@ -662,7 +664,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../image_to_3d/" class="md-nav__link">
+      <a href="image_to_3d.html" class="md-nav__link">
         
   
   
@@ -685,7 +687,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../text_to_3d/" class="md-nav__link">
+      <a href="text_to_3d.html" class="md-nav__link">
         
   
   
@@ -708,7 +710,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../texture_edit/" class="md-nav__link">
+      <a href="texture_edit.html" class="md-nav__link">
         
   
   
@@ -731,81 +733,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../scene_gen/" class="md-nav__link">
+      <a href="scene_gen.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     3D Scene Generation
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../layout_gen/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Interactive 3D Scenes
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../gym_env/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Gym Parallel Envs
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../any_simulators/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Any Simulators
     
   </span>
   
@@ -832,7 +765,160 @@
         
       
       
-      <a href="./" class="md-nav__link md-nav__link--active">
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Interactive 3D Scenes
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="layout_gen.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Interactive 3D Scenes
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites-prepare-background-3d-scenes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites — Prepare Background 3D Scenes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate-interactive-layout-scenes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generate Interactive Layout Scenes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generate Interactive Layout Scenes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#batch-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Batch Generation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#layout-randomization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Layout Randomization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#load-interactive-3d-scenes-in-simulators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Load Interactive 3D Scenes in Simulators
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gym_env.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gym Parallel Envs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="any_simulators.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Any Simulators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="digital_twin.html" class="md-nav__link">
         
   
   
@@ -843,7 +929,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -904,7 +989,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/" class="md-nav__link">
+      <a href="../api/index.html" class="md-nav__link">
         
   
   
@@ -927,7 +1012,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/data/" class="md-nav__link">
+      <a href="../api/data.html" class="md-nav__link">
         
   
   
@@ -950,7 +1035,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/envs/" class="md-nav__link">
+      <a href="../api/envs.html" class="md-nav__link">
         
   
   
@@ -973,7 +1058,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/models/" class="md-nav__link">
+      <a href="../api/models.html" class="md-nav__link">
         
   
   
@@ -996,7 +1081,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/trainer/" class="md-nav__link">
+      <a href="../api/trainer.html" class="md-nav__link">
         
   
   
@@ -1019,7 +1104,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/utils/" class="md-nav__link">
+      <a href="../api/utils.html" class="md-nav__link">
         
   
   
@@ -1042,7 +1127,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/validators/" class="md-nav__link">
+      <a href="../api/validators.html" class="md-nav__link">
         
   
   
@@ -1072,7 +1157,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../acknowledgement/" class="md-nav__link">
+      <a href="../acknowledgement.html" class="md-nav__link">
         
   
   
@@ -1107,6 +1192,65 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites-prepare-background-3d-scenes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites — Prepare Background 3D Scenes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate-interactive-layout-scenes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generate Interactive Layout Scenes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generate Interactive Layout Scenes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#batch-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Batch Generation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#layout-randomization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Layout Randomization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#load-interactive-3d-scenes-in-simulators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Load Interactive 3D Scenes in Simulators
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1121,7 +1265,7 @@
 
 
   
-    <a href="https://github.com/HorizonRobotics/EmbodiedGen/edit/master/docs/tutorials/digital_twin.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/HorizonRobotics/EmbodiedGen/edit/master/docs/tutorials/layout_gen.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -1129,8 +1273,79 @@
   
 
 
-<h1 id="real-to-sim-digital-twin-creation">Real-to-Sim Digital Twin Creation</h1>
-<p><img src="/EmbodiedGen/assets/real2sim_mujoco.gif" alt="real2sim_mujoco" width="600"></p>
+<h1 id="layout-generation-interactive-3d-scenes">🏞️ Layout Generation — Interactive 3D Scenes</h1>
+<p>Layout Generation enables the generation of diverse, physically realistic, and scalable <strong>interactive 3D scenes</strong> directly from natural language task descriptions, while also modeling the robot's pose and relationships with manipulable objects. Target objects are randomly placed within the robot's reachable range, making the scenes readily usable for downstream simulation and reinforcement learning tasks in any mainstream simulator.</p>
+<div align="center" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; justify-items: center; margin: 20px 0;">
+  <img src="../assets/layout1.gif" alt="layout1" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="../assets/layout2.gif" alt="layout2" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="../assets/layout3.gif" alt="layout3" style="width: 400px; border-radius: 12px; display: block;">
+  <img src="../assets/Iscene_demo2.gif" alt="layout4" style="width: 400px; border-radius: 12px; display: block;">
+</div>
+
+<div class="admonition note">
+<p class="admonition-title">Model Requirement</p>
+<p>The text-to-image model is based on <code>SD3.5 Medium</code>. Usage requires agreement to the <a href="https://huggingface.co/stabilityai/stable-diffusion-3.5-medium">model license</a>.</p>
+</div>
+<hr />
+<h2 id="prerequisites-prepare-background-3d-scenes">Prerequisites — Prepare Background 3D Scenes</h2>
+<p>Before running <code>layout-cli</code>, you need to prepare background 3D scenes.
+You can either <strong>generate your own</strong> using the <a href="scene_gen.html"><code>scene3d-cli</code></a>, or <strong>download pre-generated backgrounds</strong> for convenience.</p>
+<p>Each scene takes approximately <strong>30 minutes</strong> to generate. For efficiency, we recommend pre-generating and listing them in <code>outputs/bg_scenes/scene_list.txt</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Option 1: Download pre-generated backgrounds (~4 GB)</span>
+hf<span class="w"> </span>download<span class="w"> </span>xinjjj/scene3d-bg<span class="w"> </span>--repo-type<span class="w"> </span>dataset<span class="w"> </span>--local-dir<span class="w"> </span>outputs
+
+<span class="c1"># Option 2: Download a larger background set (~14 GB)</span>
+hf<span class="w"> </span>download<span class="w"> </span>xinjjj..RLv2-BG<span class="w"> </span>--repo-type<span class="w"> </span>dataset<span class="w"> </span>--local-dir<span class="w"> </span>outputs
+</code></pre></div>
+<h2 id="generate-interactive-layout-scenes">Generate Interactive Layout Scenes</h2>
+<p>Use the <code>layout-cli</code> to create interactive 3D scenes based on task descriptions. Each layout generation takes approximately 30 minutes.</p>
+<div class="highlight"><pre><span></span><code>layout-cli<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--task_descs<span class="w"> </span><span class="s2">&quot;Place the pen in the mug on the desk&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">               </span><span class="s2">&quot;Put the fruit on the table on the plate&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--bg_list<span class="w"> </span><span class="s2">&quot;outputs/bg_scenes/scene_list.txt&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output_root<span class="w"> </span><span class="s2">&quot;outputs/layouts_gen&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--insert_robot
+</code></pre></div>
+<p>You will get the following results:</p>
+<div align="center" style="display: flex; justify-content: center; align-items: flex-start; gap: 24px; margin: 20px auto; flex-wrap: wrap;">
+  <img src="../assets/Iscene_demo1.gif" alt="Iscene_demo1"
+       style="height: 200px; border-radius: 12px; display: block; width: auto;">
+  <img src="../assets/Iscene_demo2.gif" alt="Iscene_demo2"
+       style="height: 200px; border-radius: 12px; display: block; width: auto;">
+</div>
+
+<h3 id="batch-generation">Batch Generation</h3>
+<p>You can also run multiple tasks via a task list file in the backend.</p>
+<div class="highlight"><pre><span></span><code><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span><span class="m">0</span><span class="w"> </span>nohup<span class="w"> </span>layout-cli<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--task_descs<span class="w"> </span><span class="s2">&quot;apps/assets/example_layout/task_list.txt&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--bg_list<span class="w"> </span><span class="s2">&quot;outputs/bg_scenes/scene_list.txt&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output_root<span class="w"> </span><span class="s2">&quot;outputs/layouts_gens&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--insert_robot<span class="w"> </span>&gt;<span class="w"> </span>layouts_gens.log<span class="w"> </span><span class="p">&amp;</span>
+</code></pre></div>
+<blockquote>
+<p>💡 Remove <code>--insert_robot</code> if you don’t need robot pose consideration in layout generation.</p>
+</blockquote>
+<h3 id="layout-randomization">Layout Randomization</h3>
+<p>Using <code>compose_layout.py</code>, you can <strong>recompose the layout</strong> of the generated interactive 3D scenes.</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>embodied_gen/scripts/compose_layout.py<span class="w"> </span><span class="se">\</span>
+--layout_path<span class="w"> </span><span class="s2">&quot;outputs/layouts_gens/task_0000/layout.json&quot;</span><span class="w"> </span><span class="se">\</span>
+--output_dir<span class="w"> </span><span class="s2">&quot;outputs/layouts_gens/task_0000/recompose&quot;</span><span class="w"> </span><span class="se">\</span>
+--insert_robot
+</code></pre></div>
+<h3 id="load-interactive-3d-scenes-in-simulators">Load Interactive 3D Scenes in Simulators</h3>
+<p>We provide <code>sim-cli</code>, that allows users to easily load generated layouts into an interactive 3D simulation using the SAPIEN engine.</p>
+<div class="highlight"><pre><span></span><code>sim-cli<span class="w"> </span>--layout_path<span class="w"> </span><span class="s2">&quot;outputs/layouts_gen/task_0000/layout.json&quot;</span><span class="w"> </span><span class="se">\</span>
+--output_dir<span class="w"> </span><span class="s2">&quot;outputs/layouts_gen/task_0000/sapien_render&quot;</span><span class="w"> </span>--insert_robot
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Recommended Workflow</p>
+<ol>
+<li>Generate or download background scenes using <code>scene3d-cli</code>.</li>
+<li>Create interactive layouts from task descriptions using <code>layout-cli</code>.</li>
+<li>Optionally recompose them using <code>compose_layout.py</code>.</li>
+<li>Load the final layouts into simulators with <code>sim-cli</code>.</li>
+</ol>
+</div>
 
 
 
@@ -1153,7 +1368,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 6, 2025 08:00:24 UTC">November 6, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 6, 2025 11:25:51 UTC">November 6, 2025</span>
   </span>
 
     
@@ -1283,10 +1498,16 @@
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.tabs", "navigation.top", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.tabs", "navigation.top", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+      
+        <script src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js" type="module"></script>
+      
+        <script src="../js/model_viewer.js"></script>
       
     
   </body>

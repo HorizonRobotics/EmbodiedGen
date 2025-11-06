@@ -8,28 +8,28 @@
       
       
       
-        <link rel="canonical" href="https://horizonrobotics.github.io/EmbodiedGen/tutorials/gym_env/">
+        <link rel="canonical" href="https://horizonrobotics.github.io/EmbodiedGen/tutorials/text_to_3d.html">
       
       
-        <link rel="prev" href="../layout_gen/">
+        <link rel="prev" href="image_to_3d.html">
       
       
-        <link rel="next" href="../any_simulators/">
+        <link rel="next" href="texture_edit.html">
       
       
-      <link rel="icon" href="../../assets/logo.png">
+      <link rel="icon" href="../assets/logo.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
     
     
       
-        <title>Gym Parallel Envs - Documentation</title>
+        <title>Text-to-3D - Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.84d31ad4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -48,11 +48,13 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../../stylesheets/extra.css">
+      <link rel="stylesheet" href="../stylesheets/extra.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -78,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#simulation-in-parallel-envs" class="md-skip">
+        <a href="#text-to-3d-generate-3d-assets-from-text" class="md-skip">
           Skip to content
         </a>
       
@@ -92,9 +94,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Documentation" class="md-header__button md-logo" aria-label="Documentation" data-md-component="logo">
+    <a href="../index.html" title="Documentation" class="md-header__button md-logo" aria-label="Documentation" data-md-component="logo">
       
-  <img src="../../assets/logo.png" alt="logo">
+  <img src="../assets/logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -111,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Gym Parallel Envs
+              Text-to-3D
             
           </span>
         </div>
@@ -222,7 +224,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../index.html" class="md-tabs__link">
         
   
   
@@ -241,7 +243,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../install/" class="md-tabs__link">
+      <a href="../install.html" class="md-tabs__link">
         
   
   
@@ -262,7 +264,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../services/" class="md-tabs__link">
+        <a href="../services/index.html" class="md-tabs__link">
           
   
   
@@ -284,7 +286,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+        <a href="index.html" class="md-tabs__link">
           
   
   
@@ -304,7 +306,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api/" class="md-tabs__link">
+        <a href="../api/index.html" class="md-tabs__link">
           
   
   
@@ -322,7 +324,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../acknowledgement/" class="md-tabs__link">
+      <a href="../acknowledgement.html" class="md-tabs__link">
         
   
   
@@ -357,9 +359,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Documentation" class="md-nav__button md-logo" aria-label="Documentation" data-md-component="logo">
+    <a href="../index.html" title="Documentation" class="md-nav__button md-logo" aria-label="Documentation" data-md-component="logo">
       
-  <img src="../../assets/logo.png" alt="logo">
+  <img src="../assets/logo.png" alt="logo">
 
     </a>
     Documentation
@@ -386,7 +388,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../index.html" class="md-nav__link">
         
   
   
@@ -408,7 +410,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../install/" class="md-nav__link">
+      <a href="../install.html" class="md-nav__link">
         
   
   
@@ -471,7 +473,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../services/" class="md-nav__link">
+      <a href="../services/index.html" class="md-nav__link">
         
   
   
@@ -494,7 +496,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../services/image_to_3d/" class="md-nav__link">
+      <a href="../services/image_to_3d.html" class="md-nav__link">
         
   
   
@@ -517,7 +519,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../services/text_to_3d/" class="md-nav__link">
+      <a href="../services/text_to_3d.html" class="md-nav__link">
         
   
   
@@ -540,7 +542,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../services/texture_edit/" class="md-nav__link">
+      <a href="../services/texture_edit.html" class="md-nav__link">
         
   
   
@@ -563,7 +565,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../services/visualize_asset/" class="md-nav__link">
+      <a href="../services/visualize_asset.html" class="md-nav__link">
         
   
   
@@ -639,7 +641,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="index.html" class="md-nav__link">
         
   
   
@@ -662,104 +664,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../image_to_3d/" class="md-nav__link">
+      <a href="image_to_3d.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     Image-to-3D
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../text_to_3d/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Text-to-3D
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../texture_edit/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Texture Generation
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../scene_gen/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    3D Scene Generation
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../layout_gen/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Interactive 3D Scenes
     
   </span>
   
@@ -791,7 +701,7 @@
   
   
   <span class="md-ellipsis">
-    Gym Parallel Envs
+    Text-to-3D
     
   </span>
   
@@ -799,12 +709,12 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="./" class="md-nav__link md-nav__link--active">
+      <a href="text_to_3d.html" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
-    Gym Parallel Envs
+    Text-to-3D
     
   </span>
   
@@ -851,7 +761,99 @@
   
   
     <li class="md-nav__item">
-      <a href="../any_simulators/" class="md-nav__link">
+      <a href="texture_edit.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Texture Generation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="scene_gen.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Scene Generation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="layout_gen.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Interactive 3D Scenes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gym_env.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gym Parallel Envs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="any_simulators.html" class="md-nav__link">
         
   
   
@@ -874,7 +876,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../digital_twin/" class="md-nav__link">
+      <a href="digital_twin.html" class="md-nav__link">
         
   
   
@@ -945,7 +947,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/" class="md-nav__link">
+      <a href="../api/index.html" class="md-nav__link">
         
   
   
@@ -968,7 +970,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/data/" class="md-nav__link">
+      <a href="../api/data.html" class="md-nav__link">
         
   
   
@@ -991,7 +993,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/envs/" class="md-nav__link">
+      <a href="../api/envs.html" class="md-nav__link">
         
   
   
@@ -1014,7 +1016,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/models/" class="md-nav__link">
+      <a href="../api/models.html" class="md-nav__link">
         
   
   
@@ -1037,7 +1039,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/trainer/" class="md-nav__link">
+      <a href="../api/trainer.html" class="md-nav__link">
         
   
   
@@ -1060,7 +1062,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/utils/" class="md-nav__link">
+      <a href="../api/utils.html" class="md-nav__link">
         
   
   
@@ -1083,7 +1085,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/validators/" class="md-nav__link">
+      <a href="../api/validators.html" class="md-nav__link">
         
   
   
@@ -1113,7 +1115,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../acknowledgement/" class="md-nav__link">
+      <a href="../acknowledgement.html" class="md-nav__link">
         
   
   
@@ -1179,7 +1181,7 @@
 
 
   
-    <a href="https://github.com/HorizonRobotics/EmbodiedGen/edit/master/docs/tutorials/gym_env.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/HorizonRobotics/EmbodiedGen/edit/master/docs/tutorials/text_to_3d.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -1187,20 +1189,109 @@
   
 
 
-<h1 id="simulation-in-parallel-envs">Simulation in Parallel Envs</h1>
-<p>Generate multiple parallel simulation environments with <code>gym.make</code> and record sensor and trajectory data.</p>
+<h1 id="text-to-3d-generate-3d-assets-from-text">📝 Text-to-3D: Generate 3D Assets from Text</h1>
+<p>Create <strong>physically plausible 3D assets</strong> from <strong>text descriptions</strong>, supporting a wide range of geometry, style, and material details.</p>
 <hr />
 <h2 id="command-line-usage">⚡ Command-Line Usage</h2>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>embodied_gen/scripts/parallel_sim.py<span class="w"> </span><span class="se">\</span>
---layout_file<span class="w"> </span><span class="s2">&quot;outputs/layouts_gen/task_0000/layout.json&quot;</span><span class="w"> </span><span class="se">\</span>
---output_dir<span class="w"> </span><span class="s2">&quot;outputs/parallel_sim/task_0000&quot;</span><span class="w"> </span><span class="se">\</span>
---num_envs<span class="w"> </span><span class="m">16</span>
+<p><strong>Basic CLI(recommend)</strong></p>
+<p>Text-to-image model based on Stable Diffusion 3.5 Medium， English prompts only. Usage requires agreement to the <a href="https://huggingface.co/stabilityai/stable-diffusion-3.5-medium">model license (click “Accept”)</a>.</p>
+<div class="highlight"><pre><span></span><code>text3d-cli<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--prompts<span class="w"> </span><span class="s2">&quot;small bronze figurine of a lion&quot;</span><span class="w"> </span><span class="s2">&quot;A globe with wooden base&quot;</span><span class="w"> </span><span class="s2">&quot;wooden table with embroidery&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--n_image_retry<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--n_asset_retry<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--n_pipe_retry<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--seed_img<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output_root<span class="w"> </span>outputs/textto3d
 </code></pre></div>
-<div style="display: flex; justify-content: center; align-items: center; gap: 16px; margin: 16px 0;">
-  <img src="/EmbodiedGen/assets/parallel_sim.gif" alt="parallel_sim1"
-       style="width: 330px; max-width: 100%; border-radius: 12px; display: block;">
-  <img src="/EmbodiedGen/assets/parallel_sim2.gif" alt="parallel_sim2"
-       style="width: 330px; max-width: 100%; border-radius: 12px; display: block;">
+<ul>
+<li><code>--n_image_retry</code>: Number of retries per prompt for text-to-image generation</li>
+<li><code>--n_asset_retry</code>: Retry attempts for image-to-3D assets generation</li>
+<li><code>--n_pipe_retry</code>: Pipeline retry for end-to-end 3D asset quality check</li>
+<li><code>--seed_img</code>: Optional initial seed image for style guidance</li>
+<li><code>--output_root</code>: Directory to save generated assets</li>
+</ul>
+<p>For large-scale 3D asset generation, set <code>--n_image_retry=4</code> <code>--n_asset_retry=3</code> <code>--n_pipe_retry=2</code>, slower but better, via automatic checking and retries. For more diverse results, omit <code>--seed_img</code>.</p>
+<p>You will get the following results:</p>
+<div class="swiper swiper1" style="max-width: 1000px; margin: 20px auto; border-radius: 12px;">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide model-card">
+        <model-viewer
+            src="https://raw.githubusercontent.com/HochCC/ShowCase/main/text2/sample3d_0.glb"
+            auto-rotate
+            camera-controls
+            background-color="#ffffff"
+            style="display:block; width: 100%; height: 160px; border-radius: 12px;"
+            >
+        </model-viewer>
+        <p style="text-align: center; margin-top: 8px; font-size: 14px;">"small bronze figurine of a lion"</p>
+        </div>
+        <div class="swiper-slide model-card">
+        <model-viewer
+            src="https://raw.githubusercontent.com/HochCC/ShowCase/main/text2/sample3d_1.glb"
+            auto-rotate
+            camera-controls
+            background-color="#ffffff"
+            style="display:block; width: 100%; height: 160px;">
+        </model-viewer>
+        <p style="text-align: center; margin-top: 8px; font-size: 14px;">"A globe with wooden base"</p>
+        </div>
+        <div class="swiper-slide model-card">
+        <model-viewer
+            src="https://raw.githubusercontent.com/HochCC/ShowCase/main/text2/sample3d_2.glb"
+            auto-rotate
+            camera-controls
+            background-color="#ffffff"
+            style="display:block; width: 100%; height: 160px;">
+        </model-viewer>
+        <p style="text-align: center; margin-top: 8px; font-size: 14px;">"wooden table with embroidery"</p>
+        </div>
+    </div>
+    <div class="swiper-button-prev swiper1-prev"></div>
+    <div class="swiper-button-next swiper1-next"></div>
+</div>
+
+<hr />
+<p>Kolors Model CLI (Supports Chinese &amp; English Prompts):
+<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>embodied_gen/scripts/textto3d.sh<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--prompts<span class="w"> </span><span class="s2">&quot;small bronze figurine of a lion&quot;</span><span class="w"> </span><span class="s2">&quot;A globe with wooden base and latitude and longitude lines&quot;</span><span class="w"> </span><span class="s2">&quot;橙色电动手钻，有磨损细节&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output_root<span class="w"> </span>outputs/textto3d_k
+</code></pre></div></p>
+<blockquote>
+<p>Models with more permissive licenses can be found in <code>embodied_gen/models/image_comm_model.py</code>.</p>
+</blockquote>
+<p>The generated results are organized as follows:
+<div class="highlight"><pre><span></span><code>outputs/textto3d
+├──<span class="w"> </span>asset3d
+│<span class="w">   </span>├──<span class="w"> </span>sample3d_xx
+│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>result
+│<span class="w">   </span>│<span class="w">       </span>├──<span class="w"> </span>mesh
+│<span class="w">   </span>│<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>material_0.png
+│<span class="w">   </span>│<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>material.mtl
+│<span class="w">   </span>│<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>sample3d_xx_collision.obj
+│<span class="w">   </span>│<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>sample3d_xx.glb
+│<span class="w">   </span>│<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>sample3d_xx_gs.ply
+│<span class="w">   </span>│<span class="w">       </span>│<span class="w">   </span>└──<span class="w"> </span>sample3d_xx.obj
+│<span class="w">   </span>│<span class="w">       </span>├──<span class="w"> </span>sample3d_xx.urdf
+│<span class="w">   </span>│<span class="w">       </span>└──<span class="w"> </span>video.mp4
+└──<span class="w"> </span>images
+<span class="w">    </span>├──<span class="w"> </span>sample3d_xx.png
+<span class="w">    </span>├──<span class="w"> </span>sample3d_xx_raw.png
+</code></pre></div></p>
+<ul>
+<li><code>mesh/</code> → 3D geometry and texture files for the asset, including visual mesh, collision mesh and 3DGS</li>
+<li><code>*.urdf</code> → Simulator-ready URDF including collision and visual meshes</li>
+<li><code>video.mp4</code> → Preview video of the generated 3D asset</li>
+<li><code>images/sample3d_xx.png</code> → Foreground-extracted image used for image-to-3D step</li>
+<li><code>images/sample3d_xx_raw.png</code> → Original generated image from the text-to-image step</li>
+</ul>
+<hr />
+<div class="admonition tip">
+<p class="admonition-title">Getting Started</p>
+<ul>
+<li>You can also try Text-to-3D instantly online via our <a href="https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D">Hugging Face Space</a> — no installation required.</li>
+<li>Explore EmbodiedGen generated sim-ready <a href="https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Gallery-Explorer">Assets Gallery</a>.</li>
+<li>For instructions on using the generated asset in any simulator, see <a href="any_simulators.html">Any Simulators Tutorial</a>.</li>
+</ul>
 </div>
 
 
@@ -1224,7 +1315,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 6, 2025 08:00:24 UTC">November 6, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 6, 2025 11:25:51 UTC">November 6, 2025</span>
   </span>
 
     
@@ -1354,10 +1445,16 @@
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.tabs", "navigation.top", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.tabs", "navigation.top", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+      
+        <script src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js" type="module"></script>
+      
+        <script src="../js/model_viewer.js"></script>
       
     
   </body>
