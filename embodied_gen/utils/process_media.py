@@ -69,6 +69,40 @@ def render_asset3d(
     no_index_file: bool = False,
     with_mtl: bool = True,
 ) -> list[str]:
+    """Renders a 3D mesh asset and returns output image paths.
+
+    Args:
+        mesh_path (str): Path to the mesh file.
+        output_root (str): Directory to save outputs.
+        distance (float, optional): Camera distance.
+        num_images (int, optional): Number of views to render.
+        elevation (list[float], optional): Camera elevation angles.
+        pbr_light_factor (float, optional): PBR lighting factor.
+        return_key (str, optional): Glob pattern for output images.
+        output_subdir (str, optional): Subdirectory for outputs.
+        gen_color_mp4 (bool, optional): Generate color MP4 video.
+        gen_viewnormal_mp4 (bool, optional): Generate view normal MP4.
+        gen_glonormal_mp4 (bool, optional): Generate global normal MP4.
+        no_index_file (bool, optional): Skip index file saving.
+        with_mtl (bool, optional): Use mesh material.
+
+    Returns:
+        list[str]: List of output image file paths.
+
+    Example:
+        ```py
+        from embodied_gen.utils.process_media import render_asset3d
+
+        image_paths = render_asset3d(
+            mesh_path="path_to_mesh.obj",
+            output_root="path_to_save_dir",
+            num_images=6,
+            elevation=(30, -30),
+            output_subdir="renders",
+            no_index_file=True,
+        )
+        ```
+    """
     input_args = dict(
         mesh_path=mesh_path,
         output_root=output_root,
@@ -95,6 +129,13 @@ def render_asset3d(
 
 
 def merge_images_video(color_images, normal_images, output_path) -> None:
+    """Merges color and normal images into a video.
+
+    Args:
+        color_images (list[np.ndarray]): List of color images.
+        normal_images (list[np.ndarray]): List of normal images.
+        output_path (str): Path to save the output video.
+    """
     width = color_images[0].shape[1]
     combined_video = [
         np.hstack([rgb_img[:, : width // 2], normal_img[:, width // 2 :]])
@@ -108,7 +149,13 @@ def merge_images_video(color_images, normal_images, output_path) -> None:
 def merge_video_video(
     video_path1: str, video_path2: str, output_path: str
 ) -> None:
-    """Merge two videos by the left half and the right half of the videos."""
+    """Merges two videos by combining their left and right halves.
+
+    Args:
+        video_path1 (str): Path to first video.
+        video_path2 (str): Path to second video.
+        output_path (str): Path to save the merged video.
+    """
     clip1 = VideoFileClip(video_path1)
     clip2 = VideoFileClip(video_path2)
 
@@ -127,6 +174,16 @@ def filter_small_connected_components(
     area_ratio: float,
     connectivity: int = 8,
 ) -> np.ndarray:
+    """Removes small connected components from a binary mask.
+
+    Args:
+        mask (Union[Image.Image, np.ndarray]): Input mask.
+        area_ratio (float): Minimum area ratio for components.
+        connectivity (int, optional): Connectivity for labeling.
+
+    Returns:
+        np.ndarray: Mask with small components removed.
+    """
     if isinstance(mask, Image.Image):
         mask = np.array(mask)
     num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(
@@ -152,6 +209,16 @@ def filter_image_small_connected_components(
     area_ratio: float = 10,
     connectivity: int = 8,
 ) -> np.ndarray:
+    """Removes small connected components from the alpha channel of an image.
+
+    Args:
+        image (Union[Image.Image, np.ndarray]): Input image.
+        area_ratio (float, optional): Minimum area ratio.
+        connectivity (int, optional): Connectivity for labeling.
+
+    Returns:
+        np.ndarray: Image with filtered alpha channel.
+    """
     if isinstance(image, Image.Image):
         image = image.convert("RGBA")
         image = np.array(image)
@@ -169,6 +236,24 @@ def combine_images_to_grid(
     target_wh: tuple[int, int] = (512, 512),
     image_mode: str = "RGB",
 ) -> list[Image.Image]:
+    """Combines multiple images into a grid.
+
+    Args:
+        images (list[str | Image.Image]): List of image paths or PIL Images.
+        cat_row_col (tuple[int, int], optional): Grid rows and columns.
+        target_wh (tuple[int, int], optional): Target image size.
+        image_mode (str, optional): Image mode.
+
+    Returns:
+        list[Image.Image]: List containing the grid image.
+
+    Example:
+        ```py
+        from embodied_gen.utils.process_media import combine_images_to_grid
+        grid = combine_images_to_grid(["img1.png", "img2.png"])
+        grid[0].save("grid.png")
+        ```
+    """
     n_images = len(images)
     if n_images == 1:
         return images
@@ -196,6 +281,19 @@ def combine_images_to_grid(
 
 
 class SceneTreeVisualizer:
+    """Visualizes a scene tree layout using networkx and matplotlib.
+
+    Args:
+        layout_info (LayoutInfo): Layout information for the scene.
+
+    Example:
+        ```py
+        from embodied_gen.utils.process_media import SceneTreeVisualizer
+        visualizer = SceneTreeVisualizer(layout_info)
+        visualizer.render(save_path="tree.png")
+        ```
+    """
+
     def __init__(self, layout_info: LayoutInfo) -> None:
         self.tree = layout_info.tree
         self.relation = layout_info.relation
@@ -274,6 +372,14 @@ class SceneTreeVisualizer:
         dpi=300,
         title: str = "Scene 3D Hierarchy Tree",
     ):
+        """Renders the scene tree and saves to file.
+
+        Args:
+            save_path (str): Path to save the rendered image.
+            figsize (tuple, optional): Figure size.
+            dpi (int, optional): Image DPI.
+            title (str, optional): Plot image title.
+        """
         node_colors = [
             self.role_colors[self._get_node_role(n)] for n in self.G.nodes
         ]
@@ -350,6 +456,14 @@ class SceneTreeVisualizer:
 
 
 def load_scene_dict(file_path: str) -> dict:
+    """Loads a scene description dictionary from a file.
+
+    Args:
+        file_path (str): Path to the scene description file.
+
+    Returns:
+        dict: Mapping from scene ID to description.
+    """
     scene_dict = {}
     with open(file_path, "r", encoding='utf-8') as f:
         for line in f:
@@ -363,12 +477,28 @@ def load_scene_dict(file_path: str) -> dict:
 
 
 def is_image_file(filename: str) -> bool:
+    """Checks if a filename is an image file.
+
+    Args:
+        filename (str): Filename to check.
+
+    Returns:
+        bool: True if image file, False otherwise.
+    """
     mime_type, _ = mimetypes.guess_type(filename)
 
     return mime_type is not None and mime_type.startswith('image')
 
 
 def parse_text_prompts(prompts: list[str]) -> list[str]:
+    """Parses text prompts from a list or file.
+
+    Args:
+        prompts (list[str]): List of prompts or a file path.
+
+    Returns:
+        list[str]: List of parsed prompts.
+    """
     if len(prompts) == 1 and prompts[0].endswith(".txt"):
         with open(prompts[0], "r") as f:
             prompts = [
@@ -386,13 +516,18 @@ def alpha_blend_rgba(
     """Alpha blends a foreground RGBA image over a background RGBA image.
 
     Args:
-        fg_image: Foreground image. Can be a file path (str), a PIL Image,
-            or a NumPy ndarray.
-        bg_image: Background image. Can be a file path (str), a PIL Image,
-            or a NumPy ndarray.
+        fg_image: Foreground image (str, PIL Image, or ndarray).
+        bg_image: Background image (str, PIL Image, or ndarray).
 
     Returns:
-        A PIL Image representing the alpha-blended result in RGBA mode.
+        Image.Image: Alpha-blended RGBA image.
+
+    Example:
+        ```py
+        from embodied_gen.utils.process_media import alpha_blend_rgba
+        result = alpha_blend_rgba("fg.png", "bg.png")
+        result.save("blended.png")
+        ```
     """
     if isinstance(fg_image, str):
         fg_image = Image.open(fg_image)
@@ -421,13 +556,11 @@ def check_object_edge_truncated(
     """Checks if a binary object mask is truncated at the image edges.
 
     Args:
-        mask: A 2D binary NumPy array where nonzero values indicate the object region.
-        edge_threshold: Number of pixels from each image edge to consider for truncation.
-            Defaults to 5.
+        mask (np.ndarray): 2D binary mask.
+        edge_threshold (int, optional): Edge pixel threshold.
 
     Returns:
-        True if the object is fully enclosed (not truncated).
-        False if the object touches or crosses any image boundary.
+        bool: True if object is fully enclosed, False if truncated.
     """
     top = mask[:edge_threshold, :].any()
     bottom = mask[-edge_threshold:, :].any()
@@ -440,6 +573,22 @@ def check_object_edge_truncated(
 def vcat_pil_images(
     images: list[Image.Image], image_mode: str = "RGB"
 ) -> Image.Image:
+    """Vertically concatenates a list of PIL images.
+
+    Args:
+        images (list[Image.Image]): List of images.
+        image_mode (str, optional): Image mode.
+
+    Returns:
+        Image.Image: Vertically concatenated image.
+
+    Example:
+        ```py
+        from embodied_gen.utils.process_media import vcat_pil_images
+        img = vcat_pil_images([Image.open("a.png"), Image.open("b.png")])
+        img.save("vcat.png")
+        ```
+    """
     widths, heights = zip(*(img.size for img in images))
     total_height = sum(heights)
     max_width = max(widths)

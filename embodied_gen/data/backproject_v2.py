@@ -58,7 +58,16 @@ __all__ = [
 def _transform_vertices(
     mtx: torch.Tensor, pos: torch.Tensor, keepdim: bool = False
 ) -> torch.Tensor:
-    """Transform 3D vertices using a projection matrix."""
+    """Transforms 3D vertices using a projection matrix.
+
+    Args:
+        mtx (torch.Tensor): Projection matrix.
+        pos (torch.Tensor): Vertex positions.
+        keepdim (bool, optional): If True, keeps the batch dimension.
+
+    Returns:
+        torch.Tensor: Transformed vertices.
+    """
     t_mtx = torch.as_tensor(mtx, device=pos.device, dtype=pos.dtype)
     if pos.size(-1) == 3:
         pos = torch.cat([pos, torch.ones_like(pos[..., :1])], dim=-1)
@@ -71,7 +80,17 @@ def _transform_vertices(
 def _bilinear_interpolation_scattering(
     image_h: int, image_w: int, coords: torch.Tensor, values: torch.Tensor
 ) -> torch.Tensor:
-    """Bilinear interpolation scattering for grid-based value accumulation."""
+    """Performs bilinear interpolation scattering for grid-based value accumulation.
+
+    Args:
+        image_h (int): Image height.
+        image_w (int): Image width.
+        coords (torch.Tensor): Normalized coordinates.
+        values (torch.Tensor): Values to scatter.
+
+    Returns:
+        torch.Tensor: Interpolated grid.
+    """
     device = values.device
     dtype = values.dtype
     C = values.shape[-1]
@@ -135,7 +154,18 @@ def _texture_inpaint_smooth(
     faces: np.ndarray,
     uv_map: np.ndarray,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Perform texture inpainting using vertex-based color propagation."""
+    """Performs texture inpainting using vertex-based color propagation.
+
+    Args:
+        texture (np.ndarray): Texture image.
+        mask (np.ndarray): Mask image.
+        vertices (np.ndarray): Mesh vertices.
+        faces (np.ndarray): Mesh faces.
+        uv_map (np.ndarray): UV coordinates.
+
+    Returns:
+        tuple[np.ndarray, np.ndarray]: Inpainted texture and updated mask.
+    """
     image_h, image_w, C = texture.shape
     N = vertices.shape[0]
 
@@ -231,29 +261,41 @@ def _texture_inpaint_smooth(
 class TextureBacker:
     """Texture baking pipeline for multi-view projection and fusion.
 
-    This class performs UV-based texture generation for a 3D mesh using
-    multi-view color images, depth, and normal information. The pipeline
-    includes mesh normalization and UV unwrapping, visibility-aware
-    back-projection, confidence-weighted texture fusion, and inpainting
-    of missing texture regions.
+    This class generates UV-based textures for a 3D mesh using multi-view images,
+    depth, and normal information. It includes mesh normalization, UV unwrapping,
+    visibility-aware back-projection, confidence-weighted fusion, and inpainting.
 
     Args:
-        camera_params (CameraSetting): Camera intrinsics and extrinsics used
-            for rendering each view.
-        view_weights (list[float]): A list of weights for each view, used
-            to blend confidence maps during texture fusion.
-        render_wh (tuple[int, int], optional): Resolution (width, height) for
-            intermediate rendering passes. Defaults to (2048, 2048).
-        texture_wh (tuple[int, int], optional): Output texture resolution
-            (width, height). Defaults to (2048, 2048).
-        bake_angle_thresh (int, optional): Maximum angle (in degrees) between
-            view direction and surface normal for projection to be considered valid.
-            Defaults to 75.
-        mask_thresh (float, optional): Threshold applied to visibility masks
-            during rendering. Defaults to 0.5.
-        smooth_texture (bool, optional): If True, apply post-processing (e.g.,
-            blurring) to the final texture. Defaults to True.
-        inpaint_smooth (bool, optional): If True, apply inpainting to smooth.
+        camera_params (CameraSetting): Camera intrinsics and extrinsics.
+        view_weights (list[float]): Weights for each view in texture fusion.
+        render_wh (tuple[int, int], optional): Intermediate rendering resolution.
+        texture_wh (tuple[int, int], optional): Output texture resolution.
+        bake_angle_thresh (int, optional): Max angle for valid projection.
+        mask_thresh (float, optional): Threshold for visibility masks.
+        smooth_texture (bool, optional): Apply post-processing to texture.
+        inpaint_smooth (bool, optional): Apply inpainting smoothing.
+
+    Example:
+        ```py
+        from embodied_gen.data.backproject_v2 import TextureBacker
+        from embodied_gen.data.utils import CameraSetting
+        import trimesh
+        from PIL import Image
+
+        camera_params = CameraSetting(
+            num_images=6,
+            elevation=[20, -10],
+            distance=5,
+            resolution_hw=(2048,2048),
+            fov=math.radians(30),
+            device='cuda',
+        )
+        view_weights = [1, 0.1, 0.02, 0.1, 1, 0.02]
+        mesh = trimesh.load('mesh.obj')
+        images = [Image.open(f'view_{i}.png') for i in range(6)]
+        texture_backer = TextureBacker(camera_params, view_weights)
+        textured_mesh = texture_backer(images, mesh, 'output.obj')
+        ```
     """
 
     def __init__(
@@ -283,6 +325,12 @@ class TextureBacker:
         )
 
     def _lazy_init_render(self, camera_params, mask_thresh):
+        """Lazily initializes the renderer.
+
+        Args:
+            camera_params (CameraSetting): Camera settings.
+            mask_thresh (float): Mask threshold.
+        """
         if self.renderer is None:
             camera = init_kal_camera(camera_params)
             mv = camera.view_matrix()  # (n 4 4) world2cam
@@ -301,6 +349,14 @@ class TextureBacker:
             )
 
     def load_mesh(self, mesh: trimesh.Trimesh) -> trimesh.Trimesh:
+        """Normalizes mesh and unwraps UVs.
+
+        Args:
+            mesh (trimesh.Trimesh): Input mesh.
+
+        Returns:
+            trimesh.Trimesh: Mesh with normalized vertices and UVs.
+        """
         mesh.vertices, scale, center = normalize_vertices_array(mesh.vertices)
         self.scale, self.center = scale, center
 
@@ -318,6 +374,16 @@ class TextureBacker:
         scale: float = None,
         center: np.ndarray = None,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Gets mesh attributes as numpy arrays.
+
+        Args:
+            mesh (trimesh.Trimesh): Input mesh.
+            scale (float, optional): Scale factor.
+            center (np.ndarray, optional): Center offset.
+
+        Returns:
+            tuple: (vertices, faces, uv_map)
+        """
         vertices = mesh.vertices.copy()
         faces = mesh.faces.copy()
         uv_map = mesh.visual.uv.copy()
@@ -331,6 +397,14 @@ class TextureBacker:
         return vertices, faces, uv_map
 
     def _render_depth_edges(self, depth_image: torch.Tensor) -> torch.Tensor:
+        """Computes edge image from depth map.
+
+        Args:
+            depth_image (torch.Tensor): Depth map.
+
+        Returns:
+            torch.Tensor: Edge image.
+        """
         depth_image_np = depth_image.cpu().numpy()
         depth_image_np = (depth_image_np * 255).astype(np.uint8)
         depth_edges = cv2.Canny(depth_image_np, 30, 80)
@@ -344,6 +418,16 @@ class TextureBacker:
     def compute_enhanced_viewnormal(
         self, mv_mtx: torch.Tensor, vertices: torch.Tensor, faces: torch.Tensor
     ) -> torch.Tensor:
+        """Computes enhanced view normals for mesh faces.
+
+        Args:
+            mv_mtx (torch.Tensor): View matrices.
+            vertices (torch.Tensor): Mesh vertices.
+            faces (torch.Tensor): Mesh faces.
+
+        Returns:
+            torch.Tensor: View normals.
+        """
         rast, _ = self.renderer.compute_dr_raster(vertices, faces)
         rendered_view_normals = []
         for idx in range(len(mv_mtx)):
@@ -376,6 +460,18 @@ class TextureBacker:
     def back_project(
         self, image, vis_mask, depth, normal, uv
     ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Back-projects image and confidence to UV texture space.
+
+        Args:
+            image (PIL.Image or np.ndarray): Input image.
+            vis_mask (torch.Tensor): Visibility mask.
+            depth (torch.Tensor): Depth map.
+            normal (torch.Tensor): Normal map.
+            uv (torch.Tensor): UV coordinates.
+
+        Returns:
+            tuple[torch.Tensor, torch.Tensor]: Texture and confidence map.
+        """
         image = np.array(image)
         image = torch.as_tensor(image, device=self.device, dtype=torch.float32)
         if image.ndim == 2:
@@ -418,6 +514,17 @@ class TextureBacker:
         )
 
     def _scatter_texture(self, uv, data, mask):
+        """Scatters data to texture using UV coordinates and mask.
+
+        Args:
+            uv (torch.Tensor): UV coordinates.
+            data (torch.Tensor): Data to scatter.
+            mask (torch.Tensor): Mask for valid pixels.
+
+        Returns:
+            torch.Tensor: Scattered texture.
+        """
+
         def __filter_data(data, mask):
             return data.view(-1, data.shape[-1])[mask]
 
@@ -432,6 +539,15 @@ class TextureBacker:
     def fast_bake_texture(
         self, textures: list[torch.Tensor], confidence_maps: list[torch.Tensor]
     ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Fuses multiple textures and confidence maps.
+
+        Args:
+            textures (list[torch.Tensor]): List of textures.
+            confidence_maps (list[torch.Tensor]): List of confidence maps.
+
+        Returns:
+            tuple[torch.Tensor, torch.Tensor]: Fused texture and mask.
+        """
         channel = textures[0].shape[-1]
         texture_merge = torch.zeros(self.texture_wh + [channel]).to(
             self.device
@@ -451,6 +567,16 @@ class TextureBacker:
     def uv_inpaint(
         self, mesh: trimesh.Trimesh, texture: np.ndarray, mask: np.ndarray
     ) -> np.ndarray:
+        """Inpaints missing regions in the UV texture.
+
+        Args:
+            mesh (trimesh.Trimesh): Mesh.
+            texture (np.ndarray): Texture image.
+            mask (np.ndarray): Mask image.
+
+        Returns:
+            np.ndarray: Inpainted texture.
+        """
         if self.inpaint_smooth:
             vertices, faces, uv_map = self.get_mesh_np_attrs(mesh)
             texture, mask = _texture_inpaint_smooth(
@@ -473,6 +599,15 @@ class TextureBacker:
         colors: list[Image.Image],
         mesh: trimesh.Trimesh,
     ) -> trimesh.Trimesh:
+        """Computes the fused texture for the mesh from multi-view images.
+
+        Args:
+            colors (list[Image.Image]): List of view images.
+            mesh (trimesh.Trimesh): Mesh to texture.
+
+        Returns:
+            tuple[np.ndarray, np.ndarray]: Texture and mask.
+        """
         self._lazy_init_render(self.camera_params, self.mask_thresh)
 
         vertices = torch.from_numpy(mesh.vertices).to(self.device).float()
@@ -517,7 +652,7 @@ class TextureBacker:
         Args:
             colors (list[Image.Image]): List of input view images.
             mesh (trimesh.Trimesh): Input mesh to be textured.
-            output_path (str): Path to save the output textured mesh (.obj or .glb).
+            output_path (str): Path to save the output textured mesh.
 
         Returns:
             trimesh.Trimesh: The textured mesh with UV and texture image.
@@ -540,6 +675,11 @@ class TextureBacker:
 
 
 def parse_args():
+    """Parses command-line arguments for texture backprojection.
+
+    Returns:
+        argparse.Namespace: Parsed arguments.
+    """
     parser = argparse.ArgumentParser(description="Backproject texture")
     parser.add_argument(
         "--color_path",
@@ -636,6 +776,16 @@ def entrypoint(
     imagesr_model: ImageRealESRGAN = None,
     **kwargs,
 ) -> trimesh.Trimesh:
+    """Entrypoint for texture backprojection from multi-view images.
+
+    Args:
+        delight_model (DelightingModel, optional): Delighting model.
+        imagesr_model (ImageRealESRGAN, optional): Super-resolution model.
+        **kwargs: Additional arguments to override CLI.
+
+    Returns:
+        trimesh.Trimesh: Textured mesh.
+    """
     args = parse_args()
     for k, v in kwargs.items():
         if hasattr(args, k) and v is not None:

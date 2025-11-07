@@ -376,6 +376,21 @@ LAYOUT_DESCRIBER_PROMPT = """
 
 
 class LayoutDesigner(object):
+    """A class for querying GPT-based scene layout reasoning and formatting responses.
+
+    Attributes:
+        prompt (str): The system prompt for GPT.
+        verbose (bool): Whether to log responses.
+        gpt_client (GPTclient): The GPT client instance.
+
+    Methods:
+        query(prompt, params): Query GPT with a prompt and parameters.
+        format_response(response): Parse and clean JSON response.
+        format_response_repair(response): Repair and parse JSON response.
+        save_output(output, save_path): Save output to file.
+        __call__(prompt, save_path, params): Query and process output.
+    """
+
     def __init__(
         self,
         gpt_client: GPTclient,
@@ -387,6 +402,15 @@ class LayoutDesigner(object):
         self.gpt_client = gpt_client
 
     def query(self, prompt: str, params: dict = None) -> str:
+        """Query GPT with the system prompt and user prompt.
+
+        Args:
+            prompt (str): User prompt.
+            params (dict, optional): GPT parameters.
+
+        Returns:
+            str: GPT response.
+        """
         full_prompt = self.prompt + f"\n\nInput:\n\"{prompt}\""
 
         response = self.gpt_client.query(
@@ -400,6 +424,17 @@ class LayoutDesigner(object):
         return response
 
     def format_response(self, response: str) -> dict:
+        """Format and parse GPT response as JSON.
+
+        Args:
+            response (str): Raw GPT response.
+
+        Returns:
+            dict: Parsed JSON output.
+
+        Raises:
+            json.JSONDecodeError: If parsing fails.
+        """
         cleaned = re.sub(r"^```json\s*|\s*```$", "", response.strip())
         try:
             output = json.loads(cleaned)
@@ -411,9 +446,23 @@ class LayoutDesigner(object):
         return output
 
     def format_response_repair(self, response: str) -> dict:
+        """Repair and parse possibly broken JSON response.
+
+        Args:
+            response (str): Raw GPT response.
+
+        Returns:
+            dict: Parsed JSON output.
+        """
         return json_repair.loads(response)
 
     def save_output(self, output: dict, save_path: str) -> None:
+        """Save output dictionary to a file.
+
+        Args:
+            output (dict): Output data.
+            save_path (str): Path to save the file.
+        """
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
         with open(save_path, 'w') as f:
             json.dump(output, f, indent=4)
@@ -421,6 +470,16 @@ class LayoutDesigner(object):
     def __call__(
         self, prompt: str, save_path: str = None, params: dict = None
     ) -> dict | str:
+        """Query GPT and process the output.
+
+        Args:
+            prompt (str): User prompt.
+            save_path (str, optional): Path to save output.
+            params (dict, optional): GPT parameters.
+
+        Returns:
+            dict | str: Output data.
+        """
         response = self.query(prompt, params=params)
         output = self.format_response_repair(response)
         self.save_output(output, save_path) if save_path else None
@@ -442,6 +501,29 @@ LAYOUT_DESCRIBER = LayoutDesigner(
 def build_scene_layout(
     task_desc: str, output_path: str = None, gpt_params: dict = None
 ) -> LayoutInfo:
+    """Build a 3D scene layout from a natural language task description.
+
+    This function uses GPT-based reasoning to generate a structured scene layout,
+    including object hierarchy, spatial relations, and style descriptions.
+
+    Args:
+        task_desc (str): Natural language description of the robotic task.
+        output_path (str, optional): Path to save the visualized scene tree.
+        gpt_params (dict, optional): Parameters for GPT queries.
+
+    Returns:
+        LayoutInfo: Structured layout information for the scene.
+
+    Example:
+        ```py
+        from embodied_gen.models.layout import build_scene_layout
+        layout_info = build_scene_layout(
+            task_desc="Put the apples on the table on the plate",
+            output_path="outputs/scene_tree.jpg",
+        )
+        print(layout_info)
+        ```
+    """
     layout_relation = LAYOUT_DISASSEMBLER(task_desc, params=gpt_params)
     layout_tree = LAYOUT_GRAPHER(layout_relation, params=gpt_params)
     object_mapping = Scene3DItemEnum.object_mapping(layout_relation)

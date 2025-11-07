@@ -80,6 +80,31 @@ URDF_TEMPLATE = """
 
 
 class URDFGenerator(object):
+    """Generates URDF files for 3D assets with physical and semantic attributes.
+
+    Uses GPT to estimate object properties and generates a URDF file with mesh, friction, mass, and metadata.
+
+    Args:
+        gpt_client (GPTclient): GPT client for attribute estimation.
+        mesh_file_list (list[str], optional): Additional mesh files to copy.
+        prompt_template (str, optional): Prompt template for GPT queries.
+        attrs_name (list[str], optional): List of attribute names to include.
+        render_dir (str, optional): Directory for rendered images.
+        render_view_num (int, optional): Number of views to render.
+        decompose_convex (bool, optional): Whether to decompose mesh for collision.
+        rotate_xyzw (list[float], optional): Quaternion for mesh rotation.
+
+    Example:
+        ```py
+        from embodied_gen.validators.urdf_convertor import URDFGenerator
+        from embodied_gen.utils.gpt_clients import GPT_CLIENT
+
+        urdf_gen = URDFGenerator(GPT_CLIENT, render_view_num=4)
+        urdf_path = urdf_gen(mesh_path="mesh.obj", output_root="output_dir")
+        print("Generated URDF:", urdf_path)
+        ```
+    """
+
     def __init__(
         self,
         gpt_client: GPTclient,
@@ -168,6 +193,14 @@ class URDFGenerator(object):
         self.rotate_xyzw = rotate_xyzw
 
     def parse_response(self, response: str) -> dict[str, any]:
+        """Parses GPT response to extract asset attributes.
+
+        Args:
+            response (str): GPT response string.
+
+        Returns:
+            dict[str, any]: Parsed attributes.
+        """
         lines = response.split("\n")
         lines = [line.strip() for line in lines if line]
         category = lines[0].split(": ")[1]
@@ -207,11 +240,9 @@ class URDFGenerator(object):
 
         Args:
             input_mesh (str): Path to the input mesh file.
-            output_dir (str): Directory to store the generated URDF
-                and processed mesh.
-            attr_dict (dict): Dictionary containing attributes like height,
-                mass, and friction coefficients.
-            output_name (str, optional): Name for the generated URDF and robot.
+            output_dir (str): Directory to store the generated URDF and mesh.
+            attr_dict (dict): Dictionary of asset attributes.
+            output_name (str, optional): Name for the URDF and robot.
 
         Returns:
             str: Path to the generated URDF file.
@@ -336,6 +367,16 @@ class URDFGenerator(object):
         attr_root: str = ".//link/extra_info",
         attr_name: str = "scale",
     ) -> float:
+        """Extracts an attribute value from a URDF file.
+
+        Args:
+            urdf_path (str): Path to the URDF file.
+            attr_root (str, optional): XML path to attribute root.
+            attr_name (str, optional): Attribute name.
+
+        Returns:
+            float: Attribute value, or None if not found.
+        """
         if not os.path.exists(urdf_path):
             raise FileNotFoundError(f"URDF file not found: {urdf_path}")
 
@@ -358,6 +399,13 @@ class URDFGenerator(object):
     def add_quality_tag(
         urdf_path: str, results: list, output_path: str = None
     ) -> None:
+        """Adds a quality tag to a URDF file.
+
+        Args:
+            urdf_path (str): Path to the URDF file.
+            results (list): List of [checker_name, result] pairs.
+            output_path (str, optional): Output file path.
+        """
         if output_path is None:
             output_path = urdf_path
 
@@ -382,6 +430,14 @@ class URDFGenerator(object):
         logger.info(f"URDF files saved to {output_path}")
 
     def get_estimated_attributes(self, asset_attrs: dict):
+        """Calculates estimated attributes from asset properties.
+
+        Args:
+            asset_attrs (dict): Asset attributes.
+
+        Returns:
+            dict: Estimated attributes (height, mass, mu, category).
+        """
         estimated_attrs = {
             "height": round(
                 (asset_attrs["min_height"] + asset_attrs["max_height"]) / 2, 4
@@ -403,6 +459,18 @@ class URDFGenerator(object):
         category: str = "unknown",
         **kwargs,
     ):
+        """Generates a URDF file for a mesh asset.
+
+        Args:
+            mesh_path (str): Path to mesh file.
+            output_root (str): Directory for outputs.
+            text_prompt (str, optional): Prompt for GPT.
+            category (str, optional): Asset category.
+            **kwargs: Additional attributes.
+
+        Returns:
+            str: Path to generated URDF file.
+        """
         if text_prompt is None or len(text_prompt) == 0:
             text_prompt = self.prompt_template
             text_prompt = text_prompt.format(category=category.lower())

@@ -27,14 +27,22 @@ from PIL import Image
 
 
 class AestheticPredictor:
-    """Aesthetic Score Predictor.
+    """Aesthetic Score Predictor using CLIP and a pre-trained MLP.
 
-    Checkpoints from https://github.com/christophschuhmann/improved-aesthetic-predictor/tree/main
+    Checkpoints from `https://github.com/christophschuhmann/improved-aesthetic-predictor/tree/main`.
 
     Args:
-        clip_model_dir (str): Path to the directory of the CLIP model.
-        sac_model_path (str): Path to the pre-trained SAC model.
-        device (str): Device to use for computation ("cuda" or "cpu").
+        clip_model_dir (str, optional): Path to CLIP model directory.
+        sac_model_path (str, optional): Path to SAC model weights.
+        device (str, optional): Device for computation ("cuda" or "cpu").
+
+    Example:
+        ```py
+        from embodied_gen.validators.aesthetic_predictor import AestheticPredictor
+        predictor = AestheticPredictor(device="cuda")
+        score = predictor.predict("image.png")
+        print("Aesthetic score:", score)
+        ```
     """
 
     def __init__(self, clip_model_dir=None, sac_model_path=None, device="cpu"):
@@ -109,7 +117,7 @@ class AestheticPredictor:
         return model
 
     def predict(self, image_path):
-        """Predict the aesthetic score for a given image.
+        """Predicts the aesthetic score for a given image.
 
         Args:
             image_path (str): Path to the image file.

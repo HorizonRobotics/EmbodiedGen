@@ -39,6 +39,22 @@ def decompose_convex_coacd(
     auto_scale: bool = True,
     scale_factor: float = 1.0,
 ) -> None:
+    """Decomposes a mesh using CoACD and saves the result.
+
+    This function loads a mesh from a file, runs the CoACD algorithm with the
+    given parameters, optionally scales the resulting convex hulls to match the
+    original mesh's bounding box, and exports the combined result to a file.
+
+    Args:
+        filename: Path to the input mesh file.
+        outfile: Path to save the decomposed output mesh.
+        params: A dictionary of parameters for the CoACD algorithm.
+        verbose: If True, sets the CoACD log level to 'info'.
+        auto_scale: If True, automatically computes a scale factor to match the
+            decomposed mesh's bounding box to the visual mesh's bounding box.
+        scale_factor: An additional scaling factor applied to the vertices of
+            the decomposed mesh parts.
+    """
     coacd.set_log_level("info" if verbose else "warn")
 
     mesh = trimesh.load(filename, force="mesh")
@@ -83,7 +99,38 @@ def decompose_convex_mesh(
     scale_factor: float = 1.005,
     verbose: bool = False,
 ) -> str:
-    """Decompose a mesh into convex parts using the CoACD algorithm."""
+    """Decomposes a mesh into convex parts with retry logic.
+
+    This function serves as a wrapper for `decompose_convex_coacd`, providing
+    explicit parameters for the CoACD algorithm and implementing a retry
+    mechanism. If the initial decomposition fails, it attempts again with
+    `preprocess_mode` set to 'on'.
+
+    Args:
+        filename: Path to the input mesh file.
+        outfile: Path to save the decomposed output mesh.
+        threshold: CoACD parameter. See CoACD documentation for details.
+        max_convex_hull: CoACD parameter. See CoACD documentation for details.
+        preprocess_mode: CoACD parameter. See CoACD documentation for details.
+        preprocess_resolution: CoACD parameter. See CoACD documentation for details.
+        resolution: CoACD parameter. See CoACD documentation for details.
+        mcts_nodes: CoACD parameter. See CoACD documentation for details.
+        mcts_iterations: CoACD parameter. See CoACD documentation for details.
+        mcts_max_depth: CoACD parameter. See CoACD documentation for details.
+        pca: CoACD parameter. See CoACD documentation for details.
+        merge: CoACD parameter. See CoACD documentation for details.
+        seed: CoACD parameter. See CoACD documentation for details.
+        auto_scale: If True, automatically scale the output to match the input
+            bounding box.
+        scale_factor: Additional scaling factor to apply.
+        verbose: If True, enables detailed logging.
+
+    Returns:
+        The path to the output file if decomposition is successful.
+
+    Raises:
+        RuntimeError: If convex decomposition fails after all attempts.
+    """
     coacd.set_log_level("info" if verbose else "warn")
 
     if os.path.exists(outfile):
@@ -148,9 +195,37 @@ def decompose_convex_mp(
     verbose: bool = False,
     auto_scale: bool = True,
 ) -> str:
-    """Decompose a mesh into convex parts using the CoACD algorithm in a separate process.
+    """Decomposes a mesh into convex parts in a separate process.
+
+    This function uses the `multiprocessing` module to run the CoACD algorithm
+    in a spawned subprocess. This is useful for isolating the decomposition
+    process to prevent potential memory leaks or crashes in the main process.
+    It includes a retry mechanism similar to `decompose_convex_mesh`.
 
     See https://simulately.wiki/docs/toolkits/ConvexDecomp for details.
+
+    Args:
+        filename: Path to the input mesh file.
+        outfile: Path to save the decomposed output mesh.
+        threshold: CoACD parameter.
+        max_convex_hull: CoACD parameter.
+        preprocess_mode: CoACD parameter.
+        preprocess_resolution: CoACD parameter.
+        resolution: CoACD parameter.
+        mcts_nodes: CoACD parameter.
+        mcts_iterations: CoACD parameter.
+        mcts_max_depth: CoACD parameter.
+        pca: CoACD parameter.
+        merge: CoACD parameter.
+        seed: CoACD parameter.
+        verbose: If True, enables detailed logging in the subprocess.
+        auto_scale: If True, automatically scale the output.
+
+    Returns:
+        The path to the output file if decomposition is successful.
+
+    Raises:
+        RuntimeError: If convex decomposition fails after all attempts.
     """
     params = dict(
         threshold=threshold,

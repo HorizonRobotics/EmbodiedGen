@@ -4,10 +4,9 @@ import pytest
 from huggingface_hub import snapshot_download
 from embodied_gen.data.asset_converter import (
     AssetConverterFactory,
-    AssetType,
-    SimAssetMapper,
     cvt_embodiedgen_asset_to_anysim,
 )
+from embodied_gen.utils.enum import AssetType, SimAssetMapper
 
 
 @pytest.fixture(scope="session")
@@ -77,7 +76,10 @@ def test_cvt_embodiedgen_asset_to_anysim(
 ):
     dst_asset_path = cvt_embodiedgen_asset_to_anysim(
         urdf_files=[
-            "outputs/embodiedgen_assets/demo_assets/remote_control2/result/remote_control.urdf",
+            "outputs/embodiedgen_assets/demo_assets/remote_control/result/remote_control.urdf",
+        ],
+        target_dirs=[
+            "outputs/embodiedgen_assets/demo_assets/remote_control/usd/remote_control.usd",
         ],
         target_type=SimAssetMapper[simulator_name],
         source_type=AssetType.MESH,

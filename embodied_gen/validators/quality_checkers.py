@@ -40,6 +40,16 @@ __all__ = [
 
 
 class BaseChecker:
+    """Base class for quality checkers using GPT clients.
+
+    Provides a common interface for querying and validating responses.
+    Subclasses must implement the `query` method.
+
+    Attributes:
+        prompt (str): The prompt used for queries.
+        verbose (bool): Whether to enable verbose logging.
+    """
+
     def __init__(self, prompt: str = None, verbose: bool = False) -> None:
         self.prompt = prompt
         self.verbose = verbose
@@ -70,6 +80,15 @@ class BaseChecker:
     def validate(
         checkers: list["BaseChecker"], images_list: list[list[str]]
     ) -> list:
+        """Validates a list of checkers against corresponding image lists.
+
+        Args:
+            checkers (list[BaseChecker]): List of checker instances.
+            images_list (list[list[str]]): List of image path lists.
+
+        Returns:
+            list: Validation results with overall outcome.
+        """
         assert len(checkers) == len(images_list)
         results = []
         overall_result = True
@@ -192,7 +211,7 @@ class ImageSegChecker(BaseChecker):
 
 
 class ImageAestheticChecker(BaseChecker):
-    """A class for evaluating the aesthetic quality of images.
+    """Evaluates the aesthetic quality of images using a CLIP-based predictor.
 
     Attributes:
         clip_model_dir (str): Path to the CLIP model directory.
@@ -200,6 +219,14 @@ class ImageAestheticChecker(BaseChecker):
         thresh (float): Threshold above which images are considered aesthetically acceptable.
         verbose (bool): Whether to print detailed log messages.
         predictor (AestheticPredictor): The model used to predict aesthetic scores.
+
+    Example:
+        ```py
+        from embodied_gen.validators.quality_checkers import ImageAestheticChecker
+        checker = ImageAestheticChecker(thresh=4.5)
+        flag, score = checker(["image1.png", "image2.png"])
+        print("Aesthetic OK:", flag, "Score:", score)
+        ```
     """
 
     def __init__(
@@ -227,6 +254,16 @@ class ImageAestheticChecker(BaseChecker):
 
 
 class SemanticConsistChecker(BaseChecker):
+    """Checks semantic consistency between text descriptions and segmented images.
+
+    Uses GPT to evaluate if the image matches the text in object type, geometry, and color.
+
+    Attributes:
+        gpt_client (GPTclient): GPT client for queries.
+        prompt (str): Prompt for consistency evaluation.
+        verbose (bool): Whether to enable verbose logging.
+    """
+
     def __init__(
         self,
         gpt_client: GPTclient,
@@ -276,6 +313,16 @@ class SemanticConsistChecker(BaseChecker):
 
 
 class TextGenAlignChecker(BaseChecker):
+    """Evaluates alignment between text prompts and generated 3D asset images.
+
+    Assesses if the rendered images match the text description in category and geometry.
+
+    Attributes:
+        gpt_client (GPTclient): GPT client for queries.
+        prompt (str): Prompt for alignment evaluation.
+        verbose (bool): Whether to enable verbose logging.
+    """
+
     def __init__(
         self,
         gpt_client: GPTclient,
@@ -489,6 +536,17 @@ class PanoHeightEstimator(object):
 
 
 class SemanticMatcher(BaseChecker):
+    """Matches query text to semantically similar scene descriptions.
+
+    Uses GPT to find the most similar scene IDs from a dictionary.
+
+    Attributes:
+        gpt_client (GPTclient): GPT client for queries.
+        prompt (str): Prompt for semantic matching.
+        verbose (bool): Whether to enable verbose logging.
+        seed (int): Random seed for selection.
+    """
+
     def __init__(
         self,
         gpt_client: GPTclient,
@@ -543,6 +601,17 @@ class SemanticMatcher(BaseChecker):
     def query(
         self, text: str, context: dict, rand: bool = True, params: dict = None
     ) -> str:
+        """Queries for semantically similar scene IDs.
+
+        Args:
+            text (str): Query text.
+            context (dict): Dictionary of scene descriptions.
+            rand (bool, optional): Whether to randomly select from top matches.
+            params (dict, optional): Additional GPT parameters.
+
+        Returns:
+            str: Matched scene ID.
+        """
         match_list = self.gpt_client.query(
             self.prompt.format(context=context, text=text),
             params=params,

@@ -66,6 +66,14 @@ def create_mp4_from_images(
     fps: int = 10,
     prompt: str = None,
 ):
+    """Creates an MP4 video from a list of images.
+
+    Args:
+        images (list[np.ndarray]): List of images as numpy arrays.
+        output_path (str): Path to save the MP4 file.
+        fps (int, optional): Frames per second. Defaults to 10.
+        prompt (str, optional): Optional text prompt overlay.
+    """
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_scale = 0.5
     font_thickness = 1
@@ -96,6 +104,13 @@ def create_mp4_from_images(
 def create_gif_from_images(
     images: list[np.ndarray], output_path: str, fps: int = 10
 ) -> None:
+    """Creates a GIF animation from a list of images.
+
+    Args:
+        images (list[np.ndarray]): List of images as numpy arrays.
+        output_path (str): Path to save the GIF file.
+        fps (int, optional): Frames per second. Defaults to 10.
+    """
     pil_images = []
     for image in images:
         image = image.clip(min=0, max=1)
@@ -116,32 +131,47 @@ def create_gif_from_images(
 
 
 class ImageRender(object):
-    """A differentiable mesh renderer supporting multi-view rendering.
+    """Differentiable mesh renderer supporting multi-view rendering.
 
-    This class wraps a differentiable rasterization using `nvdiffrast` to
-    render mesh geometry to various maps (normal, depth, alpha, albedo, etc.).
+    This class wraps differentiable rasterization using `nvdiffrast` to render mesh
+    geometry to various maps (normal, depth, alpha, albedo, etc.) and supports
+    saving images and videos.
 
     Args:
-        render_items (list[RenderItems]): A list of rendering targets to
-            generate (e.g., IMAGE, DEPTH, NORMAL, etc.).
-        camera_params (CameraSetting): The camera parameters for rendering,
-            including intrinsic and extrinsic matrices.
-        recompute_vtx_normal (bool, optional): If True, recomputes
-            vertex normals from the mesh geometry. Defaults to True.
-        with_mtl (bool, optional): Whether to load `.mtl` material files
-            for meshes. Defaults to False.
-        gen_color_gif (bool, optional): Generate a GIF of rendered
-            color images. Defaults to False.
-        gen_color_mp4 (bool, optional): Generate an MP4 video of rendered
-            color images. Defaults to False.
-        gen_viewnormal_mp4 (bool, optional): Generate an MP4 video of
-            view-space normals. Defaults to False.
-        gen_glonormal_mp4 (bool, optional): Generate an MP4 video of
-            global-space normals. Defaults to False.
-        no_index_file (bool, optional): If True, skip saving the `index.json`
-            summary file. Defaults to False.
-        light_factor (float, optional): A scalar multiplier for
-            PBR light intensity. Defaults to 1.0.
+        render_items (list[RenderItems]): List of rendering targets.
+        camera_params (CameraSetting): Camera parameters for rendering.
+        recompute_vtx_normal (bool, optional): Recompute vertex normals. Defaults to True.
+        with_mtl (bool, optional): Load mesh material files. Defaults to False.
+        gen_color_gif (bool, optional): Generate GIF of color images. Defaults to False.
+        gen_color_mp4 (bool, optional): Generate MP4 of color images. Defaults to False.
+        gen_viewnormal_mp4 (bool, optional): Generate MP4 of view-space normals. Defaults to False.
+        gen_glonormal_mp4 (bool, optional): Generate MP4 of global-space normals. Defaults to False.
+        no_index_file (bool, optional): Skip saving index file. Defaults to False.
+        light_factor (float, optional): PBR light intensity multiplier. Defaults to 1.0.
+
+    Example:
+        ```py
+        from embodied_gen.data.differentiable_render import ImageRender
+        from embodied_gen.data.utils import CameraSetting
+        from embodied_gen.utils.enum import RenderItems
+
+        camera_params = CameraSetting(
+            num_images=6,
+            elevation=[20, -10],
+            distance=5,
+            resolution_hw=(512,512),
+            fov=math.radians(30),
+            device='cuda',
+        )
+        render_items = [RenderItems.IMAGE.value, RenderItems.DEPTH.value]
+        renderer = ImageRender(
+            render_items,
+            camera_params,
+            with_mtl=args.with_mtl,
+            gen_color_mp4=True,
+        )
+        renderer.render_mesh(mesh_path='mesh.obj', output_root='./renders')
+        ```
     """
 
     def __init__(
@@ -198,6 +228,14 @@ class ImageRender(object):
         uuid: Union[str, List[str]] = None,
         prompts: List[str] = None,
     ) -> None:
+        """Renders one or more meshes and saves outputs.
+
+        Args:
+            mesh_path (Union[str, List[str]]): Path(s) to mesh files.
+            output_root (str): Directory to save outputs.
+            uuid (Union[str, List[str]], optional): Unique IDs for outputs.
+            prompts (List[str], optional): Text prompts for videos.
+        """
         mesh_path = as_list(mesh_path)
         if uuid is None:
             uuid = [os.path.basename(p).split(".")[0] for p in mesh_path]
@@ -227,18 +265,15 @@ class ImageRender(object):
     def __call__(
         self, mesh_path: str, output_dir: str, prompt: str = None
     ) -> dict[str, str]:
-        """Render a single mesh and return paths to the rendered outputs.
-
-        Processes the input mesh, renders multiple modalities (e.g., normals,
-        depth, albedo), and optionally saves video or image sequences.
+        """Renders a single mesh and returns output paths.
 
         Args:
-            mesh_path (str): Path to the mesh file (.obj/.glb).
-            output_dir (str): Directory to save rendered outputs.
-            prompt (str, optional): Optional caption prompt for MP4 metadata.
+            mesh_path (str): Path to mesh file.
+            output_dir (str): Directory to save outputs.
+            prompt (str, optional): Caption prompt for MP4 metadata.
 
         Returns:
-            dict[str, str]: A mapping render types to the saved image paths.
+            dict[str, str]: Mapping of render types to saved image paths.
         """
         try:
             mesh = import_kaolin_mesh(mesh_path, self.with_mtl)

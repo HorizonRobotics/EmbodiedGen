@@ -48,12 +48,19 @@ __all__ = [
 
 
 class SAMRemover(object):
-    """Loading SAM models and performing background removal on images.
+    """Loads SAM models and performs background removal on images.
 
     Attributes:
         checkpoint (str): Path to the model checkpoint.
-        model_type (str): Type of the SAM model to load (default: "vit_h").
-        area_ratio (float): Area ratio filtering small connected components.
+        model_type (str): Type of the SAM model to load.
+        area_ratio (float): Area ratio for filtering small connected components.
+
+    Example:
+        ```py
+        from embodied_gen.models.segment_model import SAMRemover
+        remover = SAMRemover(model_type="vit_h")
+        result = remover("input.jpg", "output.png")
+        ```
     """
 
     def __init__(
@@ -78,6 +85,14 @@ class SAMRemover(object):
         self.mask_generator = self._load_sam_model(checkpoint)
 
     def _load_sam_model(self, checkpoint: str) -> SamAutomaticMaskGenerator:
+        """Loads the SAM model and returns a mask generator.
+
+        Args:
+            checkpoint (str): Path to model checkpoint.
+
+        Returns:
+            SamAutomaticMaskGenerator: Mask generator instance.
+        """
         sam = sam_model_registry[self.model_type](checkpoint=checkpoint)
         sam.to(device=self.device)
 
@@ -89,13 +104,11 @@ class SAMRemover(object):
         """Removes the background from an image using the SAM model.
 
         Args:
-            image (Union[str, Image.Image, np.ndarray]): Input image,
-                can be a file path, PIL Image, or numpy array.
-            save_path (str): Path to save the output image (default: None).
+            image (Union[str, Image.Image, np.ndarray]): Input image.
+            save_path (str, optional): Path to save the output image.
 
         Returns:
-            Image.Image: The image with background removed,
-                including an alpha channel.
+            Image.Image: Image with background removed (RGBA).
         """
         # Convert input to numpy array
         if isinstance(image, str):
@@ -134,6 +147,15 @@ class SAMRemover(object):
 
 
 class SAMPredictor(object):
+    """Loads SAM models and predicts segmentation masks from user points.
+
+    Args:
+        checkpoint (str, optional): Path to model checkpoint.
+        model_type (str, optional): SAM model type.
+        binary_thresh (float, optional): Threshold for binary mask.
+        device (str, optional): Device for inference.
+    """
+
     def __init__(
         self,
         checkpoint: str = None,
@@ -157,12 +179,28 @@ class SAMPredictor(object):
         self.binary_thresh = binary_thresh
 
     def _load_sam_model(self, checkpoint: str) -> SamPredictor:
+        """Loads the SAM model and returns a predictor.
+
+        Args:
+            checkpoint (str): Path to model checkpoint.
+
+        Returns:
+            SamPredictor: Predictor instance.
+        """
         sam = sam_model_registry[self.model_type](checkpoint=checkpoint)
         sam.to(device=self.device)
 
         return SamPredictor(sam)
 
     def preprocess_image(self, image: Image.Image) -> np.ndarray:
+        """Preprocesses input image for SAM prediction.
+
+        Args:
+            image (Image.Image): Input image.
+
+        Returns:
+            np.ndarray: Preprocessed image array.
+        """
         if isinstance(image, str):
             image = Image.open(image)
         elif isinstance(image, np.ndarray):
@@ -178,6 +216,15 @@ class SAMPredictor(object):
         image: np.ndarray,
         selected_points: list[list[int]],
     ) -> np.ndarray:
+        """Generates segmentation masks from selected points.
+
+        Args:
+            image (np.ndarray): Input image array.
+            selected_points (list[list[int]]): List of points and labels.
+
+        Returns:
+            list[tuple[np.ndarray, str]]: List of masks and names.
+        """
         if len(selected_points) == 0:
             return []
 
@@ -220,6 +267,15 @@ class SAMPredictor(object):
     def get_segmented_image(
         self, image: np.ndarray, masks: list[tuple[np.ndarray, str]]
     ) -> Image.Image:
+        """Combines masks and returns segmented image with alpha channel.
+
+        Args:
+            image (np.ndarray): Input image array.
+            masks (list[tuple[np.ndarray, str]]): List of masks.
+
+        Returns:
+            Image.Image: Segmented RGBA image.
+        """
         seg_image = Image.fromarray(image, mode="RGB")
         alpha_channel = np.zeros(
             (seg_image.height, seg_image.width), dtype=np.uint8
@@ -241,6 +297,15 @@ class SAMPredictor(object):
         image: Union[str, Image.Image, np.ndarray],
         selected_points: list[list[int]],
     ) -> Image.Image:
+        """Segments image using selected points.
+
+        Args:
+            image (Union[str, Image.Image, np.ndarray]): Input image.
+            selected_points (list[list[int]]): List of points and labels.
+
+        Returns:
+            Image.Image: Segmented RGBA image.
+        """
         image = self.preprocess_image(image)
         self.predictor.set_image(image)
         masks = self.generate_masks(image, selected_points)
@@ -249,12 +314,32 @@ class SAMPredictor(object):
 
 
 class RembgRemover(object):
+    """Removes background from images using the rembg library.
+
+    Example:
+        ```py
+        from embodied_gen.models.segment_model import RembgRemover
+        remover = RembgRemover()
+        result = remover("input.jpg", "output.png")
+        ```
+    """
+
     def __init__(self):
+        """Initializes the RembgRemover."""
         self.rembg_session = rembg.new_session("u2net")
 
     def __call__(
         self, image: Union[str, Image.Image, np.ndarray], save_path: str = None
     ) -> Image.Image:
+        """Removes background from an image.
+
+        Args:
+            image (Union[str, Image.Image, np.ndarray]): Input image.
+            save_path (str, optional): Path to save the output image.
+
+        Returns:
+            Image.Image: Image with background removed (RGBA).
+        """
         if isinstance(image, str):
             image = Image.open(image)
         elif isinstance(image, np.ndarray):
@@ -271,7 +356,18 @@ class RembgRemover(object):
 
 
 class BMGG14Remover(object):
+    """Removes background using the RMBG-1.4 segmentation model.
+
+    Example:
+        ```py
+        from embodied_gen.models.segment_model import BMGG14Remover
+        remover = BMGG14Remover()
+        result = remover("input.jpg", "output.png")
+        ```
+    """
+
     def __init__(self) -> None:
+        """Initializes the BMGG14Remover."""
         self.model = pipeline(
             "image-segmentation",
             model="briaai/RMBG-1.4",
@@ -281,6 +377,15 @@ class BMGG14Remover(object):
     def __call__(
         self, image: Union[str, Image.Image, np.ndarray], save_path: str = None
     ):
+        """Removes background from an image.
+
+        Args:
+            image (Union[str, Image.Image, np.ndarray]): Input image.
+            save_path (str, optional): Path to save the output image.
+
+        Returns:
+            Image.Image: Image with background removed.
+        """
         if isinstance(image, str):
             image = Image.open(image)
         elif isinstance(image, np.ndarray):
@@ -299,6 +404,16 @@ class BMGG14Remover(object):
 def invert_rgba_pil(
     image: Image.Image, mask: Image.Image, save_path: str = None
 ) -> Image.Image:
+    """Inverts the alpha channel of an RGBA image using a mask.
+
+    Args:
+        image (Image.Image): Input RGB image.
+        mask (Image.Image): Mask image for alpha inversion.
+        save_path (str, optional): Path to save the output image.
+
+    Returns:
+        Image.Image: RGBA image with inverted alpha.
+    """
     mask = (255 - np.array(mask))[..., None]
     image_array = np.concatenate([np.array(image), mask], axis=-1)
     inverted_image = Image.fromarray(image_array, "RGBA")
@@ -318,6 +433,20 @@ def get_segmented_image_by_agent(
     save_path: str = None,
     mode: Literal["loose", "strict"] = "loose",
 ) -> Image.Image:
+    """Segments an image using SAM and rembg, with quality checking.
+
+    Args:
+        image (Image.Image): Input image.
+        sam_remover (SAMRemover): SAM-based remover.
+        rbg_remover (RembgRemover): rembg-based remover.
+        seg_checker (ImageSegChecker, optional): Quality checker.
+        save_path (str, optional): Path to save the output image.
+        mode (Literal["loose", "strict"], optional): Segmentation mode.
+
+    Returns:
+        Image.Image: Segmented RGBA image.
+    """
+
     def _is_valid_seg(raw_img: Image.Image, seg_img: Image.Image) -> bool:
         if seg_checker is None:
             return True

@@ -39,13 +39,38 @@ __all__ = [
 
 
 class ImageStableSR:
-    """Super-resolution image upscaler using Stable Diffusion x4 upscaling model from StabilityAI."""
+    """Super-resolution image upscaler using Stable Diffusion x4 upscaling model.
+
+    This class wraps the StabilityAI Stable Diffusion x4 upscaler for high-quality
+    image super-resolution.
+
+    Args:
+        model_path (str, optional): Path or HuggingFace repo for the model.
+        device (str, optional): Device for inference.
+
+    Example:
+        ```py
+        from embodied_gen.models.sr_model import ImageStableSR
+        from PIL import Image
+
+        sr_model = ImageStableSR()
+        img = Image.open("input.png")
+        upscaled = sr_model(img)
+        upscaled.save("output.png")
+        ```
+    """
 
     def __init__(
         self,
         model_path: str = "stabilityai/stable-diffusion-x4-upscaler",
         device="cuda",
     ) -> None:
+        """Initializes the Stable Diffusion x4 upscaler.
+
+        Args:
+            model_path (str, optional): Model path or repo.
+            device (str, optional): Device for inference.
+        """
         from diffusers import StableDiffusionUpscalePipeline
 
         self.up_pipeline_x4 = StableDiffusionUpscalePipeline.from_pretrained(
@@ -62,6 +87,16 @@ class ImageStableSR:
         prompt: str = "",
         infer_step: int = 20,
     ) -> Image.Image:
+        """Performs super-resolution on the input image.
+
+        Args:
+            image (Union[Image.Image, np.ndarray]): Input image.
+            prompt (str, optional): Text prompt for upscaling.
+            infer_step (int, optional): Number of inference steps.
+
+        Returns:
+            Image.Image: Upscaled image.
+        """
         if isinstance(image, np.ndarray):
             image = Image.fromarray(image)
 
@@ -86,9 +121,26 @@ class ImageRealESRGAN:
     Attributes:
         outscale (int): The output image scale factor (e.g., 2, 4).
         model_path (str): Path to the pre-trained model weights.
+
+    Example:
+        ```py
+        from embodied_gen.models.sr_model import ImageRealESRGAN
+        from PIL import Image
+
+        sr_model = ImageRealESRGAN(outscale=4)
+        img = Image.open("input.png")
+        upscaled = sr_model(img)
+        upscaled.save("output.png")
+        ```
     """
 
     def __init__(self, outscale: int, model_path: str = None) -> None:
+        """Initializes the RealESRGAN upscaler.
+
+        Args:
+            outscale (int): Output scale factor.
+            model_path (str, optional): Path to model weights.
+        """
         # monkey patch to support torchvision>=0.16
         import torchvision
         from packaging import version
@@ -122,6 +174,7 @@ class ImageRealESRGAN:
         self.model_path = model_path
 
     def _lazy_init(self):
+        """Lazily initializes the RealESRGAN model."""
         if self.upsampler is None:
             from basicsr.archs.rrdbnet_arch import RRDBNet
             from realesrgan import RealESRGANer
@@ -145,6 +198,14 @@ class ImageRealESRGAN:
 
     @spaces.GPU
     def __call__(self, image: Union[Image.Image, np.ndarray]) -> Image.Image:
+        """Performs super-resolution on the input image.
+
+        Args:
+            image (Union[Image.Image, np.ndarray]): Input image.
+
+        Returns:
+            Image.Image: Upscaled image.
+        """
         self._lazy_init()
 
         if isinstance(image, Image.Image):

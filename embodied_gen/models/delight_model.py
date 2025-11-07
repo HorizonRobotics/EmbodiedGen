@@ -40,7 +40,7 @@ class DelightingModel(object):
     """A model to remove the lighting in image space.
 
     This model is encapsulated based on the Hunyuan3D-Delight model
-    from https://huggingface.co/tencent/Hunyuan3D-2/tree/main/hunyuan3d-delight-v2-0 # noqa
+    from `https://huggingface.co/tencent/Hunyuan3D-2/tree/main/hunyuan3d-delight-v2-0` # noqa
 
     Attributes:
         image_guide_scale (float): Weight of image guidance in diffusion process.
