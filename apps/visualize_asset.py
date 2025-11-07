@@ -31,8 +31,8 @@ from typing import Any, Dict, Tuple
 
 import gradio as gr
 import pandas as pd
-import yaml
 from app_style import custom_theme, lighting_css
+from embodied_gen.utils.tags import VERSION
 
 try:
     from embodied_gen.utils.gpt_clients import GPT_CLIENT as gpt_client
@@ -48,7 +48,6 @@ except Exception as e:
 
 
 # --- Configuration & Data Loading ---
-VERSION = "v0.1.5"
 RUNNING_MODE = "local"  # local or hf_remote
 CSV_FILE = "dataset_index.csv"
 

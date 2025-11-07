@@ -35,7 +35,8 @@ Leverage **EmbodiedGen-generated assets** with *accurate physical collisions* an
 ## 🧱 Example: Conversion to Target Simulator
 
 ```python
-from embodied_gen.data.asset_converter import SimAssetMapper, cvt_embodiedgen_asset_to_anysim
+from embodied_gen.data.asset_converter import cvt_embodiedgen_asset_to_anysim
+from embodied_gen.utils.enum import AssetType, SimAssetMapper
 from typing import Literal
 
 simulator_name: Literal[
@@ -51,6 +52,10 @@ dst_asset_path = cvt_embodiedgen_asset_to_anysim(
     urdf_files=[
         "path1_to_embodiedgen_asset/asset.urdf",
         "path2_to_embodiedgen_asset/asset.urdf",
+    ],
+    target_dirs=[
+        "path1_to_target_dir/asset.usd",
+        "path2_to_target_dir/asset.usd",
     ],
     target_type=SimAssetMapper[simulator_name],
     source_type=AssetType.MESH,

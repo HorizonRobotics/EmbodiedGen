@@ -51,6 +51,33 @@ __all__ = ["PickEmbodiedGen"]
 
 @register_env("PickEmbodiedGen-v1", max_episode_steps=100)
 class PickEmbodiedGen(BaseEnv):
+    """PickEmbodiedGen as gym env example for object pick-and-place tasks.
+
+    This environment simulates a robot interacting with 3D assets in the
+    embodiedgen generated scene in SAPIEN. It supports multi-environment setups,
+    dynamic reconfiguration, and hybrid rendering with 3D Gaussian Splatting.
+
+    Example:
+        Use `gym.make` to create the `PickEmbodiedGen-v1` parallel environment.
+        ```python
+        import gymnasium as gym
+        env = gym.make(
+            "PickEmbodiedGen-v1",
+            num_envs=cfg.num_envs,
+            render_mode=cfg.render_mode,
+            enable_shadow=cfg.enable_shadow,
+            layout_file=cfg.layout_file,
+            control_mode=cfg.control_mode,
+            camera_cfg=dict(
+                camera_eye=cfg.camera_eye,
+                camera_target_pt=cfg.camera_target_pt,
+                image_hw=cfg.image_hw,
+                fovy_deg=cfg.fovy_deg,
+            ),
+        )
+        ```
+    """
+
     SUPPORTED_ROBOTS = ["panda", "panda_wristcam", "fetch"]
     goal_thresh = 0.0
 
@@ -63,6 +90,19 @@ class PickEmbodiedGen(BaseEnv):
         reconfiguration_freq: int = None,
         **kwargs,
     ):
+        """Initializes the PickEmbodiedGen environment.
+
+        Args:
+            *args: Variable length argument list for the base class.
+            robot_uids: The robot(s) to use in the environment.
+            robot_init_qpos_noise: Noise added to the robot's initial joint
+                positions.
+            num_envs: The number of parallel environments to create.
+            reconfiguration_freq: How often to reconfigure the scene. If None,
+                it is set based on num_envs.
+            **kwargs: Additional keyword arguments for environment setup,
+                including layout_file, replace_objs, enable_grasp, etc.
+        """
         self.robot_init_qpos_noise = robot_init_qpos_noise
         if reconfiguration_freq is None:
             if num_envs == 1:
@@ -116,6 +156,22 @@ class PickEmbodiedGen(BaseEnv):
     def init_env_layouts(
         layout_file: str, num_envs: int, replace_objs: bool
     ) -> list[LayoutInfo]:
+        """Initializes and saves layout files for each environment instance.
+
+        For each environment, this method creates a layout configuration. If
+        `replace_objs` is True, it generates new object placements for each
+        subsequent environment. The generated layouts are saved as new JSON
+        files.
+
+        Args:
+            layout_file: Path to the base layout JSON file.
+            num_envs: The number of environments to create layouts for.
+            replace_objs: If True, generates new object placements for each
+                environment after the first one using BFS placement.
+
+        Returns:
+            A list of file paths to the generated layout for each environment.
+        """
         layouts = []
         for env_idx in range(num_envs):
             if replace_objs and env_idx > 0:
@@ -136,6 +192,18 @@ class PickEmbodiedGen(BaseEnv):
     def compute_robot_init_pose(
         layouts: list[str], num_envs: int, z_offset: float = 0.0
     ) -> list[list[float]]:
+        """Computes the initial pose for the robot in each environment.
+
+        Args:
+            layouts: A list of file paths to the environment layouts.
+            num_envs: The number of environments.
+            z_offset: An optional vertical offset to apply to the robot's
+                position to prevent collisions.
+
+        Returns:
+            A list of initial poses ([x, y, z, qw, qx, qy, qz]) for the robot
+            in each environment.
+        """
         robot_pose = []
         for env_idx in range(num_envs):
             layout = json.load(open(layouts[env_idx], "r"))
@@ -148,6 +216,11 @@ class PickEmbodiedGen(BaseEnv):
 
     @property
     def _default_sim_config(self):
+        """Returns the default simulation configuration.
+
+        Returns:
+            The default simulation configuration object.
+        """
         return SimConfig(
             scene_config=SceneConfig(
                 solver_position_iterations=30,
@@ -163,6 +236,11 @@ class PickEmbodiedGen(BaseEnv):
 
     @property
     def _default_sensor_configs(self):
+        """Returns the default sensor configurations for the agent.
+
+        Returns:
+            A list containing the default camera configuration.
+        """
         pose = sapien_utils.look_at(eye=[0.3, 0, 0.6], target=[-0.1, 0, 0.1])
 
         return [
@@ -171,6 +249,11 @@ class PickEmbodiedGen(BaseEnv):
 
     @property
     def _default_human_render_camera_configs(self):
+        """Returns the default camera configuration for human-friendly rendering.
+
+        Returns:
+            The default camera configuration for the renderer.
+        """
         pose = sapien_utils.look_at(
             eye=self.camera_cfg["camera_eye"],
             target=self.camera_cfg["camera_target_pt"],
@@ -187,10 +270,24 @@ class PickEmbodiedGen(BaseEnv):
         )
 
     def _load_agent(self, options: dict):
+        """Loads the agent (robot) and a ground plane into the scene.
+
+        Args:
+            options: A dictionary of options for loading the agent.
+        """
         self.ground = build_ground(self.scene)
         super()._load_agent(options, sapien.Pose(p=[-10, 0, 10]))
 
     def _load_scene(self, options: dict):
+        """Loads all assets, objects, and the goal site into the scene.
+
+        This method iterates through the layouts for each environment, loads the
+        specified assets, and adds them to the simulation. It also creates a
+        kinematic sphere to represent the goal site.
+
+        Args:
+            options: A dictionary of options for loading the scene.
+        """
         all_objects = []
         logger.info(f"Loading EmbodiedGen assets...")
         for env_idx in range(self.num_envs):
@@ -222,6 +319,15 @@ class PickEmbodiedGen(BaseEnv):
         self._hidden_objects.append(self.goal_site)
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
+        """Initializes an episode for a given set of environments.
+
+        This method sets the goal position, resets the robot's joint positions
+        with optional noise, and sets its root pose.
+
+        Args:
+            env_idx: A tensor of environment indices to initialize.
+            options: A dictionary of options for initialization.
+        """
         with torch.device(self.device):
             b = len(env_idx)
             goal_xyz = torch.zeros((b, 3))
@@ -256,6 +362,21 @@ class PickEmbodiedGen(BaseEnv):
     def render_gs3d_images(
         self, layouts: list[str], num_envs: int, init_quat: list[float]
     ) -> dict[str, np.ndarray]:
+        """Renders background images using a pre-trained Gaussian Splatting model.
+
+        This method pre-renders the static background for each environment from
+        the perspective of all cameras to be used for hybrid rendering.
+
+        Args:
+            layouts: A list of file paths to the environment layouts.
+            num_envs: The number of environments.
+            init_quat: An initial quaternion to orient the Gaussian Splatting
+                model.
+
+        Returns:
+            A dictionary mapping a unique key (e.g., 'camera-env_idx') to the
+            rendered background image as a numpy array.
+        """
         sim_coord_align = (
             torch.tensor(SIM_COORD_ALIGN).to(torch.float32).to(self.device)
         )
@@ -293,6 +414,15 @@ class PickEmbodiedGen(BaseEnv):
         return bg_images
 
     def render(self):
+        """Renders the environment based on the configured render_mode.
+
+        Raises:
+            RuntimeError: If `render_mode` is not set.
+            NotImplementedError: If the `render_mode` is not supported.
+
+        Returns:
+            The rendered output, which varies depending on the render mode.
+        """
         if self.render_mode is None:
             raise RuntimeError("render_mode is not set.")
         if self.render_mode == "human":
@@ -315,6 +445,17 @@ class PickEmbodiedGen(BaseEnv):
     def render_rgb_array(
         self, camera_name: str = None, return_alpha: bool = False
     ):
+        """Renders an RGB image from the human-facing render camera.
+
+        Args:
+            camera_name: The name of the camera to render from. If None, uses
+                all human render cameras.
+            return_alpha: Whether to include the alpha channel in the output.
+
+        Returns:
+            A numpy array representing the rendered image(s). If multiple
+            cameras are used, the images are tiled.
+        """
         for obj in self._hidden_objects:
             obj.show_visual()
         self.scene.update_render(
@@ -335,6 +476,11 @@ class PickEmbodiedGen(BaseEnv):
         return tile_images(images)
 
     def render_sensors(self):
+        """Renders images from all on-board sensor cameras.
+
+        Returns:
+            A tiled image of all sensor outputs as a numpy array.
+        """
         images = []
         sensor_images = self.get_sensor_images()
         for image in sensor_images.values():
@@ -343,6 +489,14 @@ class PickEmbodiedGen(BaseEnv):
         return tile_images(images)
 
     def hybrid_render(self):
+        """Renders a hybrid image by blending simulated foreground with a background.
+
+        The foreground is rendered with an alpha channel and then blended with
+        the pre-rendered Gaussian Splatting background image.
+
+        Returns:
+            A torch tensor of the final blended RGB images.
+        """
         fg_images = self.render_rgb_array(
             return_alpha=True
         )  # (n_env, h, w, 3)
@@ -362,6 +516,16 @@ class PickEmbodiedGen(BaseEnv):
         return images[..., :3]
 
     def evaluate(self):
+        """Evaluates the current state of the environment.
+
+        Checks for task success criteria such as whether the object is grasped,
+        placed at the goal, and if the robot is static.
+
+        Returns:
+            A dictionary containing boolean tensors for various success
+            metrics, including 'is_grasped', 'is_obj_placed', and overall
+            'success'.
+        """
         obj_to_goal_pos = (
             self.obj.pose.p
         )  # self.goal_site.pose.p - self.obj.pose.p
@@ -381,10 +545,31 @@ class PickEmbodiedGen(BaseEnv):
         )
 
     def _get_obs_extra(self, info: dict):
+        """Gets extra information for the observation dictionary.
+
+        Args:
+            info: A dictionary containing evaluation information.
+
+        Returns:
+            An empty dictionary, as no extra observations are added.
+        """
 
         return dict()
 
     def compute_dense_reward(self, obs: any, action: torch.Tensor, info: dict):
+        """Computes a dense reward for the current step.
+
+        The reward is a composite of reaching, grasping, placing, and
+        maintaining a static final pose.
+
+        Args:
+            obs: The current observation.
+            action: The action taken in the current step.
+            info: A dictionary containing evaluation information from `evaluate()`.
+
+        Returns:
+            A tensor containing the dense reward for each environment.
+        """
         tcp_to_obj_dist = torch.linalg.norm(
             self.obj.pose.p - self.agent.tcp.pose.p, axis=1
         )
@@ -417,4 +602,14 @@ class PickEmbodiedGen(BaseEnv):
     def compute_normalized_dense_reward(
         self, obs: any, action: torch.Tensor, info: dict
     ):
+        """Computes a dense reward normalized to be between 0 and 1.
+
+        Args:
+            obs: The current observation.
+            action: The action taken in the current step.
+            info: A dictionary containing evaluation information from `evaluate()`.
+
+        Returns:
+            A tensor containing the normalized dense reward for each environment.
+        """
         return self.compute_dense_reward(obs=obs, action=action, info=info) / 6

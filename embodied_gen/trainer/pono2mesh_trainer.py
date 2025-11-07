@@ -53,26 +53,31 @@ from thirdparty.pano2room.utils.functions import (
 
 
 class Pano2MeshSRPipeline:
-    """Converting panoramic RGB image into 3D mesh representations, followed by inpainting and mesh refinement.
+    """Pipeline for converting panoramic RGB images into 3D mesh representations.
 
-    This class integrates several key components including:
-    - Depth estimation from RGB panorama
-    - Inpainting of missing regions under offsets
-    - RGB-D to mesh conversion
-    - Multi-view mesh repair
-    - 3D Gaussian Splatting (3DGS) dataset generation
+    This class integrates depth estimation, inpainting, mesh conversion, multi-view mesh repair,
+    and 3D Gaussian Splatting (3DGS) dataset generation.
 
     Args:
         config (Pano2MeshSRConfig): Configuration object containing model and pipeline parameters.
 
     Example:
-        ```python
+        ```py
+        from embodied_gen.trainer.pono2mesh_trainer import Pano2MeshSRPipeline
+        from embodied_gen.utils.config import Pano2MeshSRConfig
+
+        config = Pano2MeshSRConfig()
         pipeline = Pano2MeshSRPipeline(config)
         pipeline(pano_image='example.png', output_dir='./output')
         ```
     """
 
     def __init__(self, config: Pano2MeshSRConfig) -> None:
+        """Initializes the pipeline with models and camera poses.
+
+        Args:
+            config (Pano2MeshSRConfig): Configuration object.
+        """
         self.cfg = config
         self.device = config.device
 
@@ -93,6 +98,7 @@ class Pano2MeshSRPipeline:
         self.kernel = torch.from_numpy(kernel).float().to(self.device)
 
     def init_mesh_params(self) -> None:
+        """Initializes mesh parameters and inpaint mask."""
         torch.set_default_device(self.device)
         self.inpaint_mask = torch.ones(
             (self.cfg.cubemap_h, self.cfg.cubemap_w), dtype=torch.bool
@@ -103,6 +109,14 @@ class Pano2MeshSRPipeline:
 
     @staticmethod
     def read_camera_pose_file(filepath: str) -> np.ndarray:
+        """Reads a camera pose file and returns the pose matrix.
+
+        Args:
+            filepath (str): Path to the camera pose file.
+
+        Returns:
+            np.ndarray: 4x4 camera pose matrix.
+        """
         with open(filepath, "r") as f:
             values = [float(num) for line in f for num in line.split()]
 
@@ -111,6 +125,14 @@ class Pano2MeshSRPipeline:
     def load_camera_poses(
         self, trajectory_dir: str
     ) -> tuple[np.ndarray, list[torch.Tensor]]:
+        """Loads camera poses from a directory.
+
+        Args:
+            trajectory_dir (str): Directory containing camera pose files.
+
+        Returns:
+            tuple[np.ndarray, list[torch.Tensor]]: List of relative camera poses.
+        """
         pose_filenames = sorted(
             [
                 fname
@@ -148,6 +170,14 @@ class Pano2MeshSRPipeline:
     def load_inpaint_poses(
         self, poses: torch.Tensor
     ) -> dict[int, torch.Tensor]:
+        """Samples and loads poses for inpainting.
+
+        Args:
+            poses (torch.Tensor): Tensor of camera poses.
+
+        Returns:
+            dict[int, torch.Tensor]: Dictionary mapping indices to pose tensors.
+        """
         inpaint_poses = dict()
         sampled_views = poses[:: self.cfg.inpaint_frame_stride]
         init_pose = torch.eye(4)
@@ -162,6 +192,14 @@ class Pano2MeshSRPipeline:
         return inpaint_poses
 
     def project(self, world_to_cam: torch.Tensor):
+        """Projects the mesh to an image using the given camera pose.
+
+        Args:
+            world_to_cam (torch.Tensor): World-to-camera transformation matrix.
+
+        Returns:
+            Tuple[torch.Tensor, torch.Tensor, torch.Tensor]: Projected RGB image, inpaint mask, and depth map.
+        """
         (
             project_image,
             project_depth,
@@ -185,6 +223,14 @@ class Pano2MeshSRPipeline:
         return project_image[:3, ...], inpaint_mask, project_depth
 
     def render_pano(self, pose: torch.Tensor):
+        """Renders a panorama from the mesh using the given pose.
+
+        Args:
+            pose (torch.Tensor): Camera pose.
+
+        Returns:
+            Tuple[torch.Tensor, torch.Tensor, torch.Tensor]: RGB panorama, depth map, and mask.
+        """
         cubemap_list = []
         for cubemap_pose in self.cubemap_w2cs:
             project_pose = cubemap_pose @ pose
@@ -213,6 +259,15 @@ class Pano2MeshSRPipeline:
         world_to_cam: torch.Tensor = None,
         using_distance_map: bool = True,
     ) -> None:
+        """Converts RGB-D images to mesh and updates mesh parameters.
+
+        Args:
+            rgb (torch.Tensor): RGB image tensor.
+            depth (torch.Tensor): Depth map tensor.
+            inpaint_mask (torch.Tensor): Inpaint mask tensor.
+            world_to_cam (torch.Tensor, optional): Camera pose.
+            using_distance_map (bool, optional): Whether to use distance map.
+        """
         if world_to_cam is None:
             world_to_cam = torch.eye(4, dtype=torch.float32).to(self.device)
 
@@ -239,6 +294,15 @@ class Pano2MeshSRPipeline:
     def get_edge_image_by_depth(
         self, depth: torch.Tensor, dilate_iter: int = 1
     ) -> np.ndarray:
+        """Computes edge image from depth map.
+
+        Args:
+            depth (torch.Tensor): Depth map tensor.
+            dilate_iter (int, optional): Number of dilation iterations.
+
+        Returns:
+            np.ndarray: Edge image.
+        """
         if isinstance(depth, torch.Tensor):
             depth = depth.cpu().detach().numpy()
 
@@ -253,6 +317,15 @@ class Pano2MeshSRPipeline:
     def mesh_repair_by_greedy_view_selection(
         self, pose_dict: dict[str, torch.Tensor], output_dir: str
     ) -> list:
+        """Repairs mesh by selecting views greedily and inpainting missing regions.
+
+        Args:
+            pose_dict (dict[str, torch.Tensor]): Dictionary of poses for inpainting.
+            output_dir (str): Directory to save visualizations.
+
+        Returns:
+            list: List of inpainted panoramas with poses.
+        """
         inpainted_panos_w_pose = []
         while len(pose_dict) > 0:
             logger.info(f"Repairing mesh left rounds {len(pose_dict)}")
@@ -343,6 +416,17 @@ class Pano2MeshSRPipeline:
         distances: torch.Tensor,
         pano_mask: torch.Tensor,
     ) -> tuple[torch.Tensor]:
+        """Inpaints missing regions in a panorama.
+
+        Args:
+            idx (int): Index of the panorama.
+            colors (torch.Tensor): RGB image tensor.
+            distances (torch.Tensor): Distance map tensor.
+            pano_mask (torch.Tensor): Mask tensor.
+
+        Returns:
+            tuple[torch.Tensor]: Inpainted RGB image, distances, and normals.
+        """
         mask = (pano_mask[None, ..., None] > 0.5).float()
         mask = mask.permute(0, 3, 1, 2)
         mask = dilation(mask, kernel=self.kernel)
@@ -364,6 +448,14 @@ class Pano2MeshSRPipeline:
     def preprocess_pano(
         self, image: Image.Image | str
     ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Preprocesses a panoramic image for mesh generation.
+
+        Args:
+            image (Image.Image | str): Input image or path.
+
+        Returns:
+            tuple[torch.Tensor, torch.Tensor]: Preprocessed RGB and depth tensors.
+        """
         if isinstance(image, str):
             image = Image.open(image)
 
@@ -387,6 +479,17 @@ class Pano2MeshSRPipeline:
     def pano_to_perpective(
         self, pano_image: torch.Tensor, pitch: float, yaw: float, fov: float
     ) -> torch.Tensor:
+        """Converts a panoramic image to a perspective view.
+
+        Args:
+            pano_image (torch.Tensor): Panoramic image tensor.
+            pitch (float): Pitch angle.
+            yaw (float): Yaw angle.
+            fov (float): Field of view.
+
+        Returns:
+            torch.Tensor: Perspective image tensor.
+        """
         rots = dict(
             roll=0,
             pitch=pitch,
@@ -404,6 +507,14 @@ class Pano2MeshSRPipeline:
         return perspective
 
     def pano_to_cubemap(self, pano_rgb: torch.Tensor):
+        """Converts a panoramic RGB image to six cubemap views.
+
+        Args:
+            pano_rgb (torch.Tensor): Panoramic RGB image tensor.
+
+        Returns:
+            list: List of cubemap RGB tensors.
+        """
         # Define six canonical cube directions in (pitch, yaw)
         directions = [
             (0, 0),
@@ -424,6 +535,11 @@ class Pano2MeshSRPipeline:
         return cubemaps_rgb
 
     def save_mesh(self, output_path: str) -> None:
+        """Saves the mesh to a file.
+
+        Args:
+            output_path (str): Path to save the mesh file.
+        """
         vertices_np = self.vertices.T.cpu().numpy()
         colors_np = self.colors.T.cpu().numpy()
         faces_np = self.faces.T.cpu().numpy()
@@ -434,6 +550,14 @@ class Pano2MeshSRPipeline:
         mesh.export(output_path)
 
     def mesh_pose_to_gs_pose(self, mesh_pose: torch.Tensor) -> np.ndarray:
+        """Converts mesh pose to 3D Gaussian Splatting pose.
+
+        Args:
+            mesh_pose (torch.Tensor): Mesh pose tensor.
+
+        Returns:
+            np.ndarray: Converted pose matrix.
+        """
         pose = mesh_pose.clone()
         pose[0, :] *= -1
         pose[1, :] *= -1
@@ -450,6 +574,15 @@ class Pano2MeshSRPipeline:
         return c2w
 
     def __call__(self, pano_image: Image.Image | str, output_dir: str):
+        """Runs the pipeline to generate mesh and 3DGS data from a panoramic image.
+
+        Args:
+            pano_image (Image.Image | str): Input panoramic image or path.
+            output_dir (str): Directory to save outputs.
+
+        Returns:
+            None
+        """
         self.init_mesh_params()
         pano_rgb, pano_depth = self.preprocess_pano(pano_image)
         self.sup_pool = SupInfoPool()

@@ -38,26 +38,61 @@ __all__ = [
 
 
 class BasePipelineLoader(ABC):
+    """Abstract base class for loading Hugging Face image generation pipelines.
+
+    Attributes:
+        device (str): Device to load the pipeline on.
+
+    Methods:
+        load(): Loads and returns the pipeline.
+    """
+
     def __init__(self, device="cuda"):
         self.device = device
 
     @abstractmethod
     def load(self):
+        """Load and return the pipeline instance."""
         pass
 
 
 class BasePipelineRunner(ABC):
+    """Abstract base class for running image generation pipelines.
+
+    Attributes:
+        pipe: The loaded pipeline.
+
+    Methods:
+        run(prompt, **kwargs): Runs the pipeline with a prompt.
+    """
+
     def __init__(self, pipe):
         self.pipe = pipe
 
     @abstractmethod
     def run(self, prompt: str, **kwargs) -> Image.Image:
+        """Run the pipeline with the given prompt.
+
+        Args:
+            prompt (str): Text prompt for image generation.
+            **kwargs: Additional pipeline arguments.
+
+        Returns:
+            Image.Image: Generated image(s).
+        """
         pass
 
 
 # ===== SD3.5-medium =====
 class SD35Loader(BasePipelineLoader):
+    """Loader for Stable Diffusion 3.5 medium pipeline."""
+
     def load(self):
+        """Load the Stable Diffusion 3.5 medium pipeline.
+
+        Returns:
+            StableDiffusion3Pipeline: Loaded pipeline.
+        """
         pipe = StableDiffusion3Pipeline.from_pretrained(
             "stabilityai/stable-diffusion-3.5-medium",
             torch_dtype=torch.float16,
@@ -70,12 +105,25 @@ class SD35Loader(BasePipelineLoader):
 
 
 class SD35Runner(BasePipelineRunner):
+    """Runner for Stable Diffusion 3.5 medium pipeline."""
+
     def run(self, prompt: str, **kwargs) -> Image.Image:
+        """Generate images using Stable Diffusion 3.5 medium.
+
+        Args:
+            prompt (str): Text prompt.
+            **kwargs: Additional arguments.
+
+        Returns:
+            Image.Image: Generated image(s).
+        """
         return self.pipe(prompt=prompt, **kwargs).images
 
 
 # ===== Cosmos2 =====
 class CosmosLoader(BasePipelineLoader):
+    """Loader for Cosmos2 text-to-image pipeline."""
+
     def __init__(
         self,
         model_id="nvidia/Cosmos-Predict2-2B-Text2Image",
@@ -87,6 +135,8 @@ class CosmosLoader(BasePipelineLoader):
         self.local_dir = local_dir
 
     def _patch(self):
+        """Patch model and processor for optimized loading."""
+
         def patch_model(cls):
             orig = cls.from_pretrained
 
@@ -110,6 +160,11 @@ class CosmosLoader(BasePipelineLoader):
         patch_processor(SiglipProcessor)
 
     def load(self):
+        """Load the Cosmos2 text-to-image pipeline.
+
+        Returns:
+            Cosmos2TextToImagePipeline: Loaded pipeline.
+        """
         self._patch()
         snapshot_download(
             repo_id=self.model_id,
@@ -141,7 +196,19 @@ class CosmosLoader(BasePipelineLoader):
 
 
 class CosmosRunner(BasePipelineRunner):
+    """Runner for Cosmos2 text-to-image pipeline."""
+
     def run(self, prompt: str, negative_prompt=None, **kwargs) -> Image.Image:
+        """Generate images using Cosmos2 pipeline.
+
+        Args:
+            prompt (str): Text prompt.
+            negative_prompt (str, optional): Negative prompt.
+            **kwargs: Additional arguments.
+
+        Returns:
+            Image.Image: Generated image(s).
+        """
         return self.pipe(
             prompt=prompt, negative_prompt=negative_prompt, **kwargs
         ).images
@@ -149,7 +216,14 @@ class CosmosRunner(BasePipelineRunner):
 
 # ===== Kolors =====
 class KolorsLoader(BasePipelineLoader):
+    """Loader for Kolors pipeline."""
+
     def load(self):
+        """Load the Kolors pipeline.
+
+        Returns:
+            KolorsPipeline: Loaded pipeline.
+        """
         pipe = KolorsPipeline.from_pretrained(
             "Kwai-Kolors/Kolors-diffusers",
             torch_dtype=torch.float16,
@@ -164,13 +238,31 @@ class KolorsLoader(BasePipelineLoader):
 
 
 class KolorsRunner(BasePipelineRunner):
+    """Runner for Kolors pipeline."""
+
     def run(self, prompt: str, **kwargs) -> Image.Image:
+        """Generate images using Kolors pipeline.
+
+        Args:
+            prompt (str): Text prompt.
+            **kwargs: Additional arguments.
+
+        Returns:
+            Image.Image: Generated image(s).
+        """
         return self.pipe(prompt=prompt, **kwargs).images
 
 
 # ===== Flux =====
 class FluxLoader(BasePipelineLoader):
+    """Loader for Flux pipeline."""
+
     def load(self):
+        """Load the Flux pipeline.
+
+        Returns:
+            FluxPipeline: Loaded pipeline.
+        """
         os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
         pipe = FluxPipeline.from_pretrained(
             "black-forest-labs/FLUX.1-schnell", torch_dtype=torch.bfloat16
@@ -182,20 +274,50 @@ class FluxLoader(BasePipelineLoader):
 
 
 class FluxRunner(BasePipelineRunner):
+    """Runner for Flux pipeline."""
+
     def run(self, prompt: str, **kwargs) -> Image.Image:
+        """Generate images using Flux pipeline.
+
+        Args:
+            prompt (str): Text prompt.
+            **kwargs: Additional arguments.
+
+        Returns:
+            Image.Image: Generated image(s).
+        """
         return self.pipe(prompt=prompt, **kwargs).images
 
 
 # ===== Chroma =====
 class ChromaLoader(BasePipelineLoader):
+    """Loader for Chroma pipeline."""
+
     def load(self):
+        """Load the Chroma pipeline.
+
+        Returns:
+            ChromaPipeline: Loaded pipeline.
+        """
         return ChromaPipeline.from_pretrained(
             "lodestones/Chroma", torch_dtype=torch.bfloat16
         ).to(self.device)
 
 
 class ChromaRunner(BasePipelineRunner):
+    """Runner for Chroma pipeline."""
+
     def run(self, prompt: str, negative_prompt=None, **kwargs) -> Image.Image:
+        """Generate images using Chroma pipeline.
+
+        Args:
+            prompt (str): Text prompt.
+            negative_prompt (str, optional): Negative prompt.
+            **kwargs: Additional arguments.
+
+        Returns:
+            Image.Image: Generated image(s).
+        """
         return self.pipe(
             prompt=prompt, negative_prompt=negative_prompt, **kwargs
         ).images
@@ -211,6 +333,22 @@ PIPELINE_REGISTRY = {
 
 
 def build_hf_image_pipeline(name: str, device="cuda") -> BasePipelineRunner:
+    """Build a Hugging Face image generation pipeline runner by name.
+
+    Args:
+        name (str): Name of the pipeline (e.g., "sd35", "cosmos").
+        device (str): Device to load the pipeline on.
+
+    Returns:
+        BasePipelineRunner: Pipeline runner instance.
+
+    Example:
+        ```py
+        from embodied_gen.models.image_comm_model import build_hf_image_pipeline
+        runner = build_hf_image_pipeline("sd35")
+        images = runner.run(prompt="A robot holding a sign that says 'Hello'")
+        ```
+    """
     if name not in PIPELINE_REGISTRY:
         raise ValueError(f"Unsupported model: {name}")
     loader_cls, runner_cls = PIPELINE_REGISTRY[name]

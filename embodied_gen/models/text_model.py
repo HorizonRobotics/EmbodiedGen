@@ -60,6 +60,11 @@ PROMPT_KAPPEND = "Single {object}, in the center of the image, white background,
 
 
 def download_kolors_weights(local_dir: str = "weights/Kolors") -> None:
+    """Downloads Kolors model weights from HuggingFace.
+
+    Args:
+        local_dir (str, optional): Local directory to store weights.
+    """
     logger.info(f"Download kolors weights from huggingface...")
     os.makedirs(local_dir, exist_ok=True)
     subprocess.run(
@@ -93,6 +98,22 @@ def build_text2img_ip_pipeline(
     ref_scale: float,
     device: str = "cuda",
 ) -> StableDiffusionXLPipelineIP:
+    """Builds a Stable Diffusion XL pipeline with IP-Adapter for text-to-image generation.
+
+    Args:
+        ckpt_dir (str): Directory containing model checkpoints.
+        ref_scale (float): Reference scale for IP-Adapter.
+        device (str, optional): Device for inference.
+
+    Returns:
+        StableDiffusionXLPipelineIP: Configured pipeline.
+
+    Example:
+        ```py
+        from embodied_gen.models.text_model import build_text2img_ip_pipeline
+        pipe = build_text2img_ip_pipeline("weights/Kolors", ref_scale=0.3)
+        ```
+    """
     download_kolors_weights(ckpt_dir)
 
     text_encoder = ChatGLMModel.from_pretrained(
@@ -146,6 +167,21 @@ def build_text2img_pipeline(
     ckpt_dir: str,
     device: str = "cuda",
 ) -> StableDiffusionXLPipeline:
+    """Builds a Stable Diffusion XL pipeline for text-to-image generation.
+
+    Args:
+        ckpt_dir (str): Directory containing model checkpoints.
+        device (str, optional): Device for inference.
+
+    Returns:
+        StableDiffusionXLPipeline: Configured pipeline.
+
+    Example:
+        ```py
+        from embodied_gen.models.text_model import build_text2img_pipeline
+        pipe = build_text2img_pipeline("weights/Kolors")
+        ```
+    """
     download_kolors_weights(ckpt_dir)
 
     text_encoder = ChatGLMModel.from_pretrained(
@@ -185,6 +221,29 @@ def text2img_gen(
     ip_image_size: int = 512,
     seed: int = None,
 ) -> list[Image.Image]:
+    """Generates images from text prompts using a Stable Diffusion XL pipeline.
+
+    Args:
+        prompt (str): Text prompt for image generation.
+        n_sample (int): Number of images to generate.
+        guidance_scale (float): Guidance scale for diffusion.
+        pipeline (StableDiffusionXLPipeline | StableDiffusionXLPipelineIP): Pipeline instance.
+        ip_image (Image.Image | str, optional): Reference image for IP-Adapter.
+        image_wh (tuple[int, int], optional): Output image size (width, height).
+        infer_step (int, optional): Number of inference steps.
+        ip_image_size (int, optional): Size for IP-Adapter image.
+        seed (int, optional): Random seed.
+
+    Returns:
+        list[Image.Image]: List of generated images.
+
+    Example:
+        ```py
+        from embodied_gen.models.text_model import text2img_gen
+        images = text2img_gen(prompt="banana", n_sample=3, guidance_scale=7.5)
+        images[0].save("banana.png")
+        ```
+    """
     prompt = PROMPT_KAPPEND.format(object=prompt.strip())
     logger.info(f"Processing prompt: {prompt}")
 

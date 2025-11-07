@@ -69,6 +69,21 @@ def load_actor_from_urdf(
     update_mass: bool = False,
     scale: float | np.ndarray = 1.0,
 ) -> sapien.pysapien.Entity:
+    """Load an sapien actor from a URDF file and add it to the scene.
+
+    Args:
+        scene (sapien.Scene | ManiSkillScene): The simulation scene.
+        file_path (str): Path to the URDF file.
+        pose (sapien.Pose | None): Initial pose of the actor.
+        env_idx (int): Environment index for multi-env setup.
+        use_static (bool): Whether the actor is static.
+        update_mass (bool): Whether to update the actor's mass from URDF.
+        scale (float | np.ndarray): Scale factor for the actor.
+
+    Returns:
+        sapien.pysapien.Entity: The created actor entity.
+    """
+
     def _get_local_pose(origin_tag: ET.Element | None) -> sapien.Pose:
         local_pose = sapien.Pose(p=[0, 0, 0], q=[1, 0, 0, 0])
         if origin_tag is not None:
@@ -154,14 +169,17 @@ def load_assets_from_layout_file(
     init_quat: list[float] = [0, 0, 0, 1],
     env_idx: int = None,
 ) -> dict[str, sapien.pysapien.Entity]:
-    """Load assets from `EmbodiedGen` layout-gen output and create actors in the scene.
+    """Load assets from an EmbodiedGen layout file and create sapien actors in the scene.
 
     Args:
-        scene (sapien.Scene | ManiSkillScene): The SAPIEN or ManiSkill scene to load assets into.
-        layout (str): The layout file path.
-        z_offset (float): Offset to apply to the Z-coordinate of non-context objects.
-        init_quat (List[float]): Initial quaternion (x, y, z, w) for orientation adjustment.
-        env_idx (int): Environment index for multi-environment setup.
+        scene (ManiSkillScene | sapien.Scene): The sapien simulation scene.
+        layout (str): Path to the embodiedgen layout file.
+        z_offset (float): Z offset for non-context objects.
+        init_quat (list[float]): Initial quaternion for orientation.
+        env_idx (int): Environment index.
+
+    Returns:
+        dict[str, sapien.pysapien.Entity]: Mapping from object names to actor entities.
     """
     asset_root = os.path.dirname(layout)
     layout = LayoutInfo.from_dict(json.load(open(layout, "r")))
@@ -206,6 +224,19 @@ def load_mani_skill_robot(
     control_mode: str = "pd_joint_pos",
     backend_str: tuple[str, str] = ("cpu", "gpu"),
 ) -> BaseAgent:
+    """Load a ManiSkill robot agent into the scene.
+
+    Args:
+        scene (sapien.Scene | ManiSkillScene): The simulation scene.
+        layout (LayoutInfo | str): Layout info or path to layout file.
+        control_freq (int): Control frequency.
+        robot_init_qpos_noise (float): Noise for initial joint positions.
+        control_mode (str): Robot control mode.
+        backend_str (tuple[str, str]): Simulation/render backend.
+
+    Returns:
+        BaseAgent: The loaded robot agent.
+    """
     from mani_skill.agents import REGISTERED_AGENTS
     from mani_skill.envs.scene import ManiSkillScene
     from mani_skill.envs.utils.system.backend import (
@@ -278,14 +309,14 @@ def render_images(
         ]
     ] = None,
 ) -> dict[str, Image.Image]:
-    """Render images from a given sapien camera.
+    """Render images from a given SAPIEN camera.
 
     Args:
-        camera (sapien.render.RenderCameraComponent): The camera to render from.
-        render_keys (List[str]): Types of images to render (e.g., Color, Segmentation).
+        camera (sapien.render.RenderCameraComponent): Camera to render from.
+        render_keys (list[str], optional): Types of images to render.
 
     Returns:
-        Dict[str, Image.Image]: Dictionary of rendered images.
+        dict[str, Image.Image]: Dictionary of rendered images.
     """
     if render_keys is None:
         render_keys = [
@@ -341,11 +372,33 @@ def render_images(
 
 
 class SapienSceneManager:
-    """A class to manage SAPIEN simulator."""
+    """Manages SAPIEN simulation scenes, cameras, and rendering.
+
+    This class provides utilities for setting up scenes, adding cameras,
+    stepping simulation, and rendering images.
+
+    Attributes:
+        sim_freq (int): Simulation frequency.
+        ray_tracing (bool): Whether to use ray tracing.
+        device (str): Device for simulation.
+        renderer (sapien.SapienRenderer): SAPIEN renderer.
+        scene (sapien.Scene): Simulation scene.
+        cameras (list): List of camera components.
+        actors (dict): Mapping of actor names to entities.
+
+    Example see `embodied_gen/scripts/simulate_sapien.py`.
+    """
 
     def __init__(
         self, sim_freq: int, ray_tracing: bool, device: str = "cuda"
     ) -> None:
+        """Initialize the scene manager.
+
+        Args:
+            sim_freq (int): Simulation frequency.
+            ray_tracing (bool): Enable ray tracing.
+            device (str): Device for simulation.
+        """
         self.sim_freq = sim_freq
         self.ray_tracing = ray_tracing
         self.device = device
@@ -355,7 +408,11 @@ class SapienSceneManager:
         self.actors: dict[str, sapien.pysapien.Entity] = {}
 
     def _setup_scene(self) -> sapien.Scene:
-        """Set up the SAPIEN scene with lighting and ground."""
+        """Set up the SAPIEN scene with lighting and ground.
+
+        Returns:
+            sapien.Scene: The initialized scene.
+        """
         # Ray tracing settings
         if self.ray_tracing:
             sapien.render.set_camera_shader_dir("rt")
@@ -397,6 +454,18 @@ class SapienSceneManager:
         render_keys: list[str],
         sim_steps_per_control: int = 1,
     ) -> dict:
+        """Step the simulation and render images from cameras.
+
+        Args:
+            agent (BaseAgent): The robot agent.
+            action (torch.Tensor): Action to apply.
+            cameras (list): List of camera components.
+            render_keys (list[str]): Types of images to render.
+            sim_steps_per_control (int): Simulation steps per control.
+
+        Returns:
+            dict: Dictionary of rendered frames per camera.
+        """
         agent.set_action(action)
         frames = defaultdict(list)
         for _ in range(sim_steps_per_control):
@@ -417,13 +486,13 @@ class SapienSceneManager:
         image_hw: tuple[int, int],
         fovy_deg: float,
     ) -> sapien.render.RenderCameraComponent:
-        """Create a single camera in the scene.
+        """Create a camera in the scene.
 
         Args:
-            cam_name (str): Name of the camera.
-            pose (sapien.Pose): Camera pose p=(x, y, z), q=(w, x, y, z)
-            image_hw (Tuple[int, int]): Image resolution (height, width) for cameras.
-            fovy_deg (float): Field of view in degrees for cameras.
+            cam_name (str): Camera name.
+            pose (sapien.Pose): Camera pose.
+            image_hw (tuple[int, int]): Image resolution (height, width).
+            fovy_deg (float): Field of view in degrees.
 
         Returns:
             sapien.render.RenderCameraComponent: The created camera.
@@ -456,15 +525,15 @@ class SapienSceneManager:
         """Initialize multiple cameras arranged in a circle.
 
         Args:
-            num_cameras (int): Number of cameras to create.
-            radius (float): Radius of the camera circle.
-            height (float): Fixed Z-coordinate of the cameras.
-            target_pt (list[float]): 3D point (x, y, z) that cameras look at.
-            image_hw (Tuple[int, int]): Image resolution (height, width) for cameras.
-            fovy_deg (float): Field of view in degrees for cameras.
+            num_cameras (int): Number of cameras.
+            radius (float): Circle radius.
+            height (float): Camera height.
+            target_pt (list[float]): Target point to look at.
+            image_hw (tuple[int, int]): Image resolution.
+            fovy_deg (float): Field of view in degrees.
 
         Returns:
-            List[sapien.render.RenderCameraComponent]: List of created cameras.
+            list[sapien.render.RenderCameraComponent]: List of cameras.
         """
         angle_step = 2 * np.pi / num_cameras
         world_up_vec = np.array([0.0, 0.0, 1.0])
@@ -510,6 +579,19 @@ class SapienSceneManager:
 
 
 class FrankaPandaGrasper(object):
+    """Provides grasp planning and control for Franka Panda robot.
+
+    Attributes:
+        agent (BaseAgent): The robot agent.
+        robot: The robot instance.
+        control_freq (float): Control frequency.
+        control_timestep (float): Control timestep.
+        joint_vel_limits (float): Joint velocity limits.
+        joint_acc_limits (float): Joint acceleration limits.
+        finger_length (float): Length of gripper fingers.
+        planners: Motion planners for each environment.
+    """
+
     def __init__(
         self,
         agent: BaseAgent,
@@ -518,6 +600,7 @@ class FrankaPandaGrasper(object):
         joint_acc_limits: float = 1.0,
         finger_length: float = 0.025,
     ) -> None:
+        """Initialize the grasper."""
         self.agent = agent
         self.robot = agent.robot
         self.control_freq = control_freq
@@ -553,6 +636,15 @@ class FrankaPandaGrasper(object):
         gripper_state: Literal[-1, 1],
         n_step: int = 10,
     ) -> np.ndarray:
+        """Generate gripper control actions.
+
+        Args:
+            gripper_state (Literal[-1, 1]): Desired gripper state.
+            n_step (int): Number of steps.
+
+        Returns:
+            np.ndarray: Array of gripper actions.
+        """
         qpos = self.robot.get_qpos()[0, :-2].cpu().numpy()
         actions = []
         for _ in range(n_step):
@@ -571,6 +663,20 @@ class FrankaPandaGrasper(object):
         action_key: str = "position",
         env_idx: int = 0,
     ) -> np.ndarray:
+        """Plan and execute motion to a target pose.
+
+        Args:
+            pose (sapien.Pose): Target pose.
+            control_timestep (float): Control timestep.
+            gripper_state (Literal[-1, 1]): Desired gripper state.
+            use_point_cloud (bool): Use point cloud for planning.
+            n_max_step (int): Max number of steps.
+            action_key (str): Key for action in result.
+            env_idx (int): Environment index.
+
+        Returns:
+            np.ndarray: Array of actions to reach the pose.
+        """
         result = self.planners[env_idx].plan_qpos_to_pose(
             np.concatenate([pose.p, pose.q]),
             self.robot.get_qpos().cpu().numpy()[0],
@@ -608,6 +714,17 @@ class FrankaPandaGrasper(object):
         offset: tuple[float, float, float] = [0, 0, -0.05],
         env_idx: int = 0,
     ) -> np.ndarray:
+        """Compute grasp actions for a target actor.
+
+        Args:
+            actor (sapien.pysapien.Entity): Target actor to grasp.
+            reach_target_only (bool): Only reach the target pose if True.
+            offset (tuple[float, float, float]): Offset for reach pose.
+            env_idx (int): Environment index.
+
+        Returns:
+            np.ndarray: Array of grasp actions.
+        """
         physx_rigid = actor.components[1]
         mesh = get_component_mesh(physx_rigid, to_world_frame=True)
         obb = mesh.bounding_box_oriented

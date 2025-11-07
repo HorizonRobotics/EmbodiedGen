@@ -45,13 +45,13 @@ __all__ = [
 
 
 def matrix_to_pose(matrix: np.ndarray) -> list[float]:
-    """Convert a 4x4 transformation matrix to a pose (x, y, z, qx, qy, qz, qw).
+    """Converts a 4x4 transformation matrix to a pose (x, y, z, qx, qy, qz, qw).
 
     Args:
         matrix (np.ndarray): 4x4 transformation matrix.
 
     Returns:
-        List[float]: Pose as [x, y, z, qx, qy, qz, qw].
+        list[float]: Pose as [x, y, z, qx, qy, qz, qw].
     """
     x, y, z = matrix[:3, 3]
     rot_mat = matrix[:3, :3]
@@ -62,13 +62,13 @@ def matrix_to_pose(matrix: np.ndarray) -> list[float]:
 
 
 def pose_to_matrix(pose: list[float]) -> np.ndarray:
-    """Convert pose (x, y, z, qx, qy, qz, qw) to a 4x4 transformation matrix.
+    """Converts pose (x, y, z, qx, qy, qz, qw) to a 4x4 transformation matrix.
 
     Args:
-        List[float]: Pose as [x, y, z, qx, qy, qz, qw].
+        pose (list[float]): Pose as [x, y, z, qx, qy, qz, qw].
 
     Returns:
-        matrix (np.ndarray): 4x4 transformation matrix.
+        np.ndarray: 4x4 transformation matrix.
     """
     x, y, z, qx, qy, qz, qw = pose
     r = R.from_quat([qx, qy, qz, qw])
@@ -82,6 +82,16 @@ def pose_to_matrix(pose: list[float]) -> np.ndarray:
 def compute_xy_bbox(
     vertices: np.ndarray, col_x: int = 0, col_y: int = 1
 ) -> list[float]:
+    """Computes the bounding box in XY plane for given vertices.
+
+    Args:
+        vertices (np.ndarray): Vertex coordinates.
+        col_x (int, optional): Column index for X.
+        col_y (int, optional): Column index for Y.
+
+    Returns:
+        list[float]: [min_x, max_x, min_y, max_y]
+    """
     x_vals = vertices[:, col_x]
     y_vals = vertices[:, col_y]
     return x_vals.min(), x_vals.max(), y_vals.min(), y_vals.max()
@@ -92,6 +102,16 @@ def has_iou_conflict(
     placed_boxes: list[list[float]],
     iou_threshold: float = 0.0,
 ) -> bool:
+    """Checks for intersection-over-union conflict between boxes.
+
+    Args:
+        new_box (list[float]): New box coordinates.
+        placed_boxes (list[list[float]]): List of placed box coordinates.
+        iou_threshold (float, optional): IOU threshold.
+
+    Returns:
+        bool: True if conflict exists, False otherwise.
+    """
     new_min_x, new_max_x, new_min_y, new_max_y = new_box
     for min_x, max_x, min_y, max_y in placed_boxes:
         ix1 = max(new_min_x, min_x)
@@ -105,7 +125,14 @@ def has_iou_conflict(
 
 
 def with_seed(seed_attr_name: str = "seed"):
-    """A parameterized decorator that temporarily sets the random seed."""
+    """Decorator to temporarily set the random seed for reproducibility.
+
+    Args:
+        seed_attr_name (str, optional): Name of the seed argument.
+
+    Returns:
+        function: Decorator function.
+    """
 
     def decorator(func):
         @wraps(func)
@@ -143,6 +170,20 @@ def compute_convex_hull_path(
     y_axis: int = 1,
     z_axis: int = 2,
 ) -> Path:
+    """Computes a dense convex hull path for the top surface of a mesh.
+
+    Args:
+        vertices (np.ndarray): Mesh vertices.
+        z_threshold (float, optional): Z threshold for top surface.
+        interp_per_edge (int, optional): Interpolation points per edge.
+        margin (float, optional): Margin for polygon buffer.
+        x_axis (int, optional): X axis index.
+        y_axis (int, optional): Y axis index.
+        z_axis (int, optional): Z axis index.
+
+    Returns:
+        Path: Matplotlib path object for the convex hull.
+    """
     top_vertices = vertices[
         vertices[:, z_axis] > vertices[:, z_axis].max() - z_threshold
     ]
@@ -170,6 +211,15 @@ def compute_convex_hull_path(
 
 
 def find_parent_node(node: str, tree: dict) -> str | None:
+    """Finds the parent node of a given node in a tree.
+
+    Args:
+        node (str): Node name.
+        tree (dict): Tree structure.
+
+    Returns:
+        str | None: Parent node name or None.
+    """
     for parent, children in tree.items():
         if any(child[0] == node for child in children):
             return parent
@@ -177,6 +227,16 @@ def find_parent_node(node: str, tree: dict) -> str | None:
 
 
 def all_corners_inside(hull: Path, box: list, threshold: int = 3) -> bool:
+    """Checks if at least `threshold` corners of a box are inside a hull.
+
+    Args:
+        hull (Path): Convex hull path.
+        box (list): Box coordinates [x1, x2, y1, y2].
+        threshold (int, optional): Minimum corners inside.
+
+    Returns:
+        bool: True if enough corners are inside.
+    """
     x1, x2, y1, y2 = box
     corners = [[x1, y1], [x2, y1], [x1, y2], [x2, y2]]
 
@@ -187,6 +247,15 @@ def all_corners_inside(hull: Path, box: list, threshold: int = 3) -> bool:
 def compute_axis_rotation_quat(
     axis: Literal["x", "y", "z"], angle_rad: float
 ) -> list[float]:
+    """Computes quaternion for rotation around a given axis.
+
+    Args:
+        axis (Literal["x", "y", "z"]): Axis of rotation.
+        angle_rad (float): Rotation angle in radians.
+
+    Returns:
+        list[float]: Quaternion [x, y, z, w].
+    """
     if axis.lower() == "x":
         q = Quaternion(axis=[1, 0, 0], angle=angle_rad)
     elif axis.lower() == "y":
@@ -202,6 +271,15 @@ def compute_axis_rotation_quat(
 def quaternion_multiply(
     init_quat: list[float], rotate_quat: list[float]
 ) -> list[float]:
+    """Multiplies two quaternions.
+
+    Args:
+        init_quat (list[float]): Initial quaternion [x, y, z, w].
+        rotate_quat (list[float]): Rotation quaternion [x, y, z, w].
+
+    Returns:
+        list[float]: Resulting quaternion [x, y, z, w].
+    """
     qx, qy, qz, qw = init_quat
     q1 = Quaternion(w=qw, x=qx, y=qy, z=qz)
     qx, qy, qz, qw = rotate_quat
@@ -217,7 +295,17 @@ def check_reachable(
     min_reach: float = 0.25,
     max_reach: float = 0.85,
 ) -> bool:
-    """Check if the target point is within the reachable range."""
+    """Checks if the target point is within the reachable range.
+
+    Args:
+        base_xyz (np.ndarray): Base position.
+        reach_xyz (np.ndarray): Target position.
+        min_reach (float, optional): Minimum reach distance.
+        max_reach (float, optional): Maximum reach distance.
+
+    Returns:
+        bool: True if reachable, False otherwise.
+    """
     distance = np.linalg.norm(reach_xyz - base_xyz)
 
     return min_reach < distance < max_reach
@@ -238,26 +326,31 @@ def bfs_placement(
     robot_dim: float = 0.12,
     seed: int = None,
 ) -> LayoutInfo:
-    """Place objects in the layout using BFS traversal.
+    """Places objects in a scene layout using BFS traversal.
 
     Args:
-        layout_file: Path to the JSON file defining the layout structure and assets.
-        floor_margin: Z-offset for the background object, typically for objects placed on the floor.
-        beside_margin: Minimum margin for objects placed 'beside' their parent, used when 'on' placement fails.
-        max_attempts: Maximum number of attempts to find a non-overlapping position for an object.
-        init_rpy: Initial Roll-Pitch-Yaw rotation rad applied to all object meshes to align the mesh's
-            coordinate system with the world's (e.g., Z-up).
-        rotate_objs: If True, apply a random rotation around the Z-axis for manipulated and distractor objects.
-        rotate_bg: If True, apply a random rotation around the Y-axis for the background object.
-        rotate_context: If True, apply a random rotation around the Z-axis for the context object.
-        limit_reach_range: If set, enforce a check that manipulated objects are within the robot's reach range, in meter.
-        max_orient_diff: If set, enforce a check that manipulated objects are within the robot's orientation range, in degree.
-        robot_dim: The approximate dimension (e.g., diameter) of the robot for box representation.
-        seed: Random seed for reproducible placement.
+        layout_file (str): Path to layout JSON file generated from `layout-cli`.
+        floor_margin (float, optional): Z-offset for objects placed on the floor.
+        beside_margin (float, optional): Minimum margin for objects placed 'beside' their parent, used when 'on' placement fails.
+        max_attempts (int, optional): Max attempts for a non-overlapping placement.
+        init_rpy (tuple, optional): Initial rotation (rpy).
+        rotate_objs (bool, optional): Whether to random rotate objects.
+        rotate_bg (bool, optional): Whether to random rotate background.
+        rotate_context (bool, optional): Whether to random rotate context asset.
+        limit_reach_range (tuple[float, float] | None, optional): If set, enforce a check that manipulated objects are within the robot's reach range, in meter.
+        max_orient_diff (float | None, optional): If set, enforce a check that manipulated objects are within the robot's orientation range, in degree.
+        robot_dim (float, optional): The approximate robot size.
+        seed (int, optional): Random seed for reproducible placement.
 
     Returns:
-        A :class:`LayoutInfo` object containing the objects and their final computed 7D poses
-        ([x, y, z, qx, qy, qz, qw]).
+        LayoutInfo: Layout information with object poses.
+
+    Example:
+        ```py
+        from embodied_gen.utils.geometry import bfs_placement
+        layout = bfs_placement("scene_layout.json", seed=42)
+        print(layout.position)
+        ```
     """
     layout_info = LayoutInfo.from_dict(json.load(open(layout_file, "r")))
     asset_dir = os.path.dirname(layout_file)
@@ -478,6 +571,13 @@ def bfs_placement(
 def compose_mesh_scene(
     layout_info: LayoutInfo, out_scene_path: str, with_bg: bool = False
 ) -> None:
+    """Composes a mesh scene from layout information and saves to file.
+
+    Args:
+        layout_info (LayoutInfo): Layout information.
+        out_scene_path (str): Output scene file path.
+        with_bg (bool, optional): Include background mesh.
+    """
     object_mapping = Scene3DItemEnum.object_mapping(layout_info.relation)
     scene = trimesh.Scene()
     for node in layout_info.assets:
@@ -505,6 +605,16 @@ def compose_mesh_scene(
 def compute_pinhole_intrinsics(
     image_w: int, image_h: int, fov_deg: float
 ) -> np.ndarray:
+    """Computes pinhole camera intrinsic matrix from image size and FOV.
+
+    Args:
+        image_w (int): Image width.
+        image_h (int): Image height.
+        fov_deg (float): Field of view in degrees.
+
+    Returns:
+        np.ndarray: Intrinsic matrix K.
+    """
     fov_rad = np.deg2rad(fov_deg)
     fx = image_w / (2 * np.tan(fov_rad / 2))
     fy = fx  # assuming square pixels
