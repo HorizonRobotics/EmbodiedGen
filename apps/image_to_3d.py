@@ -45,8 +45,8 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
         ## ***EmbodiedGen***: Image-to-3D Asset
         **🔖 Version**: {VERSION}
         <p style="display: flex; gap: 10px; flex-wrap: nowrap;">
-            <a href="https://horizonrobotics.github.io/robot_lab/embodied_gen/index.html">
-                <img alt="🌐 Project Page" src="https://img.shields.io/badge/🌐-Project_Page-blue">
+            <a href="https://horizonrobotics.github.io/EmbodiedGen">
+                <img alt="📖 Documentation" src="https://img.shields.io/badge/📖-Documentation-blue">
             </a>
             <a href="https://arxiv.org/abs/2506.10600">
                 <img alt="📄 arXiv" src="https://img.shields.io/badge/📄-arXiv-b31b1b">
