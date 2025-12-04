@@ -14,10 +14,10 @@
 # implied. See the License for the specific language governing
 # permissions and limitations under the License.
 
-
 import argparse
 import logging
 import math
+import os
 from typing import Literal, Union
 
 import cv2
@@ -425,6 +425,7 @@ def parse_args():
     return args
 
 
+@spaces.GPU
 def entrypoint(
     delight_model: DelightingModel = None,
     imagesr_model: ImageRealESRGAN = None,
