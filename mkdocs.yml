@@ -94,7 +94,6 @@ plugins:
             docstring_style: google
             show_source: true
             merge_init_into_class: true
-            show_inherited_members: true
             show_root_heading: true
             show_root_full_path: true
 
