@@ -25,4 +25,4 @@ If you use EmbodiedGen in your research or projects, please cite:
 
 ## ⚖️ License
 
-This project is licensed under the [Apache License 2.0](LICENSE). See the `LICENSE` file for details.
+This project is licensed under the [Apache License 2.0](../LICENSE). See the `LICENSE` file for details.
