@@ -29,7 +29,7 @@ from embodied_gen.data.utils import (
     init_kal_camera,
     normalize_vertices_array,
 )
-from embodied_gen.models.gs_model import GaussianOperator
+from embodied_gen.models.gs_model import load_gs_model
 from embodied_gen.utils.process_media import combine_images_to_grid
 
 logging.basicConfig(
@@ -95,21 +95,6 @@ def parse_args():
     args, unknown = parser.parse_known_args()
 
     return args
-
-
-def load_gs_model(
-    input_gs: str, pre_quat: list[float] = [0.0, 0.7071, 0.0, -0.7071]
-) -> GaussianOperator:
-    gs_model = GaussianOperator.load_from_ply(input_gs)
-    # Normalize vertices to [-1, 1], center to (0, 0, 0).
-    _, scale, center = normalize_vertices_array(gs_model._means)
-    scale, center = float(scale), center.tolist()
-    transpose = [*[v for v in center], *pre_quat]
-    instance_pose = torch.tensor(transpose).to(gs_model.device)
-    gs_model = gs_model.get_gaussians(instance_pose=instance_pose)
-    gs_model.rescale(scale)
-
-    return gs_model
 
 
 @spaces.GPU

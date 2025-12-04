@@ -26,12 +26,14 @@ import numpy as np
 import torch
 import trimesh
 from PIL import Image
-from embodied_gen.data.backproject_v2 import entrypoint as backproject_api
+from embodied_gen.data.backproject_v3 import entrypoint as backproject_api
 from embodied_gen.data.utils import delete_dir, trellis_preprocess
-from embodied_gen.models.delight_model import DelightingModel
+
+# from embodied_gen.models.delight_model import DelightingModel
 from embodied_gen.models.gs_model import GaussianOperator
 from embodied_gen.models.segment_model import RembgRemover
-from embodied_gen.models.sr_model import ImageRealESRGAN
+
+# from embodied_gen.models.sr_model import ImageRealESRGAN
 from embodied_gen.scripts.render_gs import entrypoint as render_gs_api
 from embodied_gen.utils.gpt_clients import GPT_CLIENT
 from embodied_gen.utils.log import logger
@@ -59,8 +61,8 @@ os.environ["SPCONV_ALGO"] = "native"
 random.seed(0)
 
 logger.info("Loading Image3D Models...")
-DELIGHT = DelightingModel()
-IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
+# DELIGHT = DelightingModel()
+# IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
 RBG_REMOVER = RembgRemover()
 PIPELINE = TrellisImageTo3DPipeline.from_pretrained(
     "microsoft/TRELLIS-image-large"
@@ -108,9 +110,7 @@ def parse_args():
         default=2,
     )
     parser.add_argument("--disable_decompose_convex", action="store_true")
-    parser.add_argument(
-        "--texture_wh", type=int, nargs=2, default=[2048, 2048]
-    )
+    parser.add_argument("--texture_size", type=int, default=2048)
     args, unknown = parser.parse_known_args()
 
     return args
@@ -248,16 +248,14 @@ def entrypoint(**kwargs):
             mesh.export(mesh_obj_path)
 
             mesh = backproject_api(
-                delight_model=DELIGHT,
-                imagesr_model=IMAGESR_MODEL,
-                color_path=color_path,
+                # delight_model=DELIGHT,
+                # imagesr_model=IMAGESR_MODEL,
+                gs_path=aligned_gs_path,
                 mesh_path=mesh_obj_path,
                 output_path=mesh_obj_path,
                 skip_fix_mesh=False,
-                delight=True,
-                texture_wh=args.texture_wh,
-                elevation=[20, -10, 60, -50],
-                num_images=12,
+                texture_size=args.texture_size,
+                delight=False,
             )
 
             mesh_glb_path = os.path.join(output_root, f"{filename}.glb")

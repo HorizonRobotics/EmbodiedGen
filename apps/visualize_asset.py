@@ -727,7 +727,6 @@ with gr.Blocks(
 
 if __name__ == "__main__":
     demo.launch(
-        server_name="10.34.8.77",
         server_port=8088,
         allowed_paths=[
             "/horizon-bucket/robot_lab/datasets/embodiedgen/assets"

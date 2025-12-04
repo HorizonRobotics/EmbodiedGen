@@ -14,6 +14,8 @@ conda activate embodiedgen
 bash install.sh basic
 ```
 
+Please `huggingface-cli login` to ensure that the ckpts can be downloaded automatically afterwards.
+
 ## ✅ Starting from Docker
 
 We provide a pre-built Docker image on [Docker Hub](https://hub.docker.com/repository/docker/wangxinjie/embodiedgen) with a configured environment for your convenience. For more details, please refer to [Docker documentation](https://github.com/HorizonRobotics/EmbodiedGen/tree/master/docker).
