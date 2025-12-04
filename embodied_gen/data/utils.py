@@ -66,6 +66,7 @@ __all__ = [
     "resize_pil",
     "trellis_preprocess",
     "delete_dir",
+    "kaolin_to_opencv_view",
 ]
 
 
@@ -373,10 +374,18 @@ def _compute_az_el_by_views(
 def _compute_cam_pts_by_az_el(
     azs: np.ndarray,
     els: np.ndarray,
-    distance: float,
+    distance: float | list[float] | np.ndarray,
     extra_pts: np.ndarray = None,
 ) -> np.ndarray:
-    distances = np.array([distance for _ in range(len(azs))])
+    if np.isscalar(distance) or isinstance(distance, (float, int)):
+        distances = np.full(len(azs), distance)
+    else:
+        distances = np.array(distance)
+        if len(distances) != len(azs):
+            raise ValueError(
+                f"Length of distances ({len(distances)}) must match length of azs ({len(azs)})"
+            )
+
     cam_pts = _az_el_to_points(azs, els) * distances[:, None]
 
     if extra_pts is not None:
@@ -710,7 +719,7 @@ class CameraSetting:
 
     num_images: int
     elevation: list[float]
-    distance: float
+    distance: float | list[float]
     resolution_hw: tuple[int, int]
     fov: float
     at: tuple[float, float, float] = field(
@@ -822,6 +831,28 @@ def import_kaolin_mesh(mesh_path: str, with_mtl: bool = False):
         )
 
     return mesh
+
+
+def kaolin_to_opencv_view(raw_matrix):
+    R_orig = raw_matrix[:, :3, :3]
+    t_orig = raw_matrix[:, :3, 3]
+
+    R_target = torch.zeros_like(R_orig)
+    R_target[:, :, 0] = R_orig[:, :, 2]
+    R_target[:, :, 1] = R_orig[:, :, 0]
+    R_target[:, :, 2] = R_orig[:, :, 1]
+
+    t_target = t_orig
+
+    target_matrix = (
+        torch.eye(4, device=raw_matrix.device)
+        .unsqueeze(0)
+        .repeat(raw_matrix.size(0), 1, 1)
+    )
+    target_matrix[:, :3, :3] = R_target
+    target_matrix[:, :3, 3] = t_target
+
+    return target_matrix
 
 
 def save_mesh_with_mtl(

@@ -27,7 +27,7 @@ from common import (
     VERSION,
     active_btn_by_text_content,
     end_session,
-    extract_3d_representations_v2,
+    extract_3d_representations_v3,
     extract_urdf,
     get_cached_image,
     get_seed,
@@ -178,17 +178,17 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                     )
 
             generate_btn = gr.Button(
-                "🚀 2. Generate 3D(~0.5 mins)",
+                "🚀 2. Generate 3D(~2 mins)",
                 variant="primary",
                 interactive=False,
             )
             model_output_obj = gr.Textbox(label="raw mesh .obj", visible=False)
-            with gr.Row():
-                extract_rep3d_btn = gr.Button(
-                    "🔍 3. Extract 3D Representation(~1 mins)",
-                    variant="primary",
-                    interactive=False,
-                )
+            # with gr.Row():
+            #     extract_rep3d_btn = gr.Button(
+            #         "🔍 3. Extract 3D Representation(~1 mins)",
+            #         variant="primary",
+            #         interactive=False,
+            #     )
             with gr.Accordion(
                 label="Enter Asset Attributes(optional)", open=False
             ):
@@ -206,13 +206,13 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                 )
             with gr.Row():
                 extract_urdf_btn = gr.Button(
-                    "🧩 4. Extract URDF with physics(~1 mins)",
+                    "🧩 3. Extract URDF with physics(~1 mins)",
                     variant="primary",
                     interactive=False,
                 )
             with gr.Row():
                 download_urdf = gr.DownloadButton(
-                    label="⬇️ 5. Download URDF",
+                    label="⬇️ 4. Download URDF",
                     variant="primary",
                     interactive=False,
                 )
@@ -336,7 +336,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
     generate_img_btn.click(
         lambda: tuple(
             [
-                gr.Button(interactive=False),
+                # gr.Button(interactive=False),
                 gr.Button(interactive=False),
                 gr.Button(interactive=False),
                 gr.Button(interactive=False),
@@ -358,7 +358,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
             ]
         ),
         outputs=[
-            extract_rep3d_btn,
+            # extract_rep3d_btn,
             extract_urdf_btn,
             download_urdf,
             generate_btn,
@@ -428,12 +428,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
         ],
         outputs=[output_buf, video_output],
     ).success(
-        lambda: gr.Button(interactive=True),
-        outputs=[extract_rep3d_btn],
-    )
-
-    extract_rep3d_btn.click(
-        extract_3d_representations_v2,
+        extract_3d_representations_v3,
         inputs=[
             output_buf,
             project_delight,
@@ -476,4 +471,4 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
 
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(server_port=8082)

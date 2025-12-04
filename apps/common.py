@@ -32,8 +32,9 @@ import trimesh
 from easydict import EasyDict as edict
 from PIL import Image
 from embodied_gen.data.backproject_v2 import entrypoint as backproject_api
+from embodied_gen.data.backproject_v3 import entrypoint as backproject_api_v3
 from embodied_gen.data.differentiable_render import entrypoint as render_api
-from embodied_gen.data.utils import trellis_preprocess, zip_files
+from embodied_gen.data.utils import resize_pil, trellis_preprocess, zip_files
 from embodied_gen.models.delight_model import DelightingModel
 from embodied_gen.models.gs_model import GaussianOperator
 from embodied_gen.models.segment_model import (
@@ -131,8 +132,8 @@ def patched_setup_functions(self):
 Gaussian.setup_functions = patched_setup_functions
 
 
-DELIGHT = DelightingModel()
-IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
+# DELIGHT = DelightingModel()
+# IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
 # IMAGESR_MODEL = ImageStableSR()
 if os.getenv("GRADIO_APP") == "imageto3d":
     RBG_REMOVER = RembgRemover()
@@ -169,6 +170,8 @@ elif os.getenv("GRADIO_APP") == "textto3d":
     )
     os.makedirs(TMP_DIR, exist_ok=True)
 elif os.getenv("GRADIO_APP") == "texture_edit":
+    DELIGHT = DelightingModel()
+    IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
     PIPELINE_IP = build_texture_gen_pipe(
         base_ckpt_dir="./weights",
         ip_adapt_scale=0.7,
@@ -205,7 +208,7 @@ def preprocess_image_fn(
     elif isinstance(image, np.ndarray):
         image = Image.fromarray(image)
 
-    image_cache = image.copy().resize((512, 512))
+    image_cache = resize_pil(image.copy(), 1024)
 
     bg_remover = RBG_REMOVER if rmbg_tag == "rembg" else RBG14_REMOVER
     image = bg_remover(image)
@@ -221,7 +224,7 @@ def preprocess_sam_image_fn(
         image = Image.fromarray(image)
 
     sam_image = SAM_PREDICTOR.preprocess_image(image)
-    image_cache = Image.fromarray(sam_image).resize((512, 512))
+    image_cache = sam_image.copy()
     SAM_PREDICTOR.predictor.set_image(sam_image)
 
     return sam_image, image_cache
@@ -504,6 +507,60 @@ def extract_3d_representations_v2(
         texture_wh=[texture_size, texture_size],
         elevation=[20, -10, 60, -50],
         num_images=12,
+    )
+
+    mesh_glb_path = os.path.join(user_dir, f"{filename}.glb")
+    mesh.export(mesh_glb_path)
+
+    return mesh_glb_path, gs_path, mesh_obj_path, aligned_gs_path
+
+
+def extract_3d_representations_v3(
+    state: dict,
+    enable_delight: bool,
+    texture_size: int,
+    req: gr.Request,
+):
+    output_root = TMP_DIR
+    user_dir = os.path.join(output_root, str(req.session_hash))
+    gs_model, mesh_model = unpack_state(state, device="cpu")
+
+    filename = "sample"
+    gs_path = os.path.join(user_dir, f"{filename}_gs.ply")
+    gs_model.save_ply(gs_path)
+
+    # Rotate mesh and GS by 90 degrees around Z-axis.
+    rot_matrix = [[0, 0, -1], [0, 1, 0], [1, 0, 0]]
+    gs_add_rot = [[1, 0, 0], [0, -1, 0], [0, 0, -1]]
+    mesh_add_rot = [[1, 0, 0], [0, 0, -1], [0, 1, 0]]
+
+    # Addtional rotation for GS to align mesh.
+    gs_rot = np.array(gs_add_rot) @ np.array(rot_matrix)
+    pose = GaussianOperator.trans_to_quatpose(gs_rot)
+    aligned_gs_path = gs_path.replace(".ply", "_aligned.ply")
+    GaussianOperator.resave_ply(
+        in_ply=gs_path,
+        out_ply=aligned_gs_path,
+        instance_pose=pose,
+        device="cpu",
+    )
+
+    mesh = trimesh.Trimesh(
+        vertices=mesh_model.vertices.cpu().numpy(),
+        faces=mesh_model.faces.cpu().numpy(),
+    )
+    mesh.vertices = mesh.vertices @ np.array(mesh_add_rot)
+    mesh.vertices = mesh.vertices @ np.array(rot_matrix)
+
+    mesh_obj_path = os.path.join(user_dir, f"{filename}.obj")
+    mesh.export(mesh_obj_path)
+
+    mesh = backproject_api_v3(
+        gs_path=aligned_gs_path,
+        mesh_path=mesh_obj_path,
+        output_path=mesh_obj_path,
+        skip_fix_mesh=False,
+        texture_size=texture_size,
     )
 
     mesh_glb_path = os.path.join(user_dir, f"{filename}.glb")

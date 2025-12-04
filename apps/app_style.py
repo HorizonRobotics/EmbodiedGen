@@ -4,7 +4,7 @@ from gradio.themes.utils.colors import gray, neutral, slate, stone, teal, zinc
 lighting_css = """
 <style>
 #lighter_mesh canvas {
-    filter: brightness(1.9) !important;
+    filter: brightness(2.0) !important;
 }
 </style>
 """

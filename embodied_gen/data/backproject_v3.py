@@ -18,21 +18,21 @@
 import argparse
 import logging
 import math
-import os
-from typing import List, Literal, Union
+from typing import Literal, Union
 
 import cv2
 import numpy as np
 import nvdiffrast.torch as dr
+import spaces
 import torch
 import trimesh
 import utils3d
 import xatlas
+from PIL import Image
 from tqdm import tqdm
 from embodied_gen.data.mesh_operator import MeshFixer
 from embodied_gen.data.utils import (
     CameraSetting,
-    get_images_from_grid,
     init_kal_camera,
     kaolin_to_opencv_view,
     normalize_vertices_array,
@@ -40,11 +40,18 @@ from embodied_gen.data.utils import (
     save_mesh_with_mtl,
 )
 from embodied_gen.models.delight_model import DelightingModel
+from embodied_gen.models.gs_model import load_gs_model
+from embodied_gen.models.sr_model import ImageRealESRGAN
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
 )
 logger = logging.getLogger(__name__)
+
+
+__all__ = [
+    "TextureBaker",
+]
 
 
 class TextureBaker(object):
@@ -261,6 +268,7 @@ class TextureBaker(object):
                 )
                 pbar.set_postfix({"loss": loss.item()})
                 pbar.update()
+
         texture = np.clip(
             texture[0].flip(0).detach().cpu().numpy() * 255, 0, 255
         ).astype(np.uint8)
@@ -277,7 +285,7 @@ class TextureBaker(object):
 
     def bake_texture(
         self,
-        images: List[np.array],
+        images: list[np.array],
         texture_size: int = 1024,
         mode: Literal["fast", "opt"] = "opt",
         lambda_tv: float = 1e-2,
@@ -308,44 +316,39 @@ class TextureBaker(object):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Render settings")
+    """Parses command-line arguments for texture backprojection.
 
+    Returns:
+        argparse.Namespace: Parsed arguments.
+    """
+    parser = argparse.ArgumentParser(description="Backproject texture")
+    parser.add_argument(
+        "--gs_path",
+        type=str,
+        help="Path to the GS.ply gaussian splatting model",
+    )
     parser.add_argument(
         "--mesh_path",
         type=str,
-        nargs="+",
-        required=True,
-        help="Paths to the mesh files for rendering.",
+        help="Mesh path, .obj, .glb or .ply",
     )
     parser.add_argument(
-        "--color_path",
+        "--output_path",
         type=str,
-        nargs="+",
-        required=True,
-        help="Paths to the mesh files for rendering.",
+        help="Output mesh path with suffix",
     )
     parser.add_argument(
-        "--output_root",
-        type=str,
-        default="./outputs",
-        help="Root directory for output",
-    )
-    parser.add_argument(
-        "--uuid",
-        type=str,
-        nargs="+",
-        default=None,
-        help="uuid for rendering saving.",
-    )
-    parser.add_argument(
-        "--num_images", type=int, default=6, help="Number of images to render."
+        "--num_images",
+        type=int,
+        default=180,
+        help="Number of images to render.",
     )
     parser.add_argument(
         "--elevation",
-        type=float,
         nargs="+",
-        default=[20.0, -10.0],
-        help="Elevation angles for the camera (default: [20.0, -10.0])",
+        type=float,
+        default=list(range(85, -90, -10)),
+        help="Elevation angles for the camera",
     )
     parser.add_argument(
         "--distance",
@@ -358,7 +361,7 @@ def parse_args():
         type=int,
         nargs=2,
         default=(512, 512),
-        help="Resolution of the output images (default: (512, 512))",
+        help="Resolution of the render images (default: (512, 512))",
     )
     parser.add_argument(
         "--fov",
@@ -374,9 +377,12 @@ def parse_args():
         help="Device to run on (default: `cuda`)",
     )
     parser.add_argument(
+        "--skip_fix_mesh", action="store_true", help="Fix mesh geometry."
+    )
+    parser.add_argument(
         "--texture_size",
         type=int,
-        default=1024,
+        default=2048,
         help="Texture size for texture baking (default: 1024)",
     )
     parser.add_argument(
@@ -388,8 +394,8 @@ def parse_args():
     parser.add_argument(
         "--opt_step",
         type=int,
-        default=2500,
-        help="Optimization steps for texture baking (default: 2500)",
+        default=3000,
+        help="Optimization steps for texture baking (default: 3000)",
     )
     parser.add_argument(
         "--mesh_sipmlify_ratio",
@@ -398,30 +404,48 @@ def parse_args():
         help="Mesh simplification ratio (default: 0.9)",
     )
     parser.add_argument(
+        "--delight", action="store_true", help="Use delighting model."
+    )
+    parser.add_argument(
+        "--no_smooth_texture",
+        action="store_true",
+        help="Do not smooth the texture.",
+    )
+    parser.add_argument(
         "--no_coor_trans",
         action="store_true",
         help="Do not transform the asset coordinate system.",
     )
     parser.add_argument(
-        "--delight", action="store_true", help="Use delighting model."
+        "--save_glb_path", type=str, default=None, help="Save glb path."
     )
-    parser.add_argument(
-        "--skip_fix_mesh", action="store_true", help="Fix mesh geometry."
-    )
-
-    args = parser.parse_args()
-
-    if args.uuid is None:
-        args.uuid = []
-        for path in args.mesh_path:
-            uuid = os.path.basename(path).split(".")[0]
-            args.uuid.append(uuid)
+    parser.add_argument("--n_max_faces", type=int, default=30000)
+    args, unknown = parser.parse_known_args()
 
     return args
 
 
-def entrypoint() -> None:
+def entrypoint(
+    delight_model: DelightingModel = None,
+    imagesr_model: ImageRealESRGAN = None,
+    **kwargs,
+) -> trimesh.Trimesh:
+    """Entrypoint for texture backprojection from multi-view images.
+
+    Args:
+        delight_model (DelightingModel, optional): Delighting model.
+        imagesr_model (ImageRealESRGAN, optional): Super-resolution model.
+        **kwargs: Additional arguments to override CLI.
+
+    Returns:
+        trimesh.Trimesh: Textured mesh.
+    """
     args = parse_args()
+    for k, v in kwargs.items():
+        if hasattr(args, k) and v is not None:
+            setattr(args, k, v)
+
+    # Setup camera parameters.
     camera_params = CameraSetting(
         num_images=args.num_images,
         elevation=args.elevation,
@@ -431,66 +455,102 @@ def entrypoint() -> None:
         device=args.device,
     )
 
-    for mesh_path, uuid, img_path in zip(
-        args.mesh_path, args.uuid, args.color_path
-    ):
-        mesh = trimesh.load(mesh_path)
-        if isinstance(mesh, trimesh.Scene):
-            mesh = mesh.dump(concatenate=True)
-        vertices, scale, center = normalize_vertices_array(mesh.vertices)
+    # GS render.
+    camera = init_kal_camera(camera_params, flip_az=True)
+    matrix_mv = camera.view_matrix()  # (n_cam 4 4) world2cam
+    matrix_mv[:, :3, 3] = -matrix_mv[:, :3, 3]
+    w2cs = matrix_mv.to(camera_params.device)
+    c2ws = [torch.linalg.inv(matrix) for matrix in w2cs]
+    Ks = torch.tensor(camera_params.Ks).to(camera_params.device)
+    gs_model = load_gs_model(args.gs_path, pre_quat=[0.0, 0.0, 1.0, 0.0])
+    multiviews = []
+    for idx in tqdm(range(len(c2ws)), desc="Rendering GS"):
+        result = gs_model.render(
+            c2ws[idx],
+            Ks=Ks,
+            image_width=camera_params.resolution_hw[1],
+            image_height=camera_params.resolution_hw[0],
+        )
+        color = cv2.cvtColor(result.rgba, cv2.COLOR_BGRA2RGBA)
+        multiviews.append(Image.fromarray(color))
 
-        if not args.no_coor_trans:
-            x_rot = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]])
-            z_rot = np.array([[0, 1, 0], [-1, 0, 0], [0, 0, 1]])
-            vertices = vertices @ x_rot
-            vertices = vertices @ z_rot
+    if args.delight and delight_model is None:
+        delight_model = DelightingModel()
 
-        faces = mesh.faces.astype(np.int32)
-        vertices = vertices.astype(np.float32)
+    if args.delight:
+        for idx in range(len(multiviews)):
+            multiviews[idx] = delight_model(multiviews[idx])
 
-        if not args.skip_fix_mesh:
+    multiviews = [img.convert("RGB") for img in multiviews]
+
+    mesh = trimesh.load(args.mesh_path)
+    if isinstance(mesh, trimesh.Scene):
+        mesh = mesh.dump(concatenate=True)
+
+    vertices, scale, center = normalize_vertices_array(mesh.vertices)
+
+    # Transform mesh coordinate system by default.
+    if not args.no_coor_trans:
+        x_rot = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]])
+        z_rot = np.array([[0, 1, 0], [-1, 0, 0], [0, 0, 1]])
+        vertices = vertices @ x_rot
+        vertices = vertices @ z_rot
+
+    faces = mesh.faces.astype(np.int32)
+    vertices = vertices.astype(np.float32)
+
+    if not args.skip_fix_mesh and len(faces) > 10 * args.n_max_faces:
+        mesh_fixer = MeshFixer(vertices, faces, args.device)
+        vertices, faces = mesh_fixer(
+            filter_ratio=args.mesh_sipmlify_ratio,
+            max_hole_size=0.04,
+            resolution=1024,
+            num_views=1000,
+            norm_mesh_ratio=0.5,
+        )
+        if len(faces) > args.n_max_faces:
             mesh_fixer = MeshFixer(vertices, faces, args.device)
             vertices, faces = mesh_fixer(
-                filter_ratio=args.mesh_sipmlify_ratio,
+                filter_ratio=max(0.05, args.mesh_sipmlify_ratio - 0.2),
                 max_hole_size=0.04,
                 resolution=1024,
                 num_views=1000,
                 norm_mesh_ratio=0.5,
             )
 
-        vertices, faces, uvs = TextureBaker.parametrize_mesh(vertices, faces)
-        texture_backer = TextureBaker(
-            vertices,
-            faces,
-            uvs,
-            camera_params,
-        )
-        images = get_images_from_grid(
-            img_path, img_size=camera_params.resolution_hw[0]
-        )
-        if args.delight:
-            delight_model = DelightingModel()
-            images = [delight_model(img) for img in images]
+    vertices, faces, uvs = TextureBaker.parametrize_mesh(vertices, faces)
+    texture_backer = TextureBaker(
+        vertices,
+        faces,
+        uvs,
+        camera_params,
+    )
 
-        images = [np.array(img) for img in images]
-        texture = texture_backer.bake_texture(
-            images=[img[..., :3] for img in images],
-            texture_size=args.texture_size,
-            mode=args.baker_mode,
-            opt_step=args.opt_step,
-        )
+    multiviews = [np.array(img) for img in multiviews]
+    texture = texture_backer.bake_texture(
+        images=[img[..., :3] for img in multiviews],
+        texture_size=args.texture_size,
+        mode=args.baker_mode,
+        opt_step=args.opt_step,
+    )
+    if not args.no_smooth_texture:
         texture = post_process_texture(texture)
 
-        if not args.no_coor_trans:
-            vertices = vertices @ np.linalg.inv(z_rot)
-            vertices = vertices @ np.linalg.inv(x_rot)
-        vertices = vertices / scale
-        vertices = vertices + center
+    # Recover mesh original orientation, scale and center.
+    if not args.no_coor_trans:
+        vertices = vertices @ np.linalg.inv(z_rot)
+        vertices = vertices @ np.linalg.inv(x_rot)
+    vertices = vertices / scale
+    vertices = vertices + center
 
-        output_path = os.path.join(args.output_root, f"{uuid}.obj")
-        mesh = save_mesh_with_mtl(vertices, faces, uvs, texture, output_path)
+    textured_mesh = save_mesh_with_mtl(
+        vertices, faces, uvs, texture, args.output_path
+    )
+    if args.save_glb_path is not None:
+        os.makedirs(os.path.dirname(args.save_glb_path), exist_ok=True)
+        textured_mesh.export(args.save_glb_path)
 
-    return
+    return textured_mesh
 
 
 if __name__ == "__main__":

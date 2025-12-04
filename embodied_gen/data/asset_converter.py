@@ -589,6 +589,8 @@ class MeshtoUSDConverter(AssetConverterBase):
         stage = Usd.Stage.Open(usd_path)
         layer = stage.GetRootLayer()
         with Usd.EditContext(stage, layer):
+            base_prim = stage.GetPseudoRoot().GetChildren()[0]
+            base_prim.SetMetadata("kind", "component")
             for prim in stage.Traverse():
                 # Change texture path to relative path.
                 if prim.GetName() == "material_0":

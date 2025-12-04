@@ -21,14 +21,18 @@ import struct
 from dataclasses import dataclass
 from typing import Optional
 
-import cv2
 import numpy as np
 import torch
 from gsplat.cuda._wrapper import spherical_harmonics
 from gsplat.rendering import rasterization
 from plyfile import PlyData
 from scipy.spatial.transform import Rotation
-from embodied_gen.data.utils import gamma_shs, quat_mult, quat_to_rotmat
+from embodied_gen.data.utils import (
+    gamma_shs,
+    normalize_vertices_array,
+    quat_mult,
+    quat_to_rotmat,
+)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -492,6 +496,21 @@ class GaussianOperator(GaussianBase):
             rendered_depth,
             alphas[..., None],
         )
+
+
+def load_gs_model(
+    input_gs: str, pre_quat: list[float] = [0.0, 0.7071, 0.0, -0.7071]
+) -> GaussianOperator:
+    gs_model = GaussianOperator.load_from_ply(input_gs)
+    # Normalize vertices to [-1, 1], center to (0, 0, 0).
+    _, scale, center = normalize_vertices_array(gs_model._means)
+    scale, center = float(scale), center.tolist()
+    transpose = [*[v for v in center], *pre_quat]
+    instance_pose = torch.tensor(transpose).to(gs_model.device)
+    gs_model = gs_model.get_gaussians(instance_pose=instance_pose)
+    gs_model.rescale(scale)
+
+    return gs_model
 
 
 if __name__ == "__main__":
