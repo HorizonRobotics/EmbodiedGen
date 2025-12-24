@@ -267,7 +267,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
 
     demo.load(start_session)
     demo.unload(end_session)
-
+    no_mesh_post_process = gr.State(True)
     mesh_input.change(
         lambda: tuple(
             [
@@ -368,6 +368,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
             texture_size,
             project_delight,
             fix_mesh,
+            no_mesh_post_process,
         ],
         outputs=[mesh_output, mesh_outpath, download_btn],
     ).success(

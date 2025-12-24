@@ -125,7 +125,11 @@ class AestheticPredictor:
         Returns:
             float: Predicted aesthetic score.
         """
-        pil_image = Image.open(image_path)
+        if isinstance(image_path, str):
+            pil_image = Image.open(image_path)
+        else:
+            pil_image = image_path
+
         image = self.preprocess(pil_image).unsqueeze(0).to(self.device)
 
         with torch.no_grad():

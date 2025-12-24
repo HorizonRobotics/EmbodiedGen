@@ -14,6 +14,11 @@
 # implied. See the License for the specific language governing
 # permissions and limitations under the License.
 
+import spaces
+from embodied_gen.utils.monkey_patches import monkey_path_trellis
+
+monkey_path_trellis()
+
 import gc
 import logging
 import os
@@ -25,18 +30,16 @@ from glob import glob
 import cv2
 import gradio as gr
 import numpy as np
-import spaces
 import torch
-import torch.nn.functional as F
 import trimesh
-from easydict import EasyDict as edict
 from PIL import Image
 from embodied_gen.data.backproject_v2 import entrypoint as backproject_api
 from embodied_gen.data.backproject_v3 import entrypoint as backproject_api_v3
 from embodied_gen.data.differentiable_render import entrypoint as render_api
-from embodied_gen.data.utils import resize_pil, trellis_preprocess, zip_files
+from embodied_gen.data.utils import trellis_preprocess, zip_files
 from embodied_gen.models.delight_model import DelightingModel
 from embodied_gen.models.gs_model import GaussianOperator
+from embodied_gen.models.sam3d import Sam3dInference
 from embodied_gen.models.segment_model import (
     BMGG14Remover,
     RembgRemover,
@@ -53,10 +56,11 @@ from embodied_gen.scripts.text2image import (
 from embodied_gen.utils.gpt_clients import GPT_CLIENT
 from embodied_gen.utils.process_media import (
     filter_image_small_connected_components,
+    keep_largest_connected_component,
     merge_images_video,
 )
 from embodied_gen.utils.tags import VERSION
-from embodied_gen.utils.trender import render_video
+from embodied_gen.utils.trender import pack_state, render_video, unpack_state
 from embodied_gen.validators.quality_checkers import (
     BaseChecker,
     ImageAestheticChecker,
@@ -69,15 +73,6 @@ current_file_path = os.path.abspath(__file__)
 current_dir = os.path.dirname(current_file_path)
 sys.path.append(os.path.join(current_dir, ".."))
 from thirdparty.TRELLIS.trellis.pipelines import TrellisImageTo3DPipeline
-from thirdparty.TRELLIS.trellis.representations import (
-    Gaussian,
-    MeshExtractResult,
-)
-from thirdparty.TRELLIS.trellis.representations.gaussian.general_utils import (
-    build_scaling_rotation,
-    inverse_sigmoid,
-    strip_symmetric,
-)
 from thirdparty.TRELLIS.trellis.utils import postprocessing_utils
 
 logging.basicConfig(
@@ -85,64 +80,24 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
-os.environ["TORCH_EXTENSIONS_DIR"] = os.path.expanduser(
-    "~/.cache/torch_extensions"
-)
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "false"
-os.environ["SPCONV_ALGO"] = "native"
 
 MAX_SEED = 100000
-
-
-def patched_setup_functions(self):
-    def inverse_softplus(x):
-        return x + torch.log(-torch.expm1(-x))
-
-    def build_covariance_from_scaling_rotation(
-        scaling, scaling_modifier, rotation
-    ):
-        L = build_scaling_rotation(scaling_modifier * scaling, rotation)
-        actual_covariance = L @ L.transpose(1, 2)
-        symm = strip_symmetric(actual_covariance)
-        return symm
-
-    if self.scaling_activation_type == "exp":
-        self.scaling_activation = torch.exp
-        self.inverse_scaling_activation = torch.log
-    elif self.scaling_activation_type == "softplus":
-        self.scaling_activation = F.softplus
-        self.inverse_scaling_activation = inverse_softplus
-
-    self.covariance_activation = build_covariance_from_scaling_rotation
-    self.opacity_activation = torch.sigmoid
-    self.inverse_opacity_activation = inverse_sigmoid
-    self.rotation_activation = F.normalize
-
-    self.scale_bias = self.inverse_scaling_activation(
-        torch.tensor(self.scaling_bias)
-    ).to(self.device)
-    self.rots_bias = torch.zeros((4)).to(self.device)
-    self.rots_bias[0] = 1
-    self.opacity_bias = self.inverse_opacity_activation(
-        torch.tensor(self.opacity_bias)
-    ).to(self.device)
-
-
-Gaussian.setup_functions = patched_setup_functions
-
 
 # DELIGHT = DelightingModel()
 # IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
 # IMAGESR_MODEL = ImageStableSR()
-if os.getenv("GRADIO_APP") == "imageto3d":
+if os.getenv("GRADIO_APP").startswith("imageto3d"):
     RBG_REMOVER = RembgRemover()
     RBG14_REMOVER = BMGG14Remover()
     SAM_PREDICTOR = SAMPredictor(model_type="vit_h", device="cpu")
-    PIPELINE = TrellisImageTo3DPipeline.from_pretrained(
-        "microsoft/TRELLIS-image-large"
-    )
-    # PIPELINE.cuda()
+    if "sam3d" in os.getenv("GRADIO_APP"):
+        PIPELINE = Sam3dInference()
+    else:
+        PIPELINE = TrellisImageTo3DPipeline.from_pretrained(
+            "microsoft/TRELLIS-image-large"
+        )
+        # PIPELINE.cuda()
     SEG_CHECKER = ImageSegChecker(GPT_CLIENT)
     GEO_CHECKER = MeshGeoChecker(GPT_CLIENT)
     AESTHETIC_CHECKER = ImageAestheticChecker()
@@ -151,13 +106,16 @@ if os.getenv("GRADIO_APP") == "imageto3d":
         os.path.dirname(os.path.abspath(__file__)), "sessions/imageto3d"
     )
     os.makedirs(TMP_DIR, exist_ok=True)
-elif os.getenv("GRADIO_APP") == "textto3d":
+elif os.getenv("GRADIO_APP").startswith("textto3d"):
     RBG_REMOVER = RembgRemover()
     RBG14_REMOVER = BMGG14Remover()
-    PIPELINE = TrellisImageTo3DPipeline.from_pretrained(
-        "microsoft/TRELLIS-image-large"
-    )
-    # PIPELINE.cuda()
+    if "sam3d" in os.getenv("GRADIO_APP"):
+        PIPELINE = Sam3dInference()
+    else:
+        PIPELINE = TrellisImageTo3DPipeline.from_pretrained(
+            "microsoft/TRELLIS-image-large"
+        )
+        # PIPELINE.cuda()
     text_model_dir = "weights/Kolors"
     PIPELINE_IMG_IP = build_text2img_ip_pipeline(text_model_dir, ref_scale=0.3)
     PIPELINE_IMG = build_text2img_pipeline(text_model_dir)
@@ -201,18 +159,23 @@ def end_session(req: gr.Request) -> None:
 
 @spaces.GPU
 def preprocess_image_fn(
-    image: str | np.ndarray | Image.Image, rmbg_tag: str = "rembg"
+    image: str | np.ndarray | Image.Image,
+    rmbg_tag: str = "rembg",
+    preprocess: bool = True,
 ) -> tuple[Image.Image, Image.Image]:
     if isinstance(image, str):
         image = Image.open(image)
     elif isinstance(image, np.ndarray):
         image = Image.fromarray(image)
 
-    image_cache = resize_pil(image.copy(), 1024)
+    image_cache = image.copy()  # resize_pil(image.copy(), 1024)
 
     bg_remover = RBG_REMOVER if rmbg_tag == "rembg" else RBG14_REMOVER
     image = bg_remover(image)
-    image = trellis_preprocess(image)
+    image = keep_largest_connected_component(image)
+
+    if preprocess:
+        image = trellis_preprocess(image)
 
     return image, image_cache
 
@@ -264,50 +227,6 @@ def get_cached_image(image_path: str) -> Image.Image:
     return Image.open(image_path).resize((512, 512))
 
 
-@spaces.GPU
-def pack_state(gs: Gaussian, mesh: MeshExtractResult) -> dict:
-    return {
-        "gaussian": {
-            **gs.init_params,
-            "_xyz": gs._xyz.cpu().numpy(),
-            "_features_dc": gs._features_dc.cpu().numpy(),
-            "_scaling": gs._scaling.cpu().numpy(),
-            "_rotation": gs._rotation.cpu().numpy(),
-            "_opacity": gs._opacity.cpu().numpy(),
-        },
-        "mesh": {
-            "vertices": mesh.vertices.cpu().numpy(),
-            "faces": mesh.faces.cpu().numpy(),
-        },
-    }
-
-
-def unpack_state(state: dict, device: str = "cpu") -> tuple[Gaussian, dict]:
-    gs = Gaussian(
-        aabb=state["gaussian"]["aabb"],
-        sh_degree=state["gaussian"]["sh_degree"],
-        mininum_kernel_size=state["gaussian"]["mininum_kernel_size"],
-        scaling_bias=state["gaussian"]["scaling_bias"],
-        opacity_bias=state["gaussian"]["opacity_bias"],
-        scaling_activation=state["gaussian"]["scaling_activation"],
-        device=device,
-    )
-    gs._xyz = torch.tensor(state["gaussian"]["_xyz"], device=device)
-    gs._features_dc = torch.tensor(
-        state["gaussian"]["_features_dc"], device=device
-    )
-    gs._scaling = torch.tensor(state["gaussian"]["_scaling"], device=device)
-    gs._rotation = torch.tensor(state["gaussian"]["_rotation"], device=device)
-    gs._opacity = torch.tensor(state["gaussian"]["_opacity"], device=device)
-
-    mesh = edict(
-        vertices=torch.tensor(state["mesh"]["vertices"], device=device),
-        faces=torch.tensor(state["mesh"]["faces"], device=device),
-    )
-
-    return gs, mesh
-
-
 def get_seed(randomize_seed: bool, seed: int, max_seed: int = MAX_SEED) -> int:
     return np.random.randint(0, max_seed) if randomize_seed else seed
 
@@ -349,11 +268,11 @@ def select_point(
 def image_to_3d(
     image: Image.Image,
     seed: int,
-    ss_guidance_strength: float,
     ss_sampling_steps: int,
-    slat_guidance_strength: float,
     slat_sampling_steps: int,
     raw_image_cache: Image.Image,
+    ss_guidance_strength: float,
+    slat_guidance_strength: float,
     sam_image: Image.Image = None,
     is_sam_image: bool = False,
     req: gr.Request = None,
@@ -361,39 +280,48 @@ def image_to_3d(
     if is_sam_image:
         seg_image = filter_image_small_connected_components(sam_image)
         seg_image = Image.fromarray(seg_image, mode="RGBA")
-        seg_image = trellis_preprocess(seg_image)
     else:
         seg_image = image
 
     if isinstance(seg_image, np.ndarray):
         seg_image = Image.fromarray(seg_image)
 
+    if isinstance(PIPELINE, Sam3dInference):
+        outputs = PIPELINE.run(
+            seg_image,
+            seed=seed,
+            stage1_inference_steps=ss_sampling_steps,
+            stage2_inference_steps=slat_sampling_steps,
+        )
+    else:
+        PIPELINE.cuda()
+        seg_image = trellis_preprocess(seg_image)
+        outputs = PIPELINE.run(
+            seg_image,
+            seed=seed,
+            formats=["gaussian", "mesh"],
+            preprocess_image=False,
+            sparse_structure_sampler_params={
+                "steps": ss_sampling_steps,
+                "cfg_strength": ss_guidance_strength,
+            },
+            slat_sampler_params={
+                "steps": slat_sampling_steps,
+                "cfg_strength": slat_guidance_strength,
+            },
+        )
+        # Set back to cpu for memory saving.
+        PIPELINE.cpu()
+
+    gs_model = outputs["gaussian"][0]
+    mesh_model = outputs["mesh"][0]
+    color_images = render_video(gs_model, r=1.85)["color"]
+    normal_images = render_video(mesh_model, r=1.85)["normal"]
+
     output_root = os.path.join(TMP_DIR, str(req.session_hash))
     os.makedirs(output_root, exist_ok=True)
     seg_image.save(f"{output_root}/seg_image.png")
     raw_image_cache.save(f"{output_root}/raw_image.png")
-    PIPELINE.cuda()
-    outputs = PIPELINE.run(
-        seg_image,
-        seed=seed,
-        formats=["gaussian", "mesh"],
-        preprocess_image=False,
-        sparse_structure_sampler_params={
-            "steps": ss_sampling_steps,
-            "cfg_strength": ss_guidance_strength,
-        },
-        slat_sampler_params={
-            "steps": slat_sampling_steps,
-            "cfg_strength": slat_guidance_strength,
-        },
-    )
-    # Set to cpu for memory saving.
-    PIPELINE.cpu()
-
-    gs_model = outputs["gaussian"][0]
-    mesh_model = outputs["mesh"][0]
-    color_images = render_video(gs_model)["color"]
-    normal_images = render_video(mesh_model)["normal"]
 
     video_path = os.path.join(output_root, "gs_mesh.mp4")
     merge_images_video(color_images, normal_images, video_path)
@@ -405,56 +333,13 @@ def image_to_3d(
     return state, video_path
 
 
-@spaces.GPU
-def extract_3d_representations(
-    state: dict, enable_delight: bool, texture_size: int, req: gr.Request
-):
-    output_root = TMP_DIR
-    output_root = os.path.join(output_root, str(req.session_hash))
-    gs_model, mesh_model = unpack_state(state, device="cuda")
-
-    mesh = postprocessing_utils.to_glb(
-        gs_model,
-        mesh_model,
-        simplify=0.9,
-        texture_size=1024,
-        verbose=True,
-    )
-    filename = "sample"
-    gs_path = os.path.join(output_root, f"{filename}_gs.ply")
-    gs_model.save_ply(gs_path)
-
-    # Rotate mesh and GS by 90 degrees around Z-axis.
-    rot_matrix = [[0, 0, -1], [0, 1, 0], [1, 0, 0]]
-    # Addtional rotation for GS to align mesh.
-    gs_rot = np.array([[1, 0, 0], [0, -1, 0], [0, 0, -1]]) @ np.array(
-        rot_matrix
-    )
-    pose = GaussianOperator.trans_to_quatpose(gs_rot)
-    aligned_gs_path = gs_path.replace(".ply", "_aligned.ply")
-    GaussianOperator.resave_ply(
-        in_ply=gs_path,
-        out_ply=aligned_gs_path,
-        instance_pose=pose,
-    )
-
-    mesh.vertices = mesh.vertices @ np.array(rot_matrix)
-    mesh_obj_path = os.path.join(output_root, f"{filename}.obj")
-    mesh.export(mesh_obj_path)
-    mesh_glb_path = os.path.join(output_root, f"{filename}.glb")
-    mesh.export(mesh_glb_path)
-
-    torch.cuda.empty_cache()
-
-    return mesh_glb_path, gs_path, mesh_obj_path, aligned_gs_path
-
-
 def extract_3d_representations_v2(
     state: dict,
     enable_delight: bool,
     texture_size: int,
     req: gr.Request,
 ):
+    """Back-Projection Version of Texture Super-Resolution."""
     output_root = TMP_DIR
     user_dir = os.path.join(output_root, str(req.session_hash))
     gs_model, mesh_model = unpack_state(state, device="cpu")
@@ -521,6 +406,7 @@ def extract_3d_representations_v3(
     texture_size: int,
     req: gr.Request,
 ):
+    """Back-Projection Version with Optimization-Based."""
     output_root = TMP_DIR
     user_dir = os.path.join(output_root, str(req.session_hash))
     gs_model, mesh_model = unpack_state(state, device="cpu")
@@ -688,6 +574,7 @@ def text2image_fn(
     image_wh: int | tuple[int, int] = [1024, 1024],
     rmbg_tag: str = "rembg",
     seed: int = None,
+    enable_pre_resize: bool = True,
     n_sample: int = 3,
     req: gr.Request = None,
 ):
@@ -715,7 +602,9 @@ def text2image_fn(
 
     for idx in range(len(images)):
         image = images[idx]
-        images[idx], _ = preprocess_image_fn(image, rmbg_tag)
+        images[idx], _ = preprocess_image_fn(
+            image, rmbg_tag, enable_pre_resize
+        )
 
     save_paths = []
     for idx, image in enumerate(images):
@@ -841,6 +730,7 @@ def backproject_texture_v2(
     texture_size: int,
     enable_delight: bool = True,
     fix_mesh: bool = False,
+    no_mesh_post_process: bool = False,
     uuid: str = "sample",
     req: gr.Request = None,
 ) -> str:
@@ -857,6 +747,7 @@ def backproject_texture_v2(
         skip_fix_mesh=not fix_mesh,
         delight=enable_delight,
         texture_wh=[texture_size, texture_size],
+        no_mesh_post_process=no_mesh_post_process,
     )
 
     output_obj_mesh = os.path.join(output_dir, f"{uuid}.obj")

@@ -21,13 +21,14 @@ import os
 from io import BytesIO
 from typing import Optional
 
+import openai
 import yaml
 from openai import AzureOpenAI, OpenAI  # pip install openai
 from PIL import Image
 from tenacity import (
     retry,
+    retry_if_not_exception_type,
     stop_after_attempt,
-    stop_after_delay,
     wait_random_exponential,
 )
 from embodied_gen.utils.process_media import combine_images_to_grid
@@ -106,8 +107,9 @@ class GPTclient:
         logger.info(f"Using GPT model: {self.model_name}.")
 
     @retry(
-        wait=wait_random_exponential(min=1, max=20),
-        stop=(stop_after_attempt(10) | stop_after_delay(30)),
+        retry=retry_if_not_exception_type(openai.BadRequestError),
+        wait=wait_random_exponential(min=1, max=10),
+        stop=stop_after_attempt(5),
     )
     def completion_with_backoff(self, **kwargs):
         """Performs a chat completion request with retry/backoff."""
@@ -246,3 +248,8 @@ GPT_CLIENT = GPTclient(
     model_name=model_name,
     check_connection=False,
 )
+
+
+if __name__ == "__main__":
+    response = GPT_CLIENT.query("What is the capital of China?")
+    print(f"Response: {response}")

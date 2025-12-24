@@ -274,6 +274,7 @@ class TextureBacker:
         mask_thresh (float, optional): Threshold for visibility masks.
         smooth_texture (bool, optional): Apply post-processing to texture.
         inpaint_smooth (bool, optional): Apply inpainting smoothing.
+        mesh_post_process (bool, optional): False for preventing modification of vertices.
 
     Example:
         ```py
@@ -308,6 +309,7 @@ class TextureBacker:
         mask_thresh: float = 0.5,
         smooth_texture: bool = True,
         inpaint_smooth: bool = False,
+        mesh_post_process: bool = True,
     ) -> None:
         self.camera_params = camera_params
         self.renderer = None
@@ -318,6 +320,7 @@ class TextureBacker:
         self.mask_thresh = mask_thresh
         self.smooth_texture = smooth_texture
         self.inpaint_smooth = inpaint_smooth
+        self.mesh_post_process = mesh_post_process
 
         self.bake_angle_thresh = bake_angle_thresh
         self.bake_unreliable_kernel_size = int(
@@ -668,7 +671,12 @@ class TextureBacker:
             mesh, self.scale, self.center
         )
         textured_mesh = save_mesh_with_mtl(
-            vertices, faces, uv_map, texture_np, output_path
+            vertices,
+            faces,
+            uv_map,
+            texture_np,
+            output_path,
+            mesh_process=self.mesh_post_process,
         )
 
         return textured_mesh
@@ -766,6 +774,7 @@ def parse_args():
         help="Disable saving delight image",
     )
     parser.add_argument("--n_max_faces", type=int, default=30000)
+    parser.add_argument("--no_mesh_post_process", action="store_true")
     args, unknown = parser.parse_known_args()
 
     return args
@@ -856,6 +865,7 @@ def entrypoint(
         render_wh=args.resolution_hw,
         texture_wh=args.texture_wh,
         smooth_texture=not args.no_smooth_texture,
+        mesh_post_process=not args.no_mesh_post_process,
     )
 
     textured_mesh = texture_backer(multiviews, mesh, args.output_path)

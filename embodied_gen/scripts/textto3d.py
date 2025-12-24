@@ -30,6 +30,7 @@ from embodied_gen.utils.gpt_clients import GPT_CLIENT
 from embodied_gen.utils.log import logger
 from embodied_gen.utils.process_media import (
     check_object_edge_truncated,
+    combine_images_to_grid,
     render_asset3d,
 )
 from embodied_gen.validators.quality_checkers import (
@@ -51,7 +52,6 @@ BG_REMOVER = RembgRemover()
 
 
 __all__ = [
-    "text_to_image",
     "text_to_3d",
 ]
 
@@ -176,12 +176,12 @@ def text_to_3d(**kwargs) -> dict:
             image_path = render_asset3d(
                 mesh_path,
                 output_root=f"{node_save_dir}/result",
-                num_images=6,
+                num_images=4,
                 elevation=(30, -30),
                 output_subdir="renders",
                 no_index_file=True,
             )
-
+            image_path = combine_images_to_grid(image_path)
             check_text = asset_type if asset_type is not None else prompt
             qa_flag, qa_result = TXTGEN_CHECKER(check_text, image_path)
             logger.warning(

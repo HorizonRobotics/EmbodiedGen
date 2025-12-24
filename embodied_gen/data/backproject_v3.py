@@ -353,8 +353,8 @@ def parse_args():
     parser.add_argument(
         "--distance",
         type=float,
-        default=5,
-        help="Camera distance (default: 5)",
+        default=4.5,
+        help="Camera distance (default: 4.5)",
     )
     parser.add_argument(
         "--resolution_hw",
@@ -400,8 +400,8 @@ def parse_args():
     parser.add_argument(
         "--mesh_sipmlify_ratio",
         type=float,
-        default=0.9,
-        help="Mesh simplification ratio (default: 0.9)",
+        default=0.85,
+        help="Mesh simplification ratio (default: 0.85)",
     )
     parser.add_argument(
         "--delight", action="store_true", help="Use delighting model."
@@ -500,7 +500,7 @@ def entrypoint(
     faces = mesh.faces.astype(np.int32)
     vertices = vertices.astype(np.float32)
 
-    if not args.skip_fix_mesh and len(faces) > 10 * args.n_max_faces:
+    if not args.skip_fix_mesh:
         mesh_fixer = MeshFixer(vertices, faces, args.device)
         vertices, faces = mesh_fixer(
             filter_ratio=args.mesh_sipmlify_ratio,
@@ -512,7 +512,7 @@ def entrypoint(
         if len(faces) > args.n_max_faces:
             mesh_fixer = MeshFixer(vertices, faces, args.device)
             vertices, faces = mesh_fixer(
-                filter_ratio=max(0.05, args.mesh_sipmlify_ratio - 0.2),
+                filter_ratio=max(0.1, args.mesh_sipmlify_ratio - 0.1),
                 max_hole_size=0.04,
                 resolution=1024,
                 num_views=1000,

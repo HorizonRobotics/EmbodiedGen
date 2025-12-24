@@ -14,30 +14,30 @@
 # implied. See the License for the specific language governing
 # permissions and limitations under the License.
 
-
 import argparse
 import os
 import random
-import sys
 from glob import glob
 from shutil import copy, copytree, rmtree
 
 import numpy as np
-import torch
 import trimesh
 from PIL import Image
 from embodied_gen.data.backproject_v3 import entrypoint as backproject_api
-from embodied_gen.data.utils import delete_dir, trellis_preprocess
+from embodied_gen.data.utils import delete_dir
 
+# from embodied_gen.models.sr_model import ImageRealESRGAN
 # from embodied_gen.models.delight_model import DelightingModel
 from embodied_gen.models.gs_model import GaussianOperator
 from embodied_gen.models.segment_model import RembgRemover
-
-# from embodied_gen.models.sr_model import ImageRealESRGAN
 from embodied_gen.scripts.render_gs import entrypoint as render_gs_api
 from embodied_gen.utils.gpt_clients import GPT_CLIENT
+from embodied_gen.utils.inference import image3d_model_infer
 from embodied_gen.utils.log import logger
-from embodied_gen.utils.process_media import merge_images_video
+from embodied_gen.utils.process_media import (
+    combine_images_to_grid,
+    merge_images_video,
+)
 from embodied_gen.utils.tags import VERSION
 from embodied_gen.utils.trender import render_video
 from embodied_gen.validators.quality_checkers import (
@@ -48,26 +48,24 @@ from embodied_gen.validators.quality_checkers import (
 )
 from embodied_gen.validators.urdf_convertor import URDFGenerator
 
-current_file_path = os.path.abspath(__file__)
-current_dir = os.path.dirname(current_file_path)
-sys.path.append(os.path.join(current_dir, "../.."))
-from thirdparty.TRELLIS.trellis.pipelines import TrellisImageTo3DPipeline
+# random.seed(0)
+IMAGE3D_MODEL = "SAM3D"  # TRELLIS or SAM3D
+logger.info(f"Loading {IMAGE3D_MODEL} as Image3D Models...")
+if IMAGE3D_MODEL == "TRELLIS":
+    from thirdparty.TRELLIS.trellis.pipelines import TrellisImageTo3DPipeline
 
-os.environ["TORCH_EXTENSIONS_DIR"] = os.path.expanduser(
-    "~/.cache/torch_extensions"
-)
-os.environ["GRADIO_ANALYTICS_ENABLED"] = "false"
-os.environ["SPCONV_ALGO"] = "native"
-random.seed(0)
+    PIPELINE = TrellisImageTo3DPipeline.from_pretrained(
+        "microsoft/TRELLIS-image-large"
+    )
+    # PIPELINE.cuda()
+elif IMAGE3D_MODEL == "SAM3D":
+    from embodied_gen.models.sam3d import Sam3dInference
 
-logger.info("Loading Image3D Models...")
+    PIPELINE = Sam3dInference()
+
 # DELIGHT = DelightingModel()
 # IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
 RBG_REMOVER = RembgRemover()
-PIPELINE = TrellisImageTo3DPipeline.from_pretrained(
-    "microsoft/TRELLIS-image-large"
-)
-# PIPELINE.cuda()
 SEG_CHECKER = ImageSegChecker(GPT_CLIENT)
 GEO_CHECKER = MeshGeoChecker(GPT_CLIENT)
 AESTHETIC_CHECKER = ImageAestheticChecker()
@@ -151,7 +149,6 @@ def entrypoint(**kwargs):
             # Segmentation: Get segmented image using Rembg.
             seg_path = f"{output_root}/{filename}_cond.png"
             seg_image = RBG_REMOVER(image) if image.mode != "RGBA" else image
-            seg_image = trellis_preprocess(seg_image)
             seg_image.save(seg_path)
 
             seed = args.seed
@@ -162,27 +159,8 @@ def entrypoint(**kwargs):
                 logger.info(
                     f"Try: {try_idx + 1}/{args.n_retry}, Seed: {seed}, Prompt: {seg_path}"
                 )
-                # Run the pipeline
                 try:
-                    PIPELINE.cuda()
-                    outputs = PIPELINE.run(
-                        seg_image,
-                        preprocess_image=False,
-                        seed=(
-                            random.randint(0, 100000) if seed is None else seed
-                        ),
-                        # Optional parameters
-                        # sparse_structure_sampler_params={
-                        #     "steps": 12,
-                        #     "cfg_strength": 7.5,
-                        # },
-                        # slat_sampler_params={
-                        #     "steps": 12,
-                        #     "cfg_strength": 3,
-                        # },
-                    )
-                    PIPELINE.cpu()
-                    torch.cuda.empty_cache()
+                    outputs = image3d_model_infer(PIPELINE, seg_image, seed)
                 except Exception as e:
                     logger.error(
                         f"[Pipeline Failed] process {image_path}: {e}, skip."
@@ -215,14 +193,13 @@ def entrypoint(**kwargs):
                 render_gs_api(
                     input_gs=aligned_gs_path,
                     output_path=color_path,
-                    elevation=[20, -10, 60, -50],
-                    num_images=12,
+                    elevation=[30, -30],
+                    num_images=4,
                 )
-
                 color_img = Image.open(color_path)
-                keep_height = int(color_img.height * 2 / 3)
-                crop_img = color_img.crop((0, 0, color_img.width, keep_height))
-                geo_flag, geo_result = GEO_CHECKER([crop_img], text=asset_node)
+                geo_flag, geo_result = GEO_CHECKER(
+                    [color_img], text=asset_node
+                )
                 logger.warning(
                     f"{GEO_CHECKER.__class__.__name__}: {geo_result} for {seg_path}"
                 )
@@ -232,8 +209,8 @@ def entrypoint(**kwargs):
                 seed = random.randint(0, 100000) if seed is not None else None
 
             # Render the video for generated 3D asset.
-            color_images = render_video(gs_model)["color"]
-            normal_images = render_video(mesh_model)["normal"]
+            color_images = render_video(gs_model, r=1.85)["color"]
+            normal_images = render_video(mesh_model, r=1.85)["normal"]
             video_path = os.path.join(output_root, "gs_mesh.mp4")
             merge_images_video(color_images, normal_images, video_path)
 
@@ -312,7 +289,7 @@ def entrypoint(**kwargs):
             image_paths = glob(f"{image_dir}/*.png")
             images_list = []
             for checker in CHECKERS:
-                images = image_paths
+                images = combine_images_to_grid(image_paths)
                 if isinstance(checker, ImageSegChecker):
                     images = [
                         f"{output_root}/{filename}_raw.png",
@@ -334,8 +311,11 @@ def entrypoint(**kwargs):
                 f"{result_dir}/{urdf_convertor.output_mesh_dir}",
             )
             copy(video_path, f"{result_dir}/video.mp4")
+
             if not args.keep_intermediate:
                 delete_dir(output_root, keep_subs=["result"])
+
+            logger.info(f"Saved results for {image_path} in {result_dir}")
 
         except Exception as e:
             logger.error(f"Failed to process {image_path}: {e}, skip.")

@@ -27,7 +27,10 @@ import trimesh
 from scipy.spatial.transform import Rotation
 from embodied_gen.data.convex_decomposer import decompose_convex_mesh
 from embodied_gen.utils.gpt_clients import GPT_CLIENT, GPTclient
-from embodied_gen.utils.process_media import render_asset3d
+from embodied_gen.utils.process_media import (
+    combine_images_to_grid,
+    render_asset3d,
+)
 from embodied_gen.utils.tags import VERSION
 
 logging.basicConfig(level=logging.INFO)
@@ -482,7 +485,7 @@ class URDFGenerator(object):
             output_subdir=self.output_render_dir,
             no_index_file=True,
         )
-
+        # image_path = combine_images_to_grid(image_path)
         response = self.gpt_client.query(text_prompt, image_path)
         # logger.info(response)
         if response is None:

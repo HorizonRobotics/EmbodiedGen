@@ -17,7 +17,9 @@
 
 import os
 
-os.environ["GRADIO_APP"] = "imageto3d"
+# GRADIO_APP == "imageto3d_sam3d", sam3d object model, by default.
+# GRADIO_APP == "imageto3d", TRELLIS model.
+os.environ["GRADIO_APP"] = "imageto3d_sam3d"
 from glob import glob
 
 import gradio as gr
@@ -36,6 +38,16 @@ from common import (
     select_point,
     start_session,
 )
+
+app_name = os.getenv("GRADIO_APP")
+if app_name == "imageto3d_sam3d":
+    enable_pre_resize = False
+    sample_step = 25
+    bg_rm_model_name = "rembg"  # "rembg", "rmbg14"
+elif app_name == "imageto3d":
+    enable_pre_resize = True
+    sample_step = 12
+    bg_rm_model_name = "rembg"  # "rembg", "rmbg14"
 
 with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
     gr.HTML(image_css, visible=False)
@@ -67,7 +79,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
     )
 
     with gr.Row():
-        with gr.Column(scale=2):
+        with gr.Column(scale=3):
             with gr.Tabs() as input_tabs:
                 with gr.Tab(
                     label="Image(auto seg)", id=0
@@ -142,7 +154,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                     )
                     rmbg_tag = gr.Radio(
                         choices=["rembg", "rmbg14"],
-                        value="rembg",
+                        value=bg_rm_model_name,
                         label="Background Removal Model",
                     )
                 with gr.Row():
@@ -163,7 +175,11 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                         step=0.1,
                     )
                     ss_sampling_steps = gr.Slider(
-                        1, 50, label="Sampling Steps", value=12, step=1
+                        1,
+                        50,
+                        label="Sampling Steps",
+                        value=sample_step,
+                        step=1,
                     )
                 gr.Markdown("Visual Appearance Generation")
                 with gr.Row():
@@ -175,7 +191,11 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                         step=0.1,
                     )
                     slat_sampling_steps = gr.Slider(
-                        1, 50, label="Sampling Steps", value=12, step=1
+                        1,
+                        50,
+                        label="Sampling Steps",
+                        value=sample_step,
+                        step=1,
                     )
 
             generate_btn = gr.Button(
@@ -242,7 +262,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                 has quality inspection, open with an editor to view details.
             """
             )
-
+            enable_pre_resize = gr.State(enable_pre_resize)
             with gr.Row() as single_image_example:
                 examples = gr.Examples(
                     label="Image Gallery",
@@ -252,7 +272,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                             glob("apps/assets/example_image/*")
                         )
                     ],
-                    inputs=[image_prompt, rmbg_tag],
+                    inputs=[image_prompt, rmbg_tag, enable_pre_resize],
                     fn=preprocess_image_fn,
                     outputs=[image_prompt, raw_image_cache],
                     run_on_click=True,
@@ -274,16 +294,16 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                     run_on_click=True,
                     examples_per_page=10,
                 )
-        with gr.Column(scale=1):
+        with gr.Column(scale=2):
             gr.Markdown("<br>")
             video_output = gr.Video(
                 label="Generated 3D Asset",
                 autoplay=True,
                 loop=True,
-                height=300,
+                height=400,
             )
             model_output_gs = gr.Model3D(
-                label="Gaussian Representation", height=300, interactive=False
+                label="Gaussian Representation", height=350, interactive=False
             )
             aligned_gs = gr.Textbox(visible=False)
             gr.Markdown(
@@ -292,9 +312,9 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
             with gr.Row():
                 model_output_mesh = gr.Model3D(
                     label="Mesh Representation",
-                    height=300,
+                    height=350,
                     interactive=False,
-                    clear_color=[0.8, 0.8, 0.8, 1],
+                    clear_color=[0, 0, 0, 1],
                     elem_id="lighter_mesh",
                 )
 
@@ -320,7 +340,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
 
     image_prompt.upload(
         preprocess_image_fn,
-        inputs=[image_prompt, rmbg_tag],
+        inputs=[image_prompt, rmbg_tag, enable_pre_resize],
         outputs=[image_prompt, raw_image_cache],
     )
     image_prompt.change(
@@ -437,11 +457,11 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
         inputs=[
             image_prompt,
             seed,
-            ss_guidance_strength,
             ss_sampling_steps,
-            slat_guidance_strength,
             slat_sampling_steps,
             raw_image_cache,
+            ss_guidance_strength,
+            slat_guidance_strength,
             image_seg_sam,
             is_samimage,
         ],
