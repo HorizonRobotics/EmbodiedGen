@@ -21,7 +21,10 @@ from glob import glob
 
 import pytest
 from embodied_gen.utils.gpt_clients import GPT_CLIENT
-from embodied_gen.utils.process_media import render_asset3d
+from embodied_gen.utils.process_media import (
+    combine_images_to_grid,
+    render_asset3d,
+)
 from embodied_gen.validators.quality_checkers import (
     ImageAestheticChecker,
     ImageSegChecker,
@@ -166,12 +169,13 @@ def test_textgen_checker(textalign_checker, mesh_path, text_desc):
         image_list = render_asset3d(
             mesh_path,
             output_root=output_root,
-            num_images=6,
+            num_images=4,
             elevation=(30, -30),
             output_subdir="renders",
             no_index_file=True,
             with_mtl=False,
         )
+        image_list = combine_images_to_grid(image_list)
         flag, result = textalign_checker(text_desc, image_list)
         logger.info(f"textalign_checker: {flag}, {result}")
 

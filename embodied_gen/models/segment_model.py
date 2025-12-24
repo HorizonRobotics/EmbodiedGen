@@ -43,6 +43,7 @@ __all__ = [
     "SAMRemover",
     "SAMPredictor",
     "RembgRemover",
+    "BMGG14Remover",
     "get_segmented_image_by_agent",
 ]
 
@@ -376,7 +377,7 @@ class BMGG14Remover(object):
 
     def __call__(
         self, image: Union[str, Image.Image, np.ndarray], save_path: str = None
-    ):
+    ) -> Image.Image:
         """Removes background from an image.
 
         Args:
@@ -496,13 +497,18 @@ if __name__ == "__main__":
     # input_image = "outputs/text2image/tmp/bucket.jpeg"
     # output_image = "outputs/text2image/tmp/bucket_seg.png"
 
-    remover = SAMRemover(model_type="vit_h")
-    remover = RembgRemover()
-    clean_image = remover(input_image)
-    clean_image.save(output_image)
-    get_segmented_image_by_agent(
-        Image.open(input_image), remover, remover, None, "./test_seg.png"
-    )
+    # remover = SAMRemover(model_type="vit_h")
+    # remover = RembgRemover()
+    # clean_image = remover(input_image)
+    # clean_image.save(output_image)
+    # get_segmented_image_by_agent(
+    #     Image.open(input_image), remover, remover, None, "./test_seg.png"
+    # )
 
     remover = BMGG14Remover()
-    remover("embodied_gen/models/test_seg.jpg", "./seg.png")
+    clean_image = remover("./camera.jpeg", "./seg.png")
+    from embodied_gen.utils.process_media import (
+        keep_largest_connected_component,
+    )
+
+    keep_largest_connected_component(clean_image).save("./seg_post.png")

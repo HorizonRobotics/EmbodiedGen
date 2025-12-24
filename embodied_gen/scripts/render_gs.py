@@ -27,7 +27,6 @@ from tqdm import tqdm
 from embodied_gen.data.utils import (
     CameraSetting,
     init_kal_camera,
-    normalize_vertices_array,
 )
 from embodied_gen.models.gs_model import load_gs_model
 from embodied_gen.utils.process_media import combine_images_to_grid

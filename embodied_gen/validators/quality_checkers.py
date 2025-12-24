@@ -126,6 +126,30 @@ class MeshGeoChecker(BaseChecker):
         super().__init__(prompt, verbose)
         self.gpt_client = gpt_client
         if self.prompt is None:
+            # Old version for TRELLIS.
+            # self.prompt = """
+            # You are an expert in evaluating the geometry quality of generated 3D asset.
+            # You will be given rendered views of a generated 3D asset, type {}, with black background.
+            # Your task is to evaluate the quality of the 3D asset generation,
+            # including geometry, structure, and appearance, based on the rendered views.
+            # Criteria:
+            # - Is the object in the image a single, complete, and well-formed instance,
+            #     without truncation, missing parts, overlapping duplicates, or redundant geometry?
+            # - Minor flaws, asymmetries, or simplifications (e.g., less detail on sides or back,
+            #     soft edges) are acceptable if the object is structurally sound and recognizable.
+            # - Only evaluate geometry. Do not assess texture quality.
+            # - The asset should not contain any unrelated elements, such as
+            #     ground planes, platforms, or background props (e.g., paper, flooring).
+
+            # If all the above criteria are met, return "YES". Otherwise, return
+            #     "NO" followed by a brief explanation (no more than 20 words).
+
+            # Example:
+            # Images show a yellow cup standing on a flat white plane -> NO
+            # -> Response: NO: extra white surface under the object.
+            # Image shows a chair with simplified back legs and soft edges -> YES
+            # """
+
             self.prompt = """
             You are an expert in evaluating the geometry quality of generated 3D asset.
             You will be given rendered views of a generated 3D asset, type {}, with black background.
@@ -137,16 +161,13 @@ class MeshGeoChecker(BaseChecker):
             - Minor flaws, asymmetries, or simplifications (e.g., less detail on sides or back,
                 soft edges) are acceptable if the object is structurally sound and recognizable.
             - Only evaluate geometry. Do not assess texture quality.
-            - The asset should not contain any unrelated elements, such as
-                ground planes, platforms, or background props (e.g., paper, flooring).
 
-            If all the above criteria are met, return "YES". Otherwise, return
+            If all the above criteria are met, return "YES" only. Otherwise, return
                 "NO" followed by a brief explanation (no more than 20 words).
 
             Example:
-            Images show a yellow cup standing on a flat white plane -> NO
-            -> Response: NO: extra white surface under the object.
-            Image shows a chair with simplified back legs and soft edges → YES
+            Image shows a chair with one leg missing -> NO: the chair missing leg.
+            Image shows a geometrically complete cup -> YES
             """
 
     def query(

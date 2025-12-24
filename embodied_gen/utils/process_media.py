@@ -96,7 +96,7 @@ def render_asset3d(
         image_paths = render_asset3d(
             mesh_path="path_to_mesh.obj",
             output_root="path_to_save_dir",
-            num_images=6,
+            num_images=4,
             elevation=(30, -30),
             output_subdir="renders",
             no_index_file=True,
@@ -228,6 +228,29 @@ def filter_image_small_connected_components(
     image[..., 3] = mask
 
     return image
+
+
+def keep_largest_connected_component(pil_img: Image.Image) -> Image.Image:
+    if pil_img.mode != "RGBA":
+        pil_img = pil_img.convert("RGBA")
+
+    img_arr = np.array(pil_img)
+    alpha_channel = img_arr[:, :, 3]
+
+    _, binary_mask = cv2.threshold(alpha_channel, 0, 255, cv2.THRESH_BINARY)
+    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
+        binary_mask, connectivity=8
+    )
+    if num_labels < 2:
+        return pil_img
+
+    largest_label = 1 + np.argmax(stats[1:, cv2.CC_STAT_AREA])
+    new_alpha = np.where(labels == largest_label, alpha_channel, 0).astype(
+        np.uint8
+    )
+    img_arr[:, :, 3] = new_alpha
+
+    return Image.fromarray(img_arr)
 
 
 def combine_images_to_grid(
@@ -439,7 +462,7 @@ class SceneTreeVisualizer:
         plt.axis("off")
 
         legend_handles = [
-            Patch(facecolor=color, edgecolor='black', label=role)
+            Patch(facecolor=color, edgecolor="black", label=role)
             for role, color in self.role_colors.items()
         ]
         plt.legend(
@@ -465,7 +488,7 @@ def load_scene_dict(file_path: str) -> dict:
         dict: Mapping from scene ID to description.
     """
     scene_dict = {}
-    with open(file_path, "r", encoding='utf-8') as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line or ":" not in line:
@@ -487,7 +510,7 @@ def is_image_file(filename: str) -> bool:
     """
     mime_type, _ = mimetypes.guess_type(filename)
 
-    return mime_type is not None and mime_type.startswith('image')
+    return mime_type is not None and mime_type.startswith("image")
 
 
 def parse_text_prompts(prompts: list[str]) -> list[str]:

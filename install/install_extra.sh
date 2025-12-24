@@ -4,21 +4,17 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/_utils.sh"
 
 PYTHON_PACKAGES_NODEPS=(
-    "timm"
     "txt2panoimg@git+https://github.com/HochCC/SD-T2I-360PanoImage"
 )
 
 PYTHON_PACKAGES=(
-    "ninja"
-    "fused-ssim@git+https://github.com/rahul-goel/fused-ssim#egg=328dc98"
+    "fused-ssim@git+https://github.com/rahul-goel/fused-ssim#egg=328dc98 --no-build-isolation"
     "git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch"
-    "git+https://github.com/facebookresearch/pytorch3d.git@stable"
     "kornia"
     "h5py"
     "albumentations==0.5.2"
     "webdataset"
     "icecream"
-    "open3d"
     "pyequilib"
 )
 

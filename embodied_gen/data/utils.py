@@ -15,10 +15,13 @@
 # permissions and limitations under the License.
 
 
+import logging
 import math
 import os
-import random
+import time
 import zipfile
+from contextlib import contextmanager
+from dataclasses import dataclass, field
 from shutil import rmtree
 from typing import List, Tuple, Union
 
@@ -28,20 +31,9 @@ import numpy as np
 import nvdiffrast.torch as dr
 import torch
 import torch.nn.functional as F
-from PIL import Image, ImageEnhance
-
-try:
-    from kolors.models.modeling_chatglm import ChatGLMModel
-    from kolors.models.tokenization_chatglm import ChatGLMTokenizer
-except ImportError:
-    ChatGLMTokenizer = None
-    ChatGLMModel = None
-import logging
-from dataclasses import dataclass, field
-
 import trimesh
 from kaolin.render.camera import Camera
-from torch import nn
+from PIL import Image, ImageEnhance
 
 logger = logging.getLogger(__name__)
 
@@ -50,10 +42,8 @@ __all__ = [
     "DiffrastRender",
     "save_images",
     "render_pbr",
-    "prelabel_text_feature",
     "calc_vertex_normals",
     "normalize_vertices_array",
-    "load_mesh_to_unit_cube",
     "as_list",
     "CameraSetting",
     "import_kaolin_mesh",
@@ -67,6 +57,7 @@ __all__ = [
     "trellis_preprocess",
     "delete_dir",
     "kaolin_to_opencv_view",
+    "model_device_ctx",
 ]
 
 
@@ -520,114 +511,6 @@ def render_pbr(
     return image, albedo, diffuse, normal
 
 
-def _move_to_target_device(data, device: str):
-    if isinstance(data, dict):
-        for key, value in data.items():
-            data[key] = _move_to_target_device(value, device)
-    elif isinstance(data, torch.Tensor):
-        return data.to(device)
-
-    return data
-
-
-def _encode_prompt(
-    prompt_batch,
-    text_encoders,
-    tokenizers,
-    proportion_empty_prompts=0,
-    is_train=True,
-):
-    prompt_embeds_list = []
-
-    captions = []
-    for caption in prompt_batch:
-        if random.random() < proportion_empty_prompts:
-            captions.append("")
-        elif isinstance(caption, str):
-            captions.append(caption)
-        elif isinstance(caption, (list, np.ndarray)):
-            captions.append(random.choice(caption) if is_train else caption[0])
-
-    with torch.no_grad():
-        for tokenizer, text_encoder in zip(tokenizers, text_encoders):
-            text_inputs = tokenizer(
-                captions,
-                padding="max_length",
-                max_length=256,
-                truncation=True,
-                return_tensors="pt",
-            ).to(text_encoder.device)
-
-            output = text_encoder(
-                input_ids=text_inputs.input_ids,
-                attention_mask=text_inputs.attention_mask,
-                position_ids=text_inputs.position_ids,
-                output_hidden_states=True,
-            )
-
-            # We are only interested in the pooled output of the text encoder.
-            prompt_embeds = output.hidden_states[-2].permute(1, 0, 2).clone()
-            pooled_prompt_embeds = output.hidden_states[-1][-1, :, :].clone()
-            bs_embed, seq_len, _ = prompt_embeds.shape
-            prompt_embeds = prompt_embeds.view(bs_embed, seq_len, -1)
-            prompt_embeds_list.append(prompt_embeds)
-
-    prompt_embeds = torch.concat(prompt_embeds_list, dim=-1)
-    pooled_prompt_embeds = pooled_prompt_embeds.view(bs_embed, -1)
-
-    return prompt_embeds, pooled_prompt_embeds
-
-
-def load_llm_models(pretrained_model_name_or_path: str, device: str):
-    tokenizer = ChatGLMTokenizer.from_pretrained(
-        pretrained_model_name_or_path,
-        subfolder="text_encoder",
-    )
-    text_encoder = ChatGLMModel.from_pretrained(
-        pretrained_model_name_or_path,
-        subfolder="text_encoder",
-    ).to(device)
-
-    text_encoders = [
-        text_encoder,
-    ]
-    tokenizers = [
-        tokenizer,
-    ]
-
-    logger.info(f"Load model from {pretrained_model_name_or_path} done.")
-
-    return tokenizers, text_encoders
-
-
-def prelabel_text_feature(
-    prompt_batch: List[str],
-    output_dir: str,
-    tokenizers: nn.Module,
-    text_encoders: nn.Module,
-) -> List[str]:
-    os.makedirs(output_dir, exist_ok=True)
-
-    # prompt_batch ["text..."]
-    prompt_embeds, pooled_prompt_embeds = _encode_prompt(
-        prompt_batch, text_encoders, tokenizers
-    )
-
-    prompt_embeds = _move_to_target_device(prompt_embeds, device="cpu")
-    pooled_prompt_embeds = _move_to_target_device(
-        pooled_prompt_embeds, device="cpu"
-    )
-
-    data_dict = dict(
-        prompt_embeds=prompt_embeds, pooled_prompt_embeds=pooled_prompt_embeds
-    )
-
-    save_path = os.path.join(output_dir, "text_feat.pth")
-    torch.save(data_dict, save_path)
-
-    return save_path
-
-
 def _calc_face_normals(
     vertices: torch.Tensor,  # V,3 first vertex may be unreferenced
     faces: torch.Tensor,  # F,3 long, first face may be all zero
@@ -681,25 +564,6 @@ def normalize_vertices_array(
         vertices = (vertices - center) * scale
 
     return vertices, scale, center
-
-
-def load_mesh_to_unit_cube(
-    mesh_file: str,
-    mesh_scale: float = 1.0,
-) -> tuple[trimesh.Trimesh, float, list[float]]:
-    if not os.path.exists(mesh_file):
-        raise FileNotFoundError(f"mesh_file path {mesh_file} not exists.")
-
-    mesh = trimesh.load(mesh_file)
-    if isinstance(mesh, trimesh.Scene):
-        mesh = trimesh.utils.concatenate(mesh)
-
-    vertices, scale, center = normalize_vertices_array(
-        mesh.vertices, mesh_scale
-    )
-    mesh.vertices = vertices
-
-    return mesh, scale, center
 
 
 def as_list(obj):
@@ -862,6 +726,7 @@ def save_mesh_with_mtl(
     texture: Union[Image.Image, np.ndarray],
     output_path: str,
     material_base=(250, 250, 250, 255),
+    mesh_process: bool = True,
 ) -> trimesh.Trimesh:
     if isinstance(texture, np.ndarray):
         texture = Image.fromarray(texture)
@@ -870,6 +735,7 @@ def save_mesh_with_mtl(
         vertices,
         faces,
         visual=trimesh.visual.TextureVisuals(uv=uvs, image=texture),
+        process=mesh_process,  # True for preventing modification of vertices
     )
     mesh.visual.material = trimesh.visual.material.SimpleMaterial(
         image=texture,
@@ -998,8 +864,9 @@ def gamma_shs(shs: torch.Tensor, gamma: float) -> torch.Tensor:
 
 
 def resize_pil(image: Image.Image, max_size: int = 1024) -> Image.Image:
-    max_size = max(image.size)
-    scale = min(1, 1024 / max_size)
+    current_max_dim = max(image.size)
+    scale = min(1, max_size / current_max_dim)
+
     if scale < 1:
         new_size = (int(image.width * scale), int(image.height * scale))
         image = image.resize(new_size, Image.Resampling.LANCZOS)
@@ -1068,3 +935,34 @@ def delete_dir(folder_path: str, keep_subs: list[str] = None) -> None:
             rmtree(item_path)
         else:
             os.remove(item_path)
+
+
+@contextmanager
+def model_device_ctx(
+    *models,
+    src_device: str = "cpu",
+    dst_device: str = "cuda",
+    verbose: bool = False,
+):
+    start = time.perf_counter()
+    for m in models:
+        if m is None:
+            continue
+        m.to(dst_device)
+    to_cuda_time = time.perf_counter() - start
+
+    try:
+        yield
+    finally:
+        start = time.perf_counter()
+        for m in models:
+            if m is None:
+                continue
+            m.to(src_device)
+        to_cpu_time = time.perf_counter() - start
+
+        if verbose:
+            model_names = [m.__class__.__name__ for m in models]
+            logger.debug(
+                f"[model_device_ctx] {model_names} to cuda: {to_cuda_time:.1f}s, to cpu: {to_cpu_time:.1f}s"
+            )

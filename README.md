@@ -37,11 +37,12 @@
 ```sh
 git clone https://github.com/HorizonRobotics/EmbodiedGen.git
 cd EmbodiedGen
-git checkout v0.1.6
+git checkout v0.1.7
 git submodule update --init --recursive --progress
 conda create -n embodiedgen python=3.10.13 -y # recommended to use a new env.
 conda activate embodiedgen
-bash install.sh basic
+bash install.sh basic # around 20 mins
+# Optional: `bash install.sh extra` for scene3d-cli
 ```
 
 ### ✅ Starting from Docker
@@ -94,11 +95,13 @@ CUDA_VISIBLE_DEVICES=0 nohup python apps/image_to_3d.py > /dev/null 2>&1 &
 ### ⚡ API
 Generate physically plausible 3D assets from image input via the command-line API.
 ```sh
-img3d-cli --image_path apps/assets/example_image/sample_00.jpg apps/assets/example_image/sample_01.jpg apps/assets/example_image/sample_19.jpg \
+img3d-cli --image_path apps/assets/example_image/sample_00.jpg apps/assets/example_image/sample_01.jpg \
 --n_retry 1 --output_root outputs/imageto3d
 
 # See result(.urdf/mesh.obj/mesh.glb/gs.ply) in ${output_root}/sample_xx/result
 ```
+
+Support the use of [SAM3D](https://github.com/facebookresearch/sam-3d-objects) or [TRELLIS](https://github.com/microsoft/TRELLIS) as 3D generation model, modify `IMAGE3D_MODEL` in `embodied_gen/scripts/imageto3d.py` to switch model.
 
 ---
 
@@ -133,7 +136,7 @@ text3d-cli --prompts "small bronze figurine of a lion" "A globe with wooden base
 Text-to-image model based on the Kolors model.
 ```sh
 bash embodied_gen/scripts/textto3d.sh \
-    --prompts "small bronze figurine of a lion" "A globe with wooden base and latitude and longitude lines" "橙色电动手钻，有磨损细节" \
+    --prompts "A globe with wooden base and latitude and longitude lines" "橙色电动手钻，有磨损细节" \
     --output_root outputs/textto3d_k
 ```
 ps: models with more permissive licenses found in `embodied_gen/models/image_comm_model.py`
@@ -191,7 +194,11 @@ CUDA_VISIBLE_DEVICES=0 scene3d-cli \
 
 <h2 id="articulated-object-generation">⚙️ Articulated Object Generation</h2>
 
-🚧 *Coming Soon*
+See our paper published in NeurIPS 2025.
+[[Arxiv Paper]](https://arxiv.org/abs/2505.20460) |
+[[Gradio Demo]](https://huggingface.co/spaces/HorizonRobotics/DIPO) |
+[[Code]](https://github.com/RQ-Wu/DIPO)
+
 
 <img src="docs/assets/articulate.gif" alt="articulate" style="width: 500px;">
 
@@ -239,6 +246,7 @@ Remove `--insert_robot` if you don't consider the robot pose in layout generatio
 CUDA_VISIBLE_DEVICES=0 nohup layout-cli \
 --task_descs "apps/assets/example_layout/task_list.txt" \
 --bg_list "outputs/bg_scenes/scene_list.txt" \
+--n_image_retry 4 --n_asset_retry 3 --n_pipe_retry 2 \
 --output_root "outputs/layouts_gens" --insert_robot > layouts_gens.log &
 ```
 
@@ -325,7 +333,7 @@ If you use EmbodiedGen in your research or projects, please cite:
 ## 🙌 Acknowledgement
 
 EmbodiedGen builds upon the following amazing projects and models:
-🌟 [Trellis](https://github.com/microsoft/TRELLIS) | 🌟 [Hunyuan-Delight](https://huggingface.co/tencent/Hunyuan3D-2/tree/main/hunyuan3d-delight-v2-0) | 🌟 [Segment Anything](https://github.com/facebookresearch/segment-anything) | 🌟 [Rembg](https://github.com/danielgatis/rembg) | 🌟 [RMBG-1.4](https://huggingface.co/briaai/RMBG-1.4) | 🌟 [Stable Diffusion x4](https://huggingface.co/stabilityai/stable-diffusion-x4-upscaler) | 🌟 [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) | 🌟 [Kolors](https://github.com/Kwai-Kolors/Kolors) | 🌟 [ChatGLM3](https://github.com/THUDM/ChatGLM3) | 🌟 [Aesthetic Score](http://captions.christoph-schuhmann.de/aesthetic_viz_laion_sac+logos+ava1-l14-linearMSE-en-2.37B.html) | 🌟 [Pano2Room](https://github.com/TrickyGo/Pano2Room) | 🌟 [Diffusion360](https://github.com/ArcherFMY/SD-T2I-360PanoImage) | 🌟 [Kaolin](https://github.com/NVIDIAGameWorks/kaolin) | 🌟 [diffusers](https://github.com/huggingface/diffusers) | 🌟 [gsplat](https://github.com/nerfstudio-project/gsplat) | 🌟 [QWEN-2.5VL](https://github.com/QwenLM/Qwen2.5-VL) | 🌟 [GPT4o](https://platform.openai.com/docs/models/gpt-4o) | 🌟 [SD3.5](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium) | 🌟 [ManiSkill](https://github.com/haosulab/ManiSkill)
+🌟 [Trellis](https://github.com/microsoft/TRELLIS) | 🌟 [Hunyuan-Delight](https://huggingface.co/tencent/Hunyuan3D-2/tree/main/hunyuan3d-delight-v2-0) | 🌟 [Segment Anything](https://github.com/facebookresearch/segment-anything) | 🌟 [Rembg](https://github.com/danielgatis/rembg) | 🌟 [RMBG-1.4](https://huggingface.co/briaai/RMBG-1.4) | 🌟 [Stable Diffusion x4](https://huggingface.co/stabilityai/stable-diffusion-x4-upscaler) | 🌟 [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) | 🌟 [Kolors](https://github.com/Kwai-Kolors/Kolors) | 🌟 [ChatGLM3](https://github.com/THUDM/ChatGLM3) | 🌟 [Aesthetic Score](http://captions.christoph-schuhmann.de/aesthetic_viz_laion_sac+logos+ava1-l14-linearMSE-en-2.37B.html) | 🌟 [Pano2Room](https://github.com/TrickyGo/Pano2Room) | 🌟 [Diffusion360](https://github.com/ArcherFMY/SD-T2I-360PanoImage) | 🌟 [Kaolin](https://github.com/NVIDIAGameWorks/kaolin) | 🌟 [diffusers](https://github.com/huggingface/diffusers) | 🌟 [gsplat](https://github.com/nerfstudio-project/gsplat) | 🌟 [QWEN-2.5VL](https://github.com/QwenLM/Qwen2.5-VL) | 🌟 [GPT4o](https://platform.openai.com/docs/models/gpt-4o) | 🌟 [SD3.5](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium) | 🌟 [ManiSkill](https://github.com/haosulab/ManiSkill) | 🌟 [SAM3D](https://github.com/facebookresearch/sam-3d-objects)
 
 ---
 

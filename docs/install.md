@@ -7,11 +7,12 @@ hide:
 ```sh
 git clone https://github.com/HorizonRobotics/EmbodiedGen.git
 cd EmbodiedGen
-git checkout v0.1.6
+git checkout v0.1.7
 git submodule update --init --recursive --progress
 conda create -n embodiedgen python=3.10.13 -y # recommended to use a new env.
 conda activate embodiedgen
-bash install.sh basic
+bash install.sh basic # around 20 mins
+# Optional: `bash install.sh extra` for scene3d-cli
 ```
 
 Please `huggingface-cli login` to ensure that the ckpts can be downloaded automatically afterwards.

@@ -8,3 +8,8 @@
 	url = https://github.com/TrickyGo/Pano2Room.git
 	branch = main
 	shallow = true
+[submodule "thirdparty/sam3d"]
+	path = thirdparty/sam3d
+	url = https://github.com/HochCC/sam-3d-objects.git
+	branch = main
+	shallow = true

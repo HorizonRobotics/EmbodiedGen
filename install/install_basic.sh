@@ -8,7 +8,7 @@ PIP_INSTALL_PACKAGES=(
     "torch==2.4.0 torchvision==0.19.0 --index-url https://download.pytorch.org/whl/cu118"
     "xformers==0.0.27.post2 --index-url https://download.pytorch.org/whl/cu118"
     "-r requirements.txt --use-deprecated=legacy-resolver"
-    "flash-attn==2.7.0.post2"
+    # "flash-attn==2.7.0.post2"
     "utils3d@git+https://github.com/EasternJournalist/utils3d.git@9a4eb15"
     "clip@git+https://github.com/openai/CLIP.git"
     "segment-anything@git+https://github.com/facebookresearch/segment-anything.git@dca509f"
@@ -16,6 +16,8 @@ PIP_INSTALL_PACKAGES=(
     "kolors@git+https://github.com/HochCC/Kolors.git"
     "kaolin@git+https://github.com/NVIDIAGameWorks/kaolin.git@v0.16.0"
     "git+https://github.com/nerfstudio-project/gsplat.git@v1.5.3"
+    "git+https://github.com/facebookresearch/pytorch3d.git@stable"
+    "MoGe@git+https://github.com/microsoft/MoGe.git@a8c3734"
 )
 
 for pkg in "${PIP_INSTALL_PACKAGES[@]}"; do

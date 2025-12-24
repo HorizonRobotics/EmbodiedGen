@@ -27,7 +27,6 @@ import shutil
 import uuid
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Any, Dict, Tuple
 
 import gradio as gr
 import pandas as pd
@@ -255,8 +254,7 @@ def search_assets(query: str, top_k: int):
     return items, gr.update(interactive=True), top_assets
 
 
-# --- Mesh extraction ---
-def _extract_mesh_paths(row) -> Tuple[str | None, str | None, str]:
+def _extract_mesh_paths(row) -> tuple[str | None, str | None, str]:
     desc = row["description"]
     urdf_path = os.path.join(DATA_ROOT, row["urdf_path"])
     asset_dir = os.path.join(DATA_ROOT, row["asset_dir"])

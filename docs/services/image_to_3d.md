@@ -67,6 +67,8 @@ python apps/image_to_3d.py
 CUDA_VISIBLE_DEVICES=0 nohup python apps/image_to_3d.py > /dev/null 2>&1 &
 ```
 
+Support the use of [SAM3D](https://github.com/facebookresearch/sam-3d-objects) or [TRELLIS](https://github.com/microsoft/TRELLIS) as 3D generation model, modify `GRADIO_APP` in `apps/image_to_3d.py` to switch model.
+
 ---
 
 !!! tip "Getting Started"

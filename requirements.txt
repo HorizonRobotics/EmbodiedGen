@@ -43,3 +43,12 @@ mani_skill==3.0.0b21
 typing_extensions==4.14.1
 ninja
 packaging
+lightning
+astor
+optree
+loguru
+seaborn
+hydra-core
+modelscope
+timm
+open3d

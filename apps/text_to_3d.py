@@ -17,8 +17,9 @@
 
 import os
 
-os.environ["GRADIO_APP"] = "textto3d"
-
+# GRADIO_APP == "textto3d_sam3d", sam3d object model, by default.
+# GRADIO_APP == "textto3d", TRELLIS model.
+os.environ["GRADIO_APP"] = "textto3d_sam3d"
 
 import gradio as gr
 from app_style import custom_theme, image_css, lighting_css
@@ -36,6 +37,14 @@ from common import (
     start_session,
     text2image_fn,
 )
+
+app_name = os.getenv("GRADIO_APP")
+if app_name == "textto3d_sam3d":
+    enable_pre_resize = False
+    sample_step = 25
+elif app_name == "textto3d":
+    enable_pre_resize = True
+    sample_step = 12
 
 with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
     gr.HTML(image_css, visible=False)
@@ -101,11 +110,11 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                     )
                 rmbg_tag = gr.Radio(
                     choices=["rembg", "rmbg14"],
-                    value="rembg",
+                    value="rmbg14",
                     label="Background Removal Model",
                 )
                 ip_adapt_scale = gr.Slider(
-                    0, 1, label="IP-adapter Scale", value=0.3, step=0.05
+                    0, 1, label="IP-adapter Scale", value=0.7, step=0.05
                 )
                 img_guidance_scale = gr.Slider(
                     1, 30, label="Text Guidance Scale", value=12, step=0.2
@@ -162,7 +171,11 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                         step=0.1,
                     )
                     ss_sampling_steps = gr.Slider(
-                        1, 50, label="Sampling Steps", value=12, step=1
+                        1,
+                        50,
+                        label="Sampling Steps",
+                        value=sample_step,
+                        step=1,
                     )
                 gr.Markdown("Visual Appearance Generation")
                 with gr.Row():
@@ -174,7 +187,11 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                         step=0.1,
                     )
                     slat_sampling_steps = gr.Slider(
-                        1, 50, label="Sampling Steps", value=12, step=1
+                        1,
+                        50,
+                        label="Sampling Steps",
+                        value=sample_step,
+                        step=1,
                     )
 
             generate_btn = gr.Button(
@@ -265,7 +282,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                     visible=False,
                 )
             gr.Markdown(
-                "Generated image may be poor quality due to auto seg."
+                "Generated image may be poor quality due to auto seg. "
                 "Retry by adjusting text prompt, seed or switch seg model in `Image Gen Settings`."
             )
             with gr.Row():
@@ -285,7 +302,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
 
                 model_output_mesh = gr.Model3D(
                     label="Mesh Representation",
-                    clear_color=[0.8, 0.8, 0.8, 1],
+                    clear_color=[0, 0, 0, 1],
                     height=300,
                     interactive=False,
                     elem_id="lighter_mesh",
@@ -323,6 +340,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
             )
 
     output_buf = gr.State()
+    enable_pre_resize = gr.State(enable_pre_resize)
 
     demo.load(start_session)
     demo.unload(end_session)
@@ -389,6 +407,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
             img_resolution,
             rmbg_tag,
             seed,
+            enable_pre_resize,
         ],
         outputs=[
             image_sample1,
@@ -420,11 +439,11 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
         inputs=[
             select_img,
             seed,
-            ss_guidance_strength,
             ss_sampling_steps,
-            slat_guidance_strength,
             slat_sampling_steps,
             raw_image_cache,
+            ss_guidance_strength,
+            slat_guidance_strength,
         ],
         outputs=[output_buf, video_output],
     ).success(
