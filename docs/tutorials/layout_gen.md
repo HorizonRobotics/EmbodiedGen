@@ -60,7 +60,7 @@ You can also run multiple tasks via a task list file in the backend.
 CUDA_VISIBLE_DEVICES=0 nohup layout-cli \
   --task_descs "apps/assets/example_layout/task_list.txt" \
   --bg_list "outputs/bg_scenes/scene_list.txt" \
-  --n_image_retry 4 --n_asset_retry 3 --n_pipe_retry 2 \
+  --n_image_retry 4 --n_asset_retry 3 --n_pipe_retry 3 \
   --output_root "outputs/layouts_gens" \
   --insert_robot > layouts_gens.log &
 ```

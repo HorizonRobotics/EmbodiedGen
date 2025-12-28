@@ -204,8 +204,13 @@ class URDFGenerator(object):
         Returns:
             dict[str, any]: Parsed attributes.
         """
-        lines = response.split("\n")
-        lines = [line.strip() for line in lines if line]
+        raw_lines = response.split("\n")
+        lines = []
+        for line in raw_lines:
+            line = line.strip()
+            if line and not line.startswith("```") and ":" in line:
+                lines.append(line)
+
         category = lines[0].split(": ")[1]
         description = lines[1].split(": ")[1]
         min_height, max_height = map(

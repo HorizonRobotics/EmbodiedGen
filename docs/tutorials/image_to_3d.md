@@ -10,7 +10,7 @@ Support the use of [SAM3D](https://github.com/facebookresearch/sam-3d-objects) o
 ```bash
 img3d-cli --image_path apps/assets/example_image/sample_00.jpg \
 apps/assets/example_image/sample_01.jpg \
---n_retry 1 --output_root outputs/imageto3d
+--n_retry 2 --output_root outputs/imageto3d
 ```
 
 You will get the following results:
