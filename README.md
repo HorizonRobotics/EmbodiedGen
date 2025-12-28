@@ -96,7 +96,7 @@ CUDA_VISIBLE_DEVICES=0 nohup python apps/image_to_3d.py > /dev/null 2>&1 &
 Generate physically plausible 3D assets from image input via the command-line API.
 ```sh
 img3d-cli --image_path apps/assets/example_image/sample_00.jpg apps/assets/example_image/sample_01.jpg \
---n_retry 1 --output_root outputs/imageto3d
+--n_retry 2 --output_root outputs/imageto3d
 
 # See result(.urdf/mesh.obj/mesh.glb/gs.ply) in ${output_root}/sample_xx/result
 ```
@@ -246,7 +246,7 @@ Remove `--insert_robot` if you don't consider the robot pose in layout generatio
 CUDA_VISIBLE_DEVICES=0 nohup layout-cli \
 --task_descs "apps/assets/example_layout/task_list.txt" \
 --bg_list "outputs/bg_scenes/scene_list.txt" \
---n_image_retry 4 --n_asset_retry 3 --n_pipe_retry 2 \
+--n_image_retry 4 --n_asset_retry 3 --n_pipe_retry 3 \
 --output_root "outputs/layouts_gens" --insert_robot > layouts_gens.log &
 ```
 

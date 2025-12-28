@@ -105,7 +105,7 @@ def parse_args():
     parser.add_argument(
         "--n_retry",
         type=int,
-        default=2,
+        default=3,
     )
     parser.add_argument("--disable_decompose_convex", action="store_true")
     parser.add_argument("--texture_size", type=int, default=2048)
@@ -163,7 +163,7 @@ def entrypoint(**kwargs):
                     outputs = image3d_model_infer(PIPELINE, seg_image, seed)
                 except Exception as e:
                     logger.error(
-                        f"[Pipeline Failed] process {image_path}: {e}, skip."
+                        f"[Image3D Failed] process {image_path}: {e}, retry: {try_idx+1}/{args.n_retry}"
                     )
                     continue
 
