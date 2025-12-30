@@ -53,7 +53,7 @@ __all__ = [
 ]
 
 PROMPT_APPEND = (
-    "Angled 3D view of one {object}, centered, no cropping, no occlusion, isolated product photo, "
+    "Angled 3D view of one {object}, centered, no cropping, no occlusion, isolated product photo, placed horizontally, "
     "no surroundings, high-quality appearance, vivid colors, on a plain clean surface, 3D style revealing multiple surfaces"
 )
 PROMPT_KAPPEND = "Single {object}, in the center of the image, white background, 3D style, best quality"
