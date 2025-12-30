@@ -4745,7 +4745,9 @@ a GPT client to determine whether any physical obstacles there.</p>
 <span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span>
-<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">gpt_client</span><span class="p">:</span> <span class="n">GPTclient</span><span class="p">,</span>
     <span class="n">mesh_file_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;material_0.png&quot;</span><span class="p">,</span> <span class="s2">&quot;material.mtl&quot;</span><span class="p">],</span>
@@ -4764,7 +4766,7 @@ a GPT client to determine whether any physical obstacles there.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">gpt_client</span> <span class="o">=</span> <span class="n">gpt_client</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">render_view_num</span> <span class="o">=</span> <span class="n">render_view_num</span>
     <span class="k">if</span> <span class="n">render_view_num</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
-        <span class="n">view_desc</span> <span class="o">=</span> <span class="s2">&quot;This is orthographic projection showing the front, left, right and back views &quot;</span>  <span class="c1"># noqa</span>
+        <span class="n">view_desc</span> <span class="o">=</span> <span class="s2">&quot;This is an orthographic projection showing the front(1st image), right(2nd), back(3rd), and left(4th) views.&quot;</span>  <span class="c1"># noqa</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">view_desc</span> <span class="o">=</span> <span class="s2">&quot;This is the rendered views &quot;</span>
 
@@ -4776,7 +4778,7 @@ a GPT client to determine whether any physical obstacles there.</p>
 <span class="s2">        You are an expert in 3D object analysis and physical property estimation.</span>
 <span class="s2">        Give the category of this object asset (within 3 words), (if category is</span>
 <span class="s2">        already provided, use it directly), accurately describe this 3D object asset (within 15 words),</span>
-<span class="s2">        Determine the pose of the object in the first image and estimate the true vertical height</span>
+<span class="s2">        Determine the pose of the object in the first image based on all views and estimate the true vertical height</span>
 <span class="s2">        (vertical projection) range of the object (in meters), i.e., how tall the object appears from top</span>
 <span class="s2">        to bottom in the first image. also weight range (unit: kilogram), the average</span>
 <span class="s2">        static friction coefficient of the object relative to rubber and the average dynamic friction</span>
@@ -4798,14 +4800,16 @@ a GPT client to determine whether any physical obstacles there.</p>
 <span class="s2">        use the diameter as the vertical height. If the edge is visible, use the thickness instead.</span>
 <span class="s2">        - This is not necessarily the full length of the object, but how tall it appears</span>
 <span class="s2">        in the first image vertically, based on its pose and orientation estimation on all views.</span>
-<span class="s2">        - For objects(e.g., spoons, forks, writing instruments etc.) at an angle showing in images,</span>
-<span class="s2">            e.g., tilted at 45° will appear shorter vertically than when upright.</span>
+<span class="s2">        - Distinguish whether the entire objects such as plates, books, pens, spoons, fork are placed</span>
+<span class="s2">            horizontally or vertically based on pictures from left, right views.</span>
+
 <span class="s2">        Estimate the vertical projection of their real length based on its pose.</span>
 <span class="s2">        For example:</span>
 <span class="s2">          - A pen standing upright in the first image (aligned with the image&#39;s vertical axis)</span>
-<span class="s2">            full body visible in the first image: → vertical height ≈ 0.14-0.20 m</span>
+<span class="s2">            full body visible in the first and other image: → vertically → vertical height ≈ 0.14-0.20 m</span>
 <span class="s2">          - A pen lying flat in the first image or either the tip or the tail is facing the image</span>
-<span class="s2">            (showing thickness or as a circle) → vertical height ≈ 0.018-0.025 m</span>
+<span class="s2">            (showing thickness or as a circle), left/right view can show the full body</span>
+<span class="s2">            → horizontally → vertical height ≈ 0.018-0.025 m</span>
 <span class="s2">          - Tilted pen in the first image (e.g., ~45° angle): vertical height ≈ 0.07-0.12 m</span>
 <span class="s2">        - Use the rest views to help determine the object&#39;s 3D pose and orientation.</span>
 <span class="s2">        Assume the object is in real-world scale and estimate the approximate vertical height</span>
@@ -4981,9 +4985,7 @@ a GPT client to determine whether any physical obstacles there.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>embodied_gen/validators/urdf_convertor.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">462</span>
-<span class="normal">463</span>
-<span class="normal">464</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">464</span>
 <span class="normal">465</span>
 <span class="normal">466</span>
 <span class="normal">467</span>
@@ -5044,7 +5046,9 @@ a GPT client to determine whether any physical obstacles there.</p>
 <span class="normal">522</span>
 <span class="normal">523</span>
 <span class="normal">524</span>
-<span class="normal">525</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
+<span class="normal">525</span>
+<span class="normal">526</span>
+<span class="normal">527</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">mesh_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">output_root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -5199,9 +5203,7 @@ a GPT client to determine whether any physical obstacles there.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>embodied_gen/validators/urdf_convertor.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">406</span>
-<span class="normal">407</span>
-<span class="normal">408</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">408</span>
 <span class="normal">409</span>
 <span class="normal">410</span>
 <span class="normal">411</span>
@@ -5231,7 +5233,9 @@ a GPT client to determine whether any physical obstacles there.</p>
 <span class="normal">435</span>
 <span class="normal">436</span>
 <span class="normal">437</span>
-<span class="normal">438</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">add_quality_tag</span><span class="p">(</span>
     <span class="n">urdf_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -5390,9 +5394,7 @@ a GPT client to determine whether any physical obstacles there.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>embodied_gen/validators/urdf_convertor.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">242</span>
 <span class="normal">243</span>
 <span class="normal">244</span>
 <span class="normal">245</span>
@@ -5520,7 +5522,9 @@ a GPT client to determine whether any physical obstacles there.</p>
 <span class="normal">367</span>
 <span class="normal">368</span>
 <span class="normal">369</span>
-<span class="normal">370</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_urdf</span><span class="p">(</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_urdf</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">input_mesh</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -5765,9 +5769,7 @@ a GPT client to determine whether any physical obstacles there.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>embodied_gen/validators/urdf_convertor.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">372</span>
-<span class="normal">373</span>
-<span class="normal">374</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">374</span>
 <span class="normal">375</span>
 <span class="normal">376</span>
 <span class="normal">377</span>
@@ -5797,7 +5799,9 @@ a GPT client to determine whether any physical obstacles there.</p>
 <span class="normal">401</span>
 <span class="normal">402</span>
 <span class="normal">403</span>
-<span class="normal">404</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_attr_from_urdf</span><span class="p">(</span>
     <span class="n">urdf_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">attr_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;.//link/extra_info&quot;</span><span class="p">,</span>
@@ -5907,9 +5911,7 @@ a GPT client to determine whether any physical obstacles there.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>embodied_gen/validators/urdf_convertor.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">440</span>
-<span class="normal">441</span>
-<span class="normal">442</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">442</span>
 <span class="normal">443</span>
 <span class="normal">444</span>
 <span class="normal">445</span>
@@ -5927,7 +5929,9 @@ a GPT client to determine whether any physical obstacles there.</p>
 <span class="normal">457</span>
 <span class="normal">458</span>
 <span class="normal">459</span>
-<span class="normal">460</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_estimated_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset_attrs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_estimated_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset_attrs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates estimated attributes from asset properties.</span>
 
 <span class="sd">    Args:</span>
@@ -6026,9 +6030,7 @@ a GPT client to determine whether any physical obstacles there.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>embodied_gen/validators/urdf_convertor.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
@@ -6066,7 +6068,9 @@ a GPT client to determine whether any physical obstacles there.</p>
 <span class="normal">235</span>
 <span class="normal">236</span>
 <span class="normal">237</span>
-<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]:</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parses GPT response to extract asset attributes.</span>
 
 <span class="sd">    Args:</span>
