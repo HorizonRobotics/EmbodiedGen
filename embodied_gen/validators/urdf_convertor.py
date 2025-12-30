@@ -127,7 +127,7 @@ class URDFGenerator(object):
         self.gpt_client = gpt_client
         self.render_view_num = render_view_num
         if render_view_num == 4:
-            view_desc = "This is orthographic projection showing the front, left, right and back views "  # noqa
+            view_desc = "This is an orthographic projection showing the front(1st image), right(2nd), back(3rd), and left(4th) views."  # noqa
         else:
             view_desc = "This is the rendered views "
 
@@ -139,7 +139,7 @@ class URDFGenerator(object):
             You are an expert in 3D object analysis and physical property estimation.
             Give the category of this object asset (within 3 words), (if category is
             already provided, use it directly), accurately describe this 3D object asset (within 15 words),
-            Determine the pose of the object in the first image and estimate the true vertical height
+            Determine the pose of the object in the first image based on all views and estimate the true vertical height
             (vertical projection) range of the object (in meters), i.e., how tall the object appears from top
             to bottom in the first image. also weight range (unit: kilogram), the average
             static friction coefficient of the object relative to rubber and the average dynamic friction
@@ -161,14 +161,16 @@ class URDFGenerator(object):
             use the diameter as the vertical height. If the edge is visible, use the thickness instead.
             - This is not necessarily the full length of the object, but how tall it appears
             in the first image vertically, based on its pose and orientation estimation on all views.
-            - For objects(e.g., spoons, forks, writing instruments etc.) at an angle showing in images,
-                e.g., tilted at 45° will appear shorter vertically than when upright.
+            - Distinguish whether the entire objects such as plates, books, pens, spoons, fork are placed
+                horizontally or vertically based on pictures from left, right views.
+
             Estimate the vertical projection of their real length based on its pose.
             For example:
               - A pen standing upright in the first image (aligned with the image's vertical axis)
-                full body visible in the first image: → vertical height ≈ 0.14-0.20 m
+                full body visible in the first and other image: → vertically → vertical height ≈ 0.14-0.20 m
               - A pen lying flat in the first image or either the tip or the tail is facing the image
-                (showing thickness or as a circle) → vertical height ≈ 0.018-0.025 m
+                (showing thickness or as a circle), left/right view can show the full body
+                → horizontally → vertical height ≈ 0.018-0.025 m
               - Tilted pen in the first image (e.g., ~45° angle): vertical height ≈ 0.07-0.12 m
             - Use the rest views to help determine the object's 3D pose and orientation.
             Assume the object is in real-world scale and estimate the approximate vertical height
