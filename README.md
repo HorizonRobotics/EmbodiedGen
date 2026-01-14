@@ -223,14 +223,20 @@ See our paper published in NeurIPS 2025.
 
 Text-to-image model based on SD3.5 Medium, usage requires agreement to the [model license](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium). All models auto-downloaded at the first run.
 
-You can generate any desired room as background using `scene3d-cli`. As each scene takes approximately 30 minutes to generate, we recommend pre-generating them for efficiency and adding them to `outputs/bg_scenes/scene_list.txt`.
+You can generate any desired room as background using `scene3d-cli`. As each scene takes approximately 30 minutes to generate, we recommend pre-generating them for efficiency and adding them to `outputs/example_gen_scenes/scene_part_list.txt`.
 
-We provided some sample background assets created with `scene3d-cli`. Download them(~4G) using `hf download xinjjj/scene3d-bg --repo-type dataset --local-dir outputs`.
+We provided some sample background assets created with `scene3d-cli`. Download them(~2G) using:
+```sh
+hf download HorizonRobotics/EmbodiedGenData \
+  --repo-type dataset --local-dir outputs \
+  --include "example_gen_scenes/scene_00[01][0-9]/**" \
+            "example_gen_scenes/scene_part_list.txt"
+```
 
 Generating one interactive 3D scene from task description with `layout-cli` takes approximately 30 minutes.
 ```sh
 layout-cli --task_descs "Place the pen in the mug on the desk" "Put the fruit on the table on the plate" \
---bg_list "outputs/bg_scenes/scene_list.txt" --output_root "outputs/layouts_gen" --insert_robot
+--bg_list "outputs/example_gen_scenes/scene_part_list.txt" --output_root "outputs/layouts_gen" --insert_robot
 ```
 
 <table>
@@ -245,7 +251,7 @@ Remove `--insert_robot` if you don't consider the robot pose in layout generatio
 ```sh
 CUDA_VISIBLE_DEVICES=0 nohup layout-cli \
 --task_descs "apps/assets/example_layout/task_list.txt" \
---bg_list "outputs/bg_scenes/scene_list.txt" \
+--bg_list "outputs/example_gen_scenes/scene_part_list.txt" \
 --n_image_retry 4 --n_asset_retry 3 --n_pipe_retry 3 \
 --output_root "outputs/layouts_gens" --insert_robot > layouts_gens.log &
 ```
