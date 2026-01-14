@@ -42,7 +42,8 @@ __all__ = [
     "GPTclient",
 ]
 
-CONFIG_FILE = "embodied_gen/utils/gpt_config.yaml"
+_CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_FILE = os.path.join(_CURRENT_DIR, "gpt_config.yaml")
 
 
 class GPTclient:

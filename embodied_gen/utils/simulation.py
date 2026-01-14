@@ -25,6 +25,7 @@ import numpy as np
 import sapien.core as sapien
 import sapien.physx as physx
 import torch
+import trimesh
 from mani_skill.agents.base_agent import BaseAgent
 from mani_skill.envs.scene import ManiSkillScene
 from mani_skill.examples.motionplanning.panda.utils import (
@@ -57,7 +58,22 @@ __all__ = [
     "load_assets_from_layout_file",
     "load_mani_skill_robot",
     "render_images",
+    "is_urdf_articulated",
 ]
+
+
+def is_urdf_articulated(urdf_path: str) -> bool:
+    try:
+        tree = ET.parse(urdf_path)
+        root = tree.getroot()
+        for joint in root.findall(".//joint"):
+            j_type = joint.get("type")
+            if j_type in ["prismatic", "revolute", "continuous", "planar"]:
+                return True
+        return False
+    except Exception as e:
+        print(f"Error parsing URDF {urdf_path}: {e}.")
+        return False
 
 
 def load_actor_from_urdf(
@@ -203,14 +219,21 @@ def load_assets_from_layout_file(
         # Combine initial quaternion with object quaternion
         x, y, z, qx, qy, qz, qw = position
         qx, qy, qz, qw = quaternion_multiply([qx, qy, qz, qw], init_quat)
-        actor = load_actor_from_urdf(
-            scene,
-            urdf_file,
-            sapien.Pose(p=[x, y, z], q=[qw, qx, qy, qz]),
-            env_idx,
-            use_static=use_static,
-            update_mass=False,
-        )
+        target_pose = sapien.Pose(p=[x, y, z], q=[qw, qx, qy, qz])
+        if is_urdf_articulated(urdf_file):
+            loader = scene.create_urdf_loader()
+            loader.fix_root_link = use_static
+            actor = loader.load(urdf_file)
+            actor.set_root_pose(target_pose)
+        else:
+            actor = load_actor_from_urdf(
+                scene,
+                urdf_file,
+                target_pose,
+                env_idx,
+                use_static=use_static,
+                update_mass=False,
+            )
         actors[node] = actor
 
     return actors
@@ -725,8 +748,23 @@ class FrankaPandaGrasper(object):
         Returns:
             np.ndarray: Array of grasp actions.
         """
-        physx_rigid = actor.components[1]
-        mesh = get_component_mesh(physx_rigid, to_world_frame=True)
+        if isinstance(actor, physx.PhysxArticulation):
+            meshes = []
+            for link in actor.links:
+                link_mesh = get_component_mesh(link, to_world_frame=True)
+                if link_mesh is not None and not link_mesh.is_empty:
+                    meshes.append(link_mesh)
+            if meshes:
+                mesh = trimesh.util.concatenate(meshes)
+            else:
+                logger.warning(
+                    f"Articulation {actor.name} has no valid meshes."
+                )
+                return None
+        else:
+            physx_rigid = actor.components[1]
+            mesh = get_component_mesh(physx_rigid, to_world_frame=True)
+
         obb = mesh.bounding_box_oriented
         approaching = np.array([0, 0, -1])
         tcp_pose = self.agent.tcp.pose[env_idx]

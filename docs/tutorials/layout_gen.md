@@ -19,14 +19,14 @@ Layout Generation enables the generation of diverse, physically realistic, and s
 Before running `layout-cli`, you need to prepare background 3D scenes.
 You can either **generate your own** using the [`scene3d-cli`](scene_gen.md), or **download pre-generated backgrounds** for convenience.
 
-Each scene takes approximately **30 minutes** to generate. For efficiency, we recommend pre-generating and listing them in `outputs/bg_scenes/scene_list.txt`.
+Each scene takes approximately **30 minutes** to generate. For efficiency, we recommend pre-generating and listing them in `outputs/example_gen_scenes/scene_part_list.txt`.
 
 ```bash
-# Option 1: Download pre-generated backgrounds (~4 GB)
-hf download xinjjj/scene3d-bg --repo-type dataset --local-dir outputs
-
-# Option 2: Download a larger background set (~14 GB)
-hf download xinjjj..RLv2-BG --repo-type dataset --local-dir outputs
+# Download pre-generated backgrounds (~2 GB)
+hf download HorizonRobotics/EmbodiedGenData \
+  --repo-type dataset --local-dir outputs \
+  --include "example_gen_scenes/scene_00[01][0-9]/**" \
+            "example_gen_scenes/scene_part_list.txt"
 ```
 
 ## Generate Interactive Layout Scenes
@@ -37,7 +37,7 @@ Use the `layout-cli` to create interactive 3D scenes based on task descriptions.
 layout-cli \
   --task_descs "Place the pen in the mug on the desk" \
                "Put the fruit on the table on the plate" \
-  --bg_list "outputs/bg_scenes/scene_list.txt" \
+  --bg_list "outputs/example_gen_scenes/scene_part_list.txt" \
   --output_root "outputs/layouts_gen" \
   --insert_robot
 ```
@@ -59,7 +59,7 @@ You can also run multiple tasks via a task list file in the backend.
 ```sh
 CUDA_VISIBLE_DEVICES=0 nohup layout-cli \
   --task_descs "apps/assets/example_layout/task_list.txt" \
-  --bg_list "outputs/bg_scenes/scene_list.txt" \
+  --bg_list "outputs/example_gen_scenes/scene_part_list.txt" \
   --n_image_retry 4 --n_asset_retry 3 --n_pipe_retry 3 \
   --output_root "outputs/layouts_gens" \
   --insert_robot > layouts_gens.log &

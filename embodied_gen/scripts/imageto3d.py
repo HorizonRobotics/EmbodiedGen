@@ -153,6 +153,7 @@ def entrypoint(**kwargs):
 
             seed = args.seed
             asset_node = "unknown"
+            gs_model = None
             if isinstance(args.asset_type, list) and args.asset_type[idx]:
                 asset_node = args.asset_type[idx]
             for try_idx in range(args.n_retry):
@@ -164,6 +165,9 @@ def entrypoint(**kwargs):
                 except Exception as e:
                     logger.error(
                         f"[Image3D Failed] process {image_path}: {e}, retry: {try_idx+1}/{args.n_retry}"
+                    )
+                    seed = (
+                        random.randint(0, 100000) if seed is not None else None
                     )
                     continue
 
@@ -207,6 +211,10 @@ def entrypoint(**kwargs):
                     break
 
                 seed = random.randint(0, 100000) if seed is not None else None
+
+            if gs_model is None:
+                logger.error(f"Exceed image3d retry num, skip {image_path}.")
+                continue
 
             # Render the video for generated 3D asset.
             color_images = render_video(gs_model, r=1.85)["color"]
