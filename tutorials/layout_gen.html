@@ -1513,19 +1513,19 @@
 <h2 id="prerequisites-prepare-background-3d-scenes">Prerequisites — Prepare Background 3D Scenes</h2>
 <p>Before running <code>layout-cli</code>, you need to prepare background 3D scenes.
 You can either <strong>generate your own</strong> using the <a href="scene_gen.html"><code>scene3d-cli</code></a>, or <strong>download pre-generated backgrounds</strong> for convenience.</p>
-<p>Each scene takes approximately <strong>30 minutes</strong> to generate. For efficiency, we recommend pre-generating and listing them in <code>outputs/bg_scenes/scene_list.txt</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Option 1: Download pre-generated backgrounds (~4 GB)</span>
-hf<span class="w"> </span>download<span class="w"> </span>xinjjj/scene3d-bg<span class="w"> </span>--repo-type<span class="w"> </span>dataset<span class="w"> </span>--local-dir<span class="w"> </span>outputs
-
-<span class="c1"># Option 2: Download a larger background set (~14 GB)</span>
-hf<span class="w"> </span>download<span class="w"> </span>xinjjj..RLv2-BG<span class="w"> </span>--repo-type<span class="w"> </span>dataset<span class="w"> </span>--local-dir<span class="w"> </span>outputs
+<p>Each scene takes approximately <strong>30 minutes</strong> to generate. For efficiency, we recommend pre-generating and listing them in <code>outputs/example_gen_scenes/scene_part_list.txt</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Download pre-generated backgrounds (~2 GB)</span>
+hf<span class="w"> </span>download<span class="w"> </span>HorizonRobotics/EmbodiedGenData<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--repo-type<span class="w"> </span>dataset<span class="w"> </span>--local-dir<span class="w"> </span>outputs<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--include<span class="w"> </span><span class="s2">&quot;example_gen_scenes/scene_00[01][0-9]/**&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">            </span><span class="s2">&quot;example_gen_scenes/scene_part_list.txt&quot;</span>
 </code></pre></div>
 <h2 id="generate-interactive-layout-scenes">Generate Interactive Layout Scenes</h2>
 <p>Use the <code>layout-cli</code> to create interactive 3D scenes based on task descriptions. Each layout generation takes approximately 30 minutes.</p>
 <div class="highlight"><pre><span></span><code>layout-cli<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--task_descs<span class="w"> </span><span class="s2">&quot;Place the pen in the mug on the desk&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">               </span><span class="s2">&quot;Put the fruit on the table on the plate&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--bg_list<span class="w"> </span><span class="s2">&quot;outputs/bg_scenes/scene_list.txt&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--bg_list<span class="w"> </span><span class="s2">&quot;outputs/example_gen_scenes/scene_part_list.txt&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--output_root<span class="w"> </span><span class="s2">&quot;outputs/layouts_gen&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--insert_robot
 </code></pre></div>
@@ -1541,7 +1541,7 @@ hf<span class="w"> </span>download<span class="w"> </span>xinjjj..RLv2-BG<span c
 <p>You can also run multiple tasks via a task list file in the backend.</p>
 <div class="highlight"><pre><span></span><code><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span><span class="m">0</span><span class="w"> </span>nohup<span class="w"> </span>layout-cli<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--task_descs<span class="w"> </span><span class="s2">&quot;apps/assets/example_layout/task_list.txt&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--bg_list<span class="w"> </span><span class="s2">&quot;outputs/bg_scenes/scene_list.txt&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--bg_list<span class="w"> </span><span class="s2">&quot;outputs/example_gen_scenes/scene_part_list.txt&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--n_image_retry<span class="w"> </span><span class="m">4</span><span class="w"> </span>--n_asset_retry<span class="w"> </span><span class="m">3</span><span class="w"> </span>--n_pipe_retry<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--output_root<span class="w"> </span><span class="s2">&quot;outputs/layouts_gens&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--insert_robot<span class="w"> </span>&gt;<span class="w"> </span>layouts_gens.log<span class="w"> </span><span class="p">&amp;</span>
@@ -1592,7 +1592,7 @@ hf<span class="w"> </span>download<span class="w"> </span>xinjjj..RLv2-BG<span c
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="December 28, 2025 07:15:05 UTC">December 28, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="January 14, 2026 06:45:36 UTC">January 14, 2026</span>
   </span>
 
     

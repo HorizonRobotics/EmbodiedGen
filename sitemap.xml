@@ -2,102 +2,102 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/index.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/acknowledgement.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/install.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/api/index.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/api/data.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/api/envs.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/api/models.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/api/trainer.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/api/utils.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/api/validators.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/services/index.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/services/image_to_3d.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/services/text_to_3d.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/services/texture_edit.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/services/visualize_asset.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/tutorials/index.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/tutorials/any_simulators.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/tutorials/articulated_gen.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/tutorials/digital_twin.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/tutorials/gym_env.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/tutorials/image_to_3d.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/tutorials/layout_gen.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/tutorials/scene_gen.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/tutorials/text_to_3d.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
     <url>
          <loc>https://horizonrobotics.github.io/EmbodiedGen/tutorials/texture_edit.html</loc>
-         <lastmod>2025-12-30</lastmod>
+         <lastmod>2026-01-14</lastmod>
     </url>
 </urlset>
