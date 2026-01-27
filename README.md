@@ -29,6 +29,8 @@
 - [🏞️ Layout (Interactive 3D Worlds) Generation](#layout-generation)
 - [🎮 Any Simulators](#any-simulators)
 
+[💬 Feedback Wanted: How Do You Use EmbodiedGen & What’s Missing?](https://github.com/HorizonRobotics/EmbodiedGen/issues/66)
+
 ## 🚀 Quick Start
 
 [![📖 Documentation](https://img.shields.io/badge/📖-Documentation-blue)](https://horizonrobotics.github.io/EmbodiedGen/)
