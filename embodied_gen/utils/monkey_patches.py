@@ -211,7 +211,8 @@ def monkey_patch_pano2room():
     def patched_sd_inpaint_init(self, subset_name=None):
         super(SDFTInpainter, self).__init__()
         pipe = StableDiffusionInpaintPipeline.from_pretrained(
-            "stabilityai/stable-diffusion-2-inpainting",
+            # "stabilityai/stable-diffusion-2-inpainting",
+            "sd2-community/stable-diffusion-2-inpainting",
             torch_dtype=torch.float16,
         ).to("cuda")
         pipe.enable_model_cpu_offload()
