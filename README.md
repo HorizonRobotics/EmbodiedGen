@@ -122,7 +122,9 @@ Deploy the text-to-3D generation service locally or using hunyuan3D API..
 Text-to-image model based on the Kolors model, supporting Chinese and English prompts.
 Models downloaded automatically on first run, please be patient.
 ```sh
+# Run in foreground
 python apps/text_to_3d.py
+# using hunyuan3D API.
 python apps/text_to_3d_api.py
 
 ```
