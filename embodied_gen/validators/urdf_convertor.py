@@ -75,7 +75,7 @@ URDF_TEMPLATE = """
             <min_mass>0.0</min_mass>
             <max_mass>0.0</max_mass>
             <generate_time>"-1"</generate_time>
-            <gs_model>""</gs_model>
+            <gs_model></gs_model>
         </extra_info>
     </link>
 </robot>
@@ -132,9 +132,7 @@ class URDFGenerator(object):
             view_desc = "This is the rendered views "
 
         if prompt_template is None:
-            prompt_template = (
-                view_desc
-                + """of the 3D object asset,
+            prompt_template = view_desc + """of the 3D object asset,
             category: {category}.
             You are an expert in 3D object analysis and physical property estimation.
             Give the category of this object asset (within 3 words), (if category is
@@ -176,7 +174,6 @@ class URDFGenerator(object):
             Assume the object is in real-world scale and estimate the approximate vertical height
             based on the pose estimation and how large it appears vertically in the first image.
             """
-            )
 
         self.prompt_template = prompt_template
         if attrs_name is None:

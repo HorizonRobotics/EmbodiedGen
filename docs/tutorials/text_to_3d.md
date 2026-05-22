@@ -80,6 +80,29 @@ bash embodied_gen/scripts/textto3d.sh \
 
 > Models with more permissive licenses can be found in `embodied_gen/models/image_comm_model.py`.
 
+### Choosing the 3D Backend
+
+Three 3D generation backends are supported via `--image3d_model` (case-insensitive):
+
+- `SAM3D` (default) — text → image → 3D, local SAM3D model
+- `TRELLIS` — text → image → 3D, local TRELLIS model
+- `HUNYUAN3D` — Tencent Hunyuan3D Pro **text-to-3D** API; skips the text-to-image stage entirely and generates 3D directly from the prompt
+
+Omit `--image3d_model` to keep the default `SAM3D` behaviour.
+
+### Using the Hunyuan3D Cloud Backend
+
+Hunyuan3D Pro takes the prompt directly to a 3D mesh (no GPU model loaded locally; one job ≈ 3 minutes; Tencent Cloud is billed per submit). Set up credentials once:
+
+```bash
+export TENCENT_SECRET_ID='your-secret-id'
+export TENCENT_SECRET_KEY='your-secret-key'
+text3d-cli --image3d_model HUNYUAN3D \
+  --prompts "small bronze figurine of a lion" \
+  --output_root outputs/textto3d_hunyuan
+```
+
+
 
 The generated results are organized as follows:
 ```sh

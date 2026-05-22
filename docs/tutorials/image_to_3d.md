@@ -5,12 +5,30 @@ Generate **physically plausible 3D assets** from a single input image, supportin
 ---
 
 ## ⚡ Command-Line Usage
-Support the use of [SAM3D](https://github.com/facebookresearch/sam-3d-objects) or [TRELLIS](https://github.com/microsoft/TRELLIS) as 3D generation model, modify `IMAGE3D_MODEL` in `embodied_gen/scripts/imageto3d.py` to switch model.
+Three 3D generation backends are supported:
+
+- [`SAM3D`](https://github.com/facebookresearch/sam-3d-objects) — local model (default)
+- [`TRELLIS`](https://github.com/microsoft/TRELLIS) — local model
+- `HUNYUAN3D` — Tencent Hunyuan3D Pro cloud API (no local GPU model needed)
+
+Select the backend via `--image3d_model` (case-insensitive). Omit to use the default `SAM3D`.
 
 ```bash
 img3d-cli --image_path apps/assets/example_image/sample_00.jpg \
 apps/assets/example_image/sample_01.jpg \
 --n_retry 2 --output_root outputs/imageto3d
+```
+
+### Using the Hunyuan3D Cloud Backend
+
+Hunyuan3D Pro runs entirely on Tencent Cloud — useful when you don't have a local GPU. It requires Tencent Cloud Hunyuan3D `SecretId` / `SecretKey` and network access to `ai3d.tencentcloudapi.com` and the COS download host.
+
+```bash
+export TENCENT_SECRET_ID='your-secret-id'
+export TENCENT_SECRET_KEY='your-secret-key'
+img3d-cli --image3d_model HUNYUAN3D \
+  --image_path apps/assets/example_image/sample_00.jpg \
+  --n_retry 1 --output_root outputs/imageto3d_hunyuan
 ```
 
 You will get the following results:

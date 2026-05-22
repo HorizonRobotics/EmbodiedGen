@@ -727,6 +727,7 @@ def save_mesh_with_mtl(
     output_path: str,
     material_base=(250, 250, 250, 255),
     mesh_process: bool = True,
+    glossiness: float = 250.0,
 ) -> trimesh.Trimesh:
     if isinstance(texture, np.ndarray):
         texture = Image.fromarray(texture)
@@ -742,6 +743,8 @@ def save_mesh_with_mtl(
         diffuse=material_base,
         ambient=material_base,
         specular=material_base,
+        # 250 gives a tight visible highlight similar to glossy plastic.
+        glossiness=glossiness,
     )
 
     dir_name = os.path.dirname(output_path)
