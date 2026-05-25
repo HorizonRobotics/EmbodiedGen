@@ -53,9 +53,7 @@ random.seed(0)
 TXTGEN_CHECKER = TextGenAlignChecker(GPT_CLIENT)
 
 # The text-to-image stack (PIPE_IMG, BG_REMOVER, SEMANTIC_CHECKER, SEG_CHECKER)
-# is only used on the SAM3D / TRELLIS path. HUNYUAN3D goes directly from
-# prompt to 3D, so we lazily construct these at first use to avoid loading
-# the SD/Flux pipeline (and downstream checkers) when not needed.
+# is only used on the SAM3D / TRELLIS path. HUNYUAN3D goes directly from prompt to 3D
 SEMANTIC_CHECKER = None
 SEG_CHECKER = None
 PIPE_IMG = None
@@ -169,8 +167,6 @@ def text_to_3d(**kwargs) -> dict:
     hunyuan_creds = None
     process_prompt = None
     if args.image3d_model == "HUNYUAN3D":
-        # Local import keeps SAM3D/TRELLIS callers from pulling the hunyuan
-        # module (and its kaolin/PIL chain) when not selected.
         from embodied_gen.models.hunyuan3d import (
             HunyuanConfig,
             load_credentials,
@@ -222,10 +218,6 @@ def text_to_3d(**kwargs) -> dict:
             asset_type = node if "sample3d_" not in node else None
 
             if args.image3d_model == "HUNYUAN3D":
-                # Skip text-to-image + SEMANTIC/SEG/AESTHETIC checkers;
-                # drive Hunyuan3D Pro text-to-3D directly so the result
-                # tree lands at <node_save_dir>/result/ matching the
-                # SAM3D / TRELLIS layout.
                 hunyuan_args = types.SimpleNamespace(
                     asset_type=[asset_type],
                     version=None,
