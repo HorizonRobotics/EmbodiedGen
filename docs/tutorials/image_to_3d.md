@@ -28,7 +28,7 @@ export TENCENT_SECRET_ID='your-secret-id'
 export TENCENT_SECRET_KEY='your-secret-key'
 img3d-cli --image3d_model HUNYUAN3D \
   --image_path apps/assets/example_image/sample_00.jpg \
-  --n_retry 1 --output_root outputs/imageto3d_hunyuan
+  --output_root outputs/imageto3d_hunyuan
 ```
 
 You will get the following results:
