@@ -88,8 +88,6 @@ Three 3D generation backends are supported via `--image3d_model` (case-insensiti
 - `TRELLIS` — text → image → 3D, local TRELLIS model
 - `HUNYUAN3D` — Tencent Hunyuan3D Pro **text-to-3D** API; skips the text-to-image stage entirely and generates 3D directly from the prompt
 
-Omit `--image3d_model` to keep the default `SAM3D` behaviour.
-
 ### Using the Hunyuan3D Cloud Backend
 
 Hunyuan3D Pro takes the prompt directly to a 3D mesh (no GPU model loaded locally; one job ≈ 3 minutes; Tencent Cloud is billed per submit). Set up credentials once:
