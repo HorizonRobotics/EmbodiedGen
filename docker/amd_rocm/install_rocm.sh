@@ -3,8 +3,9 @@
 # Swaps the CUDA-only generation stack for ROCm-compatible builds following the
 # rocm-lib-compat reference (github.com/ZJLi2013/rocm3d). Intended to run inside
 # rocm/pytorch:rocm6.4.3_ubuntu24.04_py3.12_pytorch_release_2.6.0 with the repo at
-# /workspace/EmbodiedGen. Each step reports PASS/FAIL but does not abort, so one
-# run yields a full ROCm-compat status map.
+# /workspace/EmbodiedGen. Each step reports PASS/FAIL so one run yields a full
+# ROCm-compat status map; the script exits non-zero at the end if any required
+# step (or core import in the smoke check) failed, so a Docker build aborts.
 set -uo pipefail
 
 export PYTORCH_ROCM_ARCH=gfx942
@@ -100,23 +101,35 @@ else
 fi
 
 # --- 6. import smoke: what actually loads on ROCm (flash-attn needs the env var) ---
+# Core imports failing is fatal (exit 1); optional ones only warn.
 echo "==================== IMPORT SMOKE ===================="
-FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE python - <<'PY'
+if ! FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE python - <<'PY'
+import importlib, sys
 core = ["torch","spconv","nvdiffrast.torch","gsplat","pytorch3d","flash_attn","trimesh","diffusers"]
 optional = ["diff_gaussian_rasterization","kaolin"]
-import importlib
 def check(m):
     try:
-        importlib.import_module(m); print(f"[import OK ] {m}")
+        importlib.import_module(m); print(f"[import OK ] {m}"); return True
     except Exception as e:
-        print(f"[import ERR] {m}: {type(e).__name__}: {str(e)[:160]}")
-print("-- core --");   [check(m) for m in core]
+        print(f"[import ERR] {m}: {type(e).__name__}: {str(e)[:160]}"); return False
+print("-- core --");     core_ok = all([check(m) for m in core])
 print("-- optional --"); [check(m) for m in optional]
 import torch
 print("torch", torch.__version__, "hip", torch.version.hip, "gpu", torch.cuda.is_available())
+sys.exit(0 if core_ok else 1)
 PY
+then
+  echo "[FAIL] import-smoke(core)"; FAIL+=("import-smoke")
+fi
 
 echo "==================== SUMMARY ===================="
 echo "PASS (${#PASS[@]}): ${PASS[*]}"
 echo "FAIL (${#FAIL[@]}): ${FAIL[*]}"
 echo "INSTALL_ROCM_DONE"
+
+# Fail the Docker build if any required (non-optional) step failed. The two
+# `optional` items (diff_gaussian_rasterization, kaolin) stay non-fatal by design.
+if [ "${#FAIL[@]}" -ne 0 ]; then
+  echo "ERROR: required ROCm step(s) failed: ${FAIL[*]}" >&2
+  exit 1
+fi

@@ -15,7 +15,7 @@ import and initialize (spconv backend + flash-attn; SAM3D attention auto-selects
 ```bash
 # from repo root, with submodules checked out:
 git submodule update --init --recursive
-docker build -f docker/Dockerfile.rocm -t embodiedgen:rocm6.4.3 .
+docker build -f docker/amd_rocm/Dockerfile -t embodiedgen:rocm6.4.3 .
 
 # import+init smoke (no download / no GPT):
 docker run --rm --device=/dev/kfd --device=/dev/dri --group-add video \
@@ -35,7 +35,7 @@ To run the swaps directly in a base container instead of building the image:
 docker run -it --device=/dev/kfd --device=/dev/dri --group-add video --shm-size 32g \
   -v $PWD:/workspace/EmbodiedGen -w /workspace/EmbodiedGen \
   rocm/pytorch:rocm6.4.3_ubuntu24.04_py3.12_pytorch_release_2.6.0 \
-  bash docker/install_rocm.sh
+  bash docker/amd_rocm/install_rocm.sh
 ```
 
 ## CUDA -> ROCm dependency map
@@ -49,10 +49,10 @@ docker run -it --device=/dev/kfd --device=/dev/dri --group-add video --shm-size 
 | `flash-attn` | FA2-Triton (`FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE` at install **and** runtime) | ✅ import OK |
 | `xformers` | not needed — SAM3D attention auto-selects `sdpa` | ✅ skipped |
 | `numpy` (base ships 2.x) | pin `numpy<2` (diffusers/transformers requirement) | ✅ |
-| `kaolin` (no ROCm wheel; setup.py requires `nvcc`) | `sitecustomize` stub (`docker/kaolin_stub.py`) | ⚠️ texture-stage only |
+| `kaolin` (no ROCm wheel; setup.py requires `nvcc`) | `sitecustomize` stub (`docker/amd_rocm/kaolin_stub.py`) | ⚠️ texture-stage only |
 | `diff-gaussian-rasterization` | optional 'inria' GS backend (gsplat is default) | ⏸ optional |
 
-## The kaolin stub (`docker/kaolin_stub.py`)
+## The kaolin stub (`docker/amd_rocm/kaolin_stub.py`)
 
 `kaolin` is CUDA-only and is imported at the top of `embodied_gen/data/utils.py`,
 but is only **used** inside the texture-backprojection / mesh-IO stage

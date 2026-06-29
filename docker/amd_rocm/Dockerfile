@@ -6,10 +6,10 @@
 #   pytorch3d -> ROCm 6.4/py3.12 wheel | flash-attn -> FA2-Triton | numpy -> <2
 #   kaolin (CUDA-only) -> sitecustomize stub (texture/mesh-IO stage only)
 # Verified on AMD Instinct MI308X: SAM3D + TRELLIS pipelines import & initialize
-# (spconv backend + flash_attn; SAM3D attention -> sdpa). See docker/README.md.
+# (spconv backend + flash_attn; SAM3D attention -> sdpa). See docker/amd_rocm/README.md.
 #
 # Build (from repo root, submodules checked out):
-#   docker build -f docker/Dockerfile.rocm -t embodiedgen:rocm6.4.3 .
+#   docker build -f docker/amd_rocm/Dockerfile -t embodiedgen:rocm6.4.3 .
 # Run img3d (GPT-free / no texture-bake smoke):
 #   docker run --rm --device=/dev/kfd --device=/dev/dri --group-add video \
 #     --shm-size 32g -e FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE \
@@ -34,7 +34,7 @@ COPY . /workspace/EmbodiedGen
 
 # Install the ROCm generation stack. Compiles spconv_rocm / nvdiffrast / flash-attn
 # from source (hipcc), so this layer is the slow one.
-RUN bash docker/install_rocm.sh
+RUN bash docker/amd_rocm/install_rocm.sh
 
 # Smoke: the full img3d import+init chain on ROCm (no model download / no GPT).
 CMD ["python", "-c", "import embodied_gen.models.sam3d, thirdparty.TRELLIS.trellis.pipelines; print('EmbodiedGen ROCm generation image OK')"]
