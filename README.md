@@ -85,13 +85,15 @@ You can choose between two backends for the GPT agent:
 <img src="docs/assets/image_to_3d.jpg" alt="Image to 3D" width="700">
 
 ### ☁️ Service
-Run the image-to-3D generation service locally.
+Run the image-to-3D generation service locally or using hunyuan3D API.
 Models downloaded automatically on first run, please be patient.
 ```sh
 # Run in foreground
 python apps/image_to_3d.py
 # Or run in the background
 CUDA_VISIBLE_DEVICES=0 nohup python apps/image_to_3d.py > /dev/null 2>&1 &
+# using hunyuan3D API.
+python apps/image_to_3d_api.py
 ```
 
 ### ⚡ API
@@ -115,12 +117,16 @@ Support the use of [SAM3D](https://github.com/facebookresearch/sam-3d-objects) o
 <img src="docs/assets/text_to_3d.jpg" alt="Text to 3D" width="700">
 
 ### ☁️ Service
-Deploy the text-to-3D generation service locally.
+Deploy the text-to-3D generation service locally or using hunyuan3D API..
 
 Text-to-image model based on the Kolors model, supporting Chinese and English prompts.
 Models downloaded automatically on first run, please be patient.
 ```sh
+# Run in foreground
 python apps/text_to_3d.py
+# using hunyuan3D API.
+python apps/text_to_3d_api.py
+
 ```
 
 ### ⚡ API
