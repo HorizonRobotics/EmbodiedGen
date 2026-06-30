@@ -1,0 +1,40 @@
+# EmbodiedGen on AMD ROCm (gfx942 / MI300X / MI308X), ROCm 6.4.3 + PyTorch 2.6.
+#
+# Builds the FULL image-to-3D generation stack on ROCm by swapping the CUDA-only
+# libraries for verified ROCm equivalents (rocm-lib-compat / ZJLi2013/rocm3d):
+#   spconv-cu120 -> spconv_rocm | nvdiffrast -> nvdiffrast@rocm | gsplat -> amd_gsplat
+#   pytorch3d -> ROCm 6.4/py3.12 wheel | flash-attn -> FA2-Triton | numpy -> <2
+#   kaolin (CUDA-only) -> sitecustomize stub (texture/mesh-IO stage only)
+# Verified on AMD Instinct MI308X: SAM3D + TRELLIS pipelines import & initialize
+# (spconv backend + flash_attn; SAM3D attention -> sdpa). See docker/amd_rocm/README.md.
+#
+# Build (from repo root, submodules checked out):
+#   docker build -f docker/amd_rocm/Dockerfile -t embodiedgen:rocm6.4.3 .
+# Run img3d (GPT-free / no texture-bake smoke):
+#   docker run --rm --device=/dev/kfd --device=/dev/dri --group-add video \
+#     --shm-size 32g -e FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE \
+#     embodiedgen:rocm6.4.3 python -m embodied_gen.models.sam3d
+
+FROM rocm/pytorch:rocm6.4.3_ubuntu24.04_py3.12_pytorch_release_2.6.0
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_ROOT_USER_ACTION=ignore \
+    PYTORCH_ROCM_ARCH=gfx942 \
+    GPU_ARCHS=gfx942 \
+    FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE \
+    PYTHONPATH=/workspace/EmbodiedGen
+
+WORKDIR /workspace/EmbodiedGen
+
+# Source tree (incl. thirdparty/TRELLIS, thirdparty/sam3d submodules) is required
+# for install_rocm.sh (cleans requirements.txt, builds extensions, installs stub).
+COPY . /workspace/EmbodiedGen
+
+# Install the ROCm generation stack. Compiles spconv_rocm / nvdiffrast / flash-attn
+# from source (hipcc), so this layer is the slow one.
+RUN bash docker/amd_rocm/install_rocm.sh
+
+# Smoke: the full img3d import+init chain on ROCm (no model download / no GPT).
+CMD ["python", "-c", "import embodied_gen.models.sam3d, thirdparty.TRELLIS.trellis.pipelines; print('EmbodiedGen ROCm generation image OK')"]
