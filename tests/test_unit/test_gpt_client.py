@@ -15,6 +15,7 @@
 # permissions and limitations under the License.
 
 import os
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
@@ -92,3 +93,142 @@ def test_gptclient_query(gpt_client, text_prompt, image_base64):
         mock_query.assert_called_once_with(
             text_prompt=text_prompt, image_base64=image_base64
         )
+
+
+def _make_client(model_name: str) -> GPTclient:
+    return GPTclient(
+        endpoint="https://yfb-openai-sweden.openai.azure.com/",
+        api_key="fake_key",
+        api_version="2024-12-01-preview",
+        model_name=model_name,
+        check_connection=False,
+    )
+
+
+def _fake_response(text: str = "ok"):
+    return SimpleNamespace(
+        choices=[SimpleNamespace(message=SimpleNamespace(content=text))]
+    )
+
+
+def test_is_gpt5_model_detection():
+    assert GPTclient._is_gpt5_model("gpt-5.4") is True
+    assert GPTclient._is_gpt5_model("GPT-5") is True
+    assert GPTclient._is_gpt5_model("gpt5-turbo") is True
+    assert GPTclient._is_gpt5_model("gpt-4o") is False
+    assert (
+        GPTclient._is_gpt5_model("qwen/qwen2.5-vl-72b-instruct:free") is False
+    )
+
+
+def test_gpt5_text_payload_uses_max_completion_tokens():
+    client = _make_client("gpt-5.4")
+    with patch.object(
+        client, "completion_with_backoff", return_value=_fake_response("hi")
+    ) as mock_call:
+        out = client.query("Hello world")
+    assert out == "hi"
+    payload = mock_call.call_args.kwargs
+    assert payload["model"] == "gpt-5.4"
+    assert payload["max_completion_tokens"] == 8192
+    # GPT-5 path should NOT include legacy sampling params.
+    for forbidden in (
+        "max_tokens",
+        "temperature",
+        "top_p",
+        "frequency_penalty",
+        "presence_penalty",
+        "stop",
+    ):
+        assert forbidden not in payload, (
+            f"{forbidden} leaked into gpt-5 payload"
+        )
+    # Text-only: a single user content block of type text.
+    user_content = payload["messages"][-1]["content"]
+    assert user_content[0]["type"] == "text"
+    assert all(c["type"] != "image_url" for c in user_content)
+
+
+def test_gpt5_text_image_payload():
+    client = _make_client("gpt-5.4")
+    img1 = Image.new("RGB", (32, 32), "red")
+    img2 = Image.new("RGB", (32, 32), "blue")
+    with patch.object(
+        client, "completion_with_backoff", return_value=_fake_response("ok")
+    ) as mock_call:
+        client.query("describe", image_base64=[img1, img2])
+    payload = mock_call.call_args.kwargs
+    user_content = payload["messages"][-1]["content"]
+    image_blocks = [c for c in user_content if c["type"] == "image_url"]
+    assert len(image_blocks) == 2
+    for b in image_blocks:
+        assert b["image_url"]["url"].startswith("data:image/png;base64,")
+    assert payload["max_completion_tokens"] == 8192
+
+
+def test_non_gpt5_payload_keeps_legacy_params():
+    client = _make_client("yfb-gpt-4o")
+    with patch.object(
+        client, "completion_with_backoff", return_value=_fake_response("ok")
+    ) as mock_call:
+        client.query("Hello")
+    payload = mock_call.call_args.kwargs
+    assert payload["max_tokens"] == 500
+    assert payload["temperature"] == 0.1
+    assert "max_completion_tokens" not in payload
+
+
+def test_params_override():
+    client = _make_client("gpt-5.4")
+    with patch.object(
+        client, "completion_with_backoff", return_value=_fake_response("ok")
+    ) as mock_call:
+        client.query("Hello", params={"max_completion_tokens": 256})
+    payload = mock_call.call_args.kwargs
+    assert payload["max_completion_tokens"] == 256
+
+
+def test_gpt5_filters_unsupported_params():
+    client = _make_client("gpt-5.4")
+    with patch.object(
+        client, "completion_with_backoff", return_value=_fake_response("ok")
+    ) as mock_call:
+        client.query(
+            "Hello",
+            params={
+                "temperature": 1.0,
+                "top_p": 0.95,
+                "frequency_penalty": 0,
+                "presence_penalty": 0,
+                "stop": None,
+                "max_tokens": 256,
+            },
+        )
+    payload = mock_call.call_args.kwargs
+    for forbidden in (
+        "temperature",
+        "top_p",
+        "frequency_penalty",
+        "presence_penalty",
+        "stop",
+        "max_tokens",
+    ):
+        assert forbidden not in payload
+    # max_tokens should be migrated to max_completion_tokens.
+    assert payload["max_completion_tokens"] == 256
+
+
+def test_image_path_loaded_from_disk(tmp_path):
+    img_path = tmp_path / "tiny.png"
+    Image.new("RGB", (8, 8), "green").save(img_path)
+    client = _make_client("gpt-5.4")
+    with patch.object(
+        client, "completion_with_backoff", return_value=_fake_response("ok")
+    ) as mock_call:
+        client.query("describe", image_base64=str(img_path))
+    user_content = mock_call.call_args.kwargs["messages"][-1]["content"]
+    image_blocks = [c for c in user_content if c["type"] == "image_url"]
+    assert len(image_blocks) == 1
+    assert image_blocks[0]["image_url"]["url"].startswith(
+        "data:image/png;base64,"
+    )

@@ -1,0 +1,565 @@
+{
+  "ear_hear": {
+    "parts": [
+      {
+        "part_name": "headband",
+        "color": "#E6194B",
+        "color_name": "Red",
+        "graspable": true,
+        "labels": [
+          "span between earcups",
+          "support wearing on the head",
+          "main carrying point",
+          "maintain overall frame shape"
+        ],
+        "description": "Wide arched headband with a pale pink outer surface and white inner side, likely plastic with soft padding, smooth finish, and a gently curved medium-thickness form across the top.",
+        "scenarios": [
+          "grasp the top of the headband to pick up the headphones",
+          "hold the headband to hang, carry, or reposition the headphones"
+        ]
+      },
+      {
+        "part_name": "earcup housing and yoke",
+        "color": "#911EB4",
+        "color_name": "Purple",
+        "graspable": true,
+        "labels": [
+          "enclose speaker components",
+          "support ear cushions",
+          "connect to headband through the side support",
+          "provide structural shell"
+        ],
+        "description": "Rounded over-ear outer housings with integrated side support arms, predominantly white to very pale pink, likely hard plastic with a smooth semi-matte finish, broad bulbous shape, and medium size on both lower sides of the frame.",
+        "scenarios": [
+          "grasp one earcup housing from the side to lift or reorient the headphones",
+          "hold both earcup housings to place the headphones onto a surface or stand"
+        ]
+      },
+      {
+        "part_name": "ear cushion",
+        "color": "#46F0F0",
+        "color_name": "Cyan",
+        "graspable": false,
+        "labels": [
+          "cushion the ears",
+          "provide wearing comfort",
+          "improve acoustic seal",
+          "contact the side of the head"
+        ],
+        "description": "Oval white padded ear cushions, likely foam covered in smooth synthetic leather, with a soft slightly matte surface and thick ring-like shape around the ear openings.",
+        "scenarios": []
+      },
+      {
+        "part_name": "hinge accent joint",
+        "color": "#3CB44B",
+        "color_name": "Green",
+        "graspable": false,
+        "labels": [
+          "join the headband to the earcup support",
+          "allow local articulation or rotation",
+          "reinforce the transition between major parts",
+          "transfer load between headband and earcup assembly"
+        ],
+        "description": "Small narrow connector accents at the junctions between the headband and earcup supports, appearing rose-gold or copper-toned, hard, smooth, and slightly reflective.",
+        "scenarios": []
+      }
+    ]
+  },
+  "basket": {
+    "parts": [
+      {
+        "part_name": "basket handle",
+        "color": "#E6194B",
+        "color_name": "Red",
+        "graspable": true,
+        "labels": [
+          "provide a carrying grip",
+          "lift the basket",
+          "enable pulling",
+          "support repositioning"
+        ],
+        "description": "An arched tan-orange woven handle made of wicker or rattan with a matte finish, hard slightly rough texture, and slender elongated shape spanning across the basket top.",
+        "scenarios": [
+          "grasp the handle to lift and carry the basket",
+          "hold the handle to reposition or swing the basket"
+        ]
+      },
+      {
+        "part_name": "basket body",
+        "color": "#3CB44B",
+        "color_name": "Green",
+        "graspable": true,
+        "labels": [
+          "contain items",
+          "support carried contents",
+          "provide side support",
+          "form the basket base and walls",
+          "stabilize the object when set down"
+        ],
+        "description": "A medium-sized round tan-orange woven basket body, likely wicker or rattan, with a matte finish, hard slightly rough texture, open lattice bottom, and curved sidewalls forming the main container.",
+        "scenarios": [
+          "hold the basket body to stabilize it during loading or unloading",
+          "grasp the basket rim or sidewall to pick up the basket when the handle is inaccessible"
+        ]
+      }
+    ]
+  },
+  "decoration": {
+    "parts": [
+      {
+        "part_name": "bird body",
+        "color": "#0082C8",
+        "color_name": "Blue",
+        "graspable": true,
+        "labels": [
+          "main structural form",
+          "connect attached parts",
+          "primary grasp surface",
+          "provide decorative bird silhouette"
+        ],
+        "description": "Large glossy bird body in deep blue to violet tones, made of hard smooth material, with a rounded chest, tapered rear, and the head and torso forming most of the visible mass.",
+        "scenarios": [
+          "grasp the torso to pick up and reposition the bird figurine",
+          "hold the body to stabilize the object during placement or inspection"
+        ]
+      },
+      {
+        "part_name": "left wing",
+        "color": "#FFE119",
+        "color_name": "Yellow",
+        "graspable": false,
+        "labels": [
+          "suggest folded wing anatomy",
+          "provide side decoration",
+          "add visual detail"
+        ],
+        "description": "Medium-sized glossy wing on one side of the bird, blue with darker shading, made of hard smooth material and sculpted with layered feather-like contours in a folded shape against the body.",
+        "scenarios": []
+      },
+      {
+        "part_name": "right wing",
+        "color": "#911EB4",
+        "color_name": "Purple",
+        "graspable": false,
+        "labels": [
+          "suggest folded wing anatomy",
+          "provide side decoration",
+          "add bilateral detail"
+        ],
+        "description": "Medium-sized glossy wing on the opposite side, blue with darker violet shading, made of hard smooth material and shaped with layered feather-like sculpting in a folded profile along the body.",
+        "scenarios": []
+      },
+      {
+        "part_name": "left foot",
+        "color": "#E6194B",
+        "color_name": "Red",
+        "graspable": false,
+        "labels": [
+          "support standing",
+          "stabilize the figurine",
+          "contact surface"
+        ],
+        "description": "Small dark blue foot at the bottom of the bird, made of hard smooth material and shaped as a stylized splayed support that helps the figurine stand.",
+        "scenarios": []
+      },
+      {
+        "part_name": "right foot",
+        "color": "#3CB44B",
+        "color_name": "Green",
+        "graspable": false,
+        "labels": [
+          "support standing",
+          "stabilize the figurine",
+          "contact surface"
+        ],
+        "description": "Small dark blue foot opposite the other one at the bottom, made of hard smooth material and formed as a stylized splayed support for standing stability.",
+        "scenarios": []
+      }
+    ]
+  },
+  "glasses": {
+    "parts": [
+      {
+        "part_name": "right lens",
+        "color": "#3CB44B",
+        "color_name": "Green",
+        "graspable": false,
+        "labels": [
+          "filter incoming light",
+          "protect the right eye",
+          "provide tinted viewing"
+        ],
+        "description": "Small rectangular slightly curved lens on the wearer's right side, made of translucent smooth glossy material with a purple-violet tint and a hard glass-like or plastic surface.",
+        "scenarios": []
+      },
+      {
+        "part_name": "left lens",
+        "color": "#E6194B",
+        "color_name": "Red",
+        "graspable": false,
+        "labels": [
+          "filter incoming light",
+          "protect the left eye",
+          "provide tinted viewing"
+        ],
+        "description": "Small rectangular slightly curved lens on the wearer's left side, made of translucent smooth glossy material with a cyan-blue tint and a hard glass-like or plastic surface.",
+        "scenarios": []
+      },
+      {
+        "part_name": "frame and temples",
+        "color": "#0082C8",
+        "color_name": "Blue",
+        "graspable": true,
+        "labels": [
+          "support the lenses",
+          "rest on the ears and nose",
+          "provide main grasp structure",
+          "maintain glasses shape",
+          "position the lenses on the face"
+        ],
+        "description": "Thin black full frame with slender temple arms, likely plastic, having a matte to low-sheen hard smooth finish and lightweight angular shape spanning the front and sides of the glasses.",
+        "scenarios": [
+          "grasp the frame front to pick up the glasses from a table",
+          "grasp one temple arm to lift and reposition the glasses"
+        ]
+      }
+    ]
+  },
+  "glue_stick": {
+    "parts": [
+      {
+        "part_name": "glue stick body",
+        "color": "#911EB4",
+        "color_name": "Purple",
+        "graspable": true,
+        "labels": [
+          "main housing",
+          "provide primary grip surface",
+          "enclose internal glue mechanism",
+          "support adhesive during use"
+        ],
+        "description": "Large bright orange plastic body with a mostly matte to lightly glossy finish, ribbed texture, and tapered cylindrical shape forming most of the glue stick exterior.",
+        "scenarios": [
+          "grasp the ribbed body to pick up and reposition the glue stick",
+          "hold the body to stabilize the glue stick while applying adhesive"
+        ]
+      },
+      {
+        "part_name": "glue stick adhesive",
+        "color": "#E6194B",
+        "color_name": "Red",
+        "graspable": false,
+        "labels": [
+          "apply adhesive",
+          "bond paper or light materials",
+          "provide glue dispensing surface",
+          "mark the usable end"
+        ],
+        "description": "Small white solid adhesive cylinder with a smooth slightly matte surface and blunt rounded end, protruding from the top opening of the glue stick body.",
+        "scenarios": []
+      },
+      {
+        "part_name": "small side notch / molded feature",
+        "color": "#0082C8",
+        "color_name": "Blue",
+        "graspable": false,
+        "labels": [
+          "minor molded body detail",
+          "possible manufacturing or assembly feature"
+        ],
+        "description": "Tiny blue-masked feature on the side of the orange body near the middle ring area, appearing as a small notch or recess rather than a separate top ring.",
+        "scenarios": []
+      }
+    ]
+  },
+  "ingredients": {
+    "parts": [
+      {
+        "part_name": "mushroom cap",
+        "color": "#3CB44B",
+        "color_name": "Green",
+        "graspable": true,
+        "labels": [
+          "main upper body",
+          "supports the underside gill structure",
+          "provides broad contact area"
+        ],
+        "description": "Large domed golden-brown to tan cap with a smooth matte surface and dense white speckling on top, broad rounded shape, and a pale yellow rim around the edge.",
+        "scenarios": [
+          "grasp the cap from the sides to pick up the mushroom gently",
+          "hold the cap to stabilize the mushroom during inspection or placement"
+        ]
+      },
+      {
+        "part_name": "mushroom stem",
+        "color": "#E6194B",
+        "color_name": "Red",
+        "graspable": true,
+        "labels": [
+          "support the cap",
+          "connect cap to base",
+          "provide main grasp point",
+          "elevate the cap"
+        ],
+        "description": "Short thick off-white stem with a matte smooth to slightly fibrous surface, firm texture, cylindrical slightly tapered shape, and central position beneath the cap with dark soil-like residue at the base.",
+        "scenarios": [
+          "grasp the stem to lift and move the mushroom",
+          "hold the stem to orient the mushroom for underside inspection"
+        ]
+      }
+    ]
+  },
+  "knife": {
+    "parts": [
+      {
+        "part_name": "knife blade",
+        "color": "#3CB44B",
+        "color_name": "Green",
+        "graspable": false,
+        "labels": [
+          "cut food or materials",
+          "slice with the sharpened edge",
+          "pierce with the tip",
+          "provide the main working edge"
+        ],
+        "description": "Silver metal blade with a reflective smooth finish, broad profile, slightly curved cutting edge, and pointed tip extending from the front of the knife.",
+        "scenarios": [
+          "avoid using the blade as the primary robotic grasp point because of slip and cut risk",
+          "briefly pinch the unsharpened spine near the base for careful inspection or reorientation"
+        ]
+      },
+      {
+        "part_name": "knife handle",
+        "color": "#FFE119",
+        "color_name": "Yellow",
+        "graspable": true,
+        "labels": [
+          "provide a safe grip",
+          "control blade orientation",
+          "keep hand away from the cutting edge",
+          "support lifting and manipulation"
+        ],
+        "description": "Black handle made of hard plastic or composite with a smooth slightly glossy finish, gently contoured elongated shape, and a rounded butt at the end.",
+        "scenarios": [
+          "hold the handle to orient the blade for cutting",
+          "grasp the handle to pick up and carry the knife safely"
+        ]
+      }
+    ]
+  },
+  "office_tools": {
+    "parts": [
+      {
+        "part_name": "top cap",
+        "color": "#E6194B",
+        "color_name": "Red",
+        "graspable": true,
+        "labels": [
+          "cover the top opening",
+          "provide an upper grip surface",
+          "house the pencil entry hole",
+          "help guide pencil insertion"
+        ],
+        "description": "Small yellow plastic top cap with a glossy smooth hard surface, rounded rectangular shape, and a visible circular entry hole on the upper face.",
+        "scenarios": [
+          "grasp the top cap to pick up or reposition the pencil sharpener",
+          "hold the top cap to stabilize the sharpener while inserting a pencil"
+        ]
+      },
+      {
+        "part_name": "sharpener body",
+        "color": "#0082C8",
+        "color_name": "Blue",
+        "graspable": true,
+        "labels": [
+          "main grasp surface",
+          "house the sharpening mechanism",
+          "support the top cap",
+          "enclose internal shavings space"
+        ],
+        "description": "Medium-sized light gray plastic body with a smooth semi-gloss hard surface, tapered block-like shape, and side walls forming the main central housing.",
+        "scenarios": [
+          "grasp the body from the sides to lift and move the pencil sharpener",
+          "hold the body to stabilize the sharpener during sharpening"
+        ]
+      },
+      {
+        "part_name": "base",
+        "color": "#3CB44B",
+        "color_name": "Green",
+        "graspable": true,
+        "labels": [
+          "support on a surface",
+          "stabilize the object",
+          "provide a broad contact footprint",
+          "anchor the housing"
+        ],
+        "description": "Dark gray plastic base with a matte smooth hard surface, broad rounded footprint, and slightly larger lower platform that supports the sharpener body.",
+        "scenarios": [
+          "hold the base to steady the sharpener on a table while sharpening",
+          "grasp the base to pick up the sharpener from below or the side"
+        ]
+      }
+    ]
+  },
+  "repair_tools": {
+    "parts": [
+      {
+        "part_name": "handle",
+        "color": "#E6194B",
+        "color_name": "Red",
+        "graspable": true,
+        "labels": [
+          "main grip surface",
+          "transmit hand or tool torque",
+          "support tool handling",
+          "stabilize during fastening"
+        ],
+        "description": "Large yellow plastic handle with a mostly matte hard smooth surface, slightly contoured blocky shape, and a small recessed notch near the rear, forming the main rear body of the screwdriver.",
+        "scenarios": [
+          "grasp the handle to pick up and reposition the screwdriver",
+          "hold the handle firmly while turning the screwdriver"
+        ]
+      },
+      {
+        "part_name": "collar",
+        "color": "#0082C8",
+        "color_name": "Blue",
+        "graspable": true,
+        "labels": [
+          "connect handle to shaft",
+          "support front alignment",
+          "provide a transition stop",
+          "position the shaft"
+        ],
+        "description": "Small yellow plastic collar at the front of the handle, with a matte hard smooth finish and short cylindrical shape that surrounds the shaft base.",
+        "scenarios": [
+          "lightly grasp the collar to orient the screwdriver tip before engagement",
+          "pinch the collar to stabilize the front of the tool during precise positioning"
+        ]
+      },
+      {
+        "part_name": "screwdriver bit",
+        "color": "#911EB4",
+        "color_name": "Purple",
+        "graspable": false,
+        "labels": [
+          "engage screw head",
+          "transmit torque to screw",
+          "fasten screws",
+          "remove screws"
+        ],
+        "description": "Short dark gray metal bit with a reflective hard finish, narrow stepped cylindrical form, and slightly textured machined profile projecting from the front of the screwdriver.",
+        "scenarios": []
+      }
+    ]
+  },
+  "salt_shaker": {
+    "parts": [
+      {
+        "part_name": "shaker body",
+        "color": "#E6194B",
+        "color_name": "Red",
+        "graspable": true,
+        "labels": [
+          "main grasp surface",
+          "contain salt",
+          "support shaking for dispensing",
+          "provide standing base"
+        ],
+        "description": "Clear to frosted glass body with a glossy hard smooth surface, vertically ribbed tapered shape, and larger lower section forming the main container and base.",
+        "scenarios": [
+          "grasp the body around the middle to pick up and move the salt shaker",
+          "hold the body while shaking to dispense salt"
+        ]
+      },
+      {
+        "part_name": "shaker cap",
+        "color": "#3CB44B",
+        "color_name": "Green",
+        "graspable": true,
+        "labels": [
+          "dispense salt through holes",
+          "cover the container opening",
+          "control flow direction",
+          "enable refilling when removed"
+        ],
+        "description": "Small black likely metal or plastic cap with a glossy reflective smooth finish, rounded cylindrical shape, and multiple top perforation holes at the narrow top of the shaker.",
+        "scenarios": [
+          "grasp the cap to orient the shaker and control the pour direction",
+          "pinch the cap to lift or reposition the shaker when body access is limited"
+        ]
+      }
+    ]
+  },
+  "ware": {
+    "parts": [
+      {
+        "part_name": "bottle body",
+        "color": "#FFE119",
+        "color_name": "Yellow",
+        "graspable": true,
+        "labels": [
+          "contain liquid",
+          "main grasp surface",
+          "support lifting and carrying",
+          "provide structural enclosure",
+          "stabilize during opening"
+        ],
+        "description": "Large translucent light cyan-blue plastic bottle body with a smooth slightly glossy surface, rounded cylindrical shape with a tapered shoulder, occupying most of the object below the neck.",
+        "scenarios": [
+          "grasp the bottle body at the midsection to pick up and carry the bottle",
+          "hold the bottle body to stabilize it while twisting the cap"
+        ]
+      },
+      {
+        "part_name": "cap",
+        "color": "#0082C8",
+        "color_name": "Blue",
+        "graspable": true,
+        "labels": [
+          "seal the bottle opening",
+          "enable opening and closing",
+          "provide twisting interface",
+          "prevent spills"
+        ],
+        "description": "Small dark blue plastic screw cap with a slightly glossy hard finish and ribbed grip texture, centered at the top of the bottle neck.",
+        "scenarios": [
+          "grasp the cap to twist it open or closed",
+          "pinch the cap to orient the bottle by the top"
+        ]
+      },
+      {
+        "part_name": "neck ring",
+        "color": "#3CB44B",
+        "color_name": "Green",
+        "graspable": false,
+        "labels": [
+          "connect cap to bottle neck",
+          "provide tamper-band or tether support",
+          "reinforce the opening area",
+          "indicate cap interface"
+        ],
+        "description": "Thin greenish-cyan plastic ring around the bottle neck directly beneath the cap, with a smooth hard surface and narrow circular shape.",
+        "scenarios": []
+      },
+      {
+        "part_name": "cap tether strap",
+        "color": "#E6194B",
+        "color_name": "Red",
+        "graspable": true,
+        "labels": [
+          "tether the cap to the bottle",
+          "prevent cap loss",
+          "assist cap manipulation",
+          "connect cap area to neck ring"
+        ],
+        "description": "Small side tether strap attached near the cap and neck area, protruding slightly from the shoulder/neck, with a smooth slightly glossy plastic surface.",
+        "scenarios": [
+          "pinch the tether strap to pull the cap assembly sideways during opening",
+          "hold the tether briefly to reorient the top area while manipulating the cap"
+        ]
+      }
+    ]
+  }
+}

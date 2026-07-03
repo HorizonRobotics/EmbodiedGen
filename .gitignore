@@ -41,6 +41,7 @@ wheels*/
 *.bak
 .arcconfig
 .vscode/
+.cursor/
 
 # files
 *.pack
@@ -51,6 +52,10 @@ wheels*/
 # node
 node_modules
 
+# site build artifacts (mkdocs build + assembled publish dir)
+/site/
+/public/
+
 # local files
 build.sh
 __pycache__/
@@ -60,7 +65,17 @@ scripts/tools/
 weights
 apps/sessions/
 apps/assets/
+.gradio/*
+CLAUDE.md
+AGENTS.md
+.github/copilot-instructions.md
+apps/gradio_cache/
 
 # Larger than 1MB
-docs/assets/real2sim_mujoco.gif
-docs/assets/scene3d.gif
+docs/documentation/assets/real2sim_mujoco.gif
+docs/documentation/assets/scene3d.gif
+
+# Project landing page (docs/landing) — keep its otherwise-ignored site files tracked
+!docs/landing/**/*.html
+!docs/landing/**/*.mp4
+!docs/landing/**/*.json

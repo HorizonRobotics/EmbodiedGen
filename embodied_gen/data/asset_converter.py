@@ -24,6 +24,7 @@ from abc import ABC, abstractmethod
 from glob import glob
 from shutil import copy, copytree, rmtree
 
+import numpy as np
 import trimesh
 from scipy.spatial.transform import Rotation
 from embodied_gen.utils.enum import AssetType
@@ -204,6 +205,123 @@ class MeshtoMJCFConverter(AssetConverterBase):
         os.makedirs(os.path.dirname(dst), exist_ok=True)
         copy(src, dst)
 
+    @staticmethod
+    def _ensure_collision_volume(
+        mesh: trimesh.Trimesh,
+        min_thickness: float = 1e-3,
+    ) -> trimesh.Trimesh:
+        """Replace degenerate collision surfaces with thin boxes."""
+        extents = mesh.extents
+        if min(extents) >= min_thickness:
+            return mesh
+
+        box_extents = [max(float(extent), min_thickness) for extent in extents]
+        transform = trimesh.transformations.translation_matrix(
+            mesh.bounds.mean(axis=0)
+        )
+        return trimesh.creation.box(extents=box_extents, transform=transform)
+
+    @staticmethod
+    def _origin_to_matrix(origin: ET.Element | None) -> np.ndarray:
+        """Convert a URDF ``<origin>`` element to a 4x4 homogeneous matrix.
+
+        A missing element is treated as the identity transform. The rotation
+        follows the URDF convention (intrinsic XYZ Euler angles in radians),
+        matching ``transform_mesh`` which applies ``v' = R @ v + t``.
+        """
+        matrix = np.eye(4)
+        if origin is None:
+            return matrix
+        xyz = list(map(float, origin.get("xyz", "0 0 0").split()))
+        rpy = list(map(float, origin.get("rpy", "0 0 0").split()))
+        matrix[:3, :3] = Rotation.from_euler(
+            "xyz", rpy, degrees=False
+        ).as_matrix()
+        matrix[:3, 3] = xyz
+        return matrix
+
+    @staticmethod
+    def _bake_obj_vertices(
+        input_obj: str, output_obj: str, matrix: np.ndarray
+    ) -> None:
+        """Bake a rigid transform into an OBJ's vertex/normal lines only.
+
+        Unlike a full mesh re-export, this rewrites just the ``v`` (rotated and
+        translated) and ``vn`` (rotated) lines, leaving ``vt`` UVs, faces,
+        ``usemtl``/``mtllib`` and the referenced texture atlas byte-identical.
+        That keeps MuJoCo/Isaac Gym texturing identical to the source asset
+        while the geometry is placed in world space.
+
+        Args:
+            input_obj (str): Source OBJ path.
+            output_obj (str): Destination OBJ path.
+            matrix (np.ndarray): 4x4 homogeneous transform (rotation only,
+                no scale).
+        """
+        rotation = matrix[:3, :3]
+        translation = matrix[:3, 3]
+
+        lines: list[str] = []
+        with open(input_obj, "r", encoding="utf-8", errors="ignore") as handle:
+            for line in handle:
+                if line.startswith("v "):
+                    parts = line.split()
+                    point = (
+                        rotation @ np.array(parts[1:4], dtype=float)
+                        + translation
+                    )
+                    extra = " " + " ".join(parts[4:]) if len(parts) > 4 else ""
+                    lines.append(
+                        f"v {point[0]:.6f} {point[1]:.6f} {point[2]:.6f}{extra}\n"
+                    )
+                elif line.startswith("vn "):
+                    parts = line.split()
+                    normal = rotation @ np.array(parts[1:4], dtype=float)
+                    lines.append(
+                        f"vn {normal[0]:.6f} {normal[1]:.6f} {normal[2]:.6f}\n"
+                    )
+                else:
+                    lines.append(line)
+
+        os.makedirs(os.path.dirname(output_obj), exist_ok=True)
+        with open(output_obj, "w", encoding="utf-8") as handle:
+            handle.writelines(lines)
+
+    @classmethod
+    def _compose_origin(
+        cls,
+        outer: ET.Element | None,
+        inner: ET.Element | None,
+    ) -> ET.Element | None:
+        """Compose two URDF origins into a single ``<origin>`` element.
+
+        The returned transform applies ``inner`` first and then ``outer``
+        (``M = M_outer @ M_inner``), so baking a link's world frame onto its
+        local visual/collision origin yields world-space mesh vertices. The
+        result always carries both ``xyz`` and ``rpy`` so it can be consumed by
+        ``transform_mesh``. Returns ``None`` when both inputs are absent.
+
+        Args:
+            outer (ET.Element | None): Outer (parent/world) origin.
+            inner (ET.Element | None): Inner (local) origin.
+
+        Returns:
+            ET.Element | None: Composed origin, or ``None`` if both are ``None``.
+        """
+        if outer is None and inner is None:
+            return None
+
+        matrix = cls._origin_to_matrix(outer) @ cls._origin_to_matrix(inner)
+        xyz = matrix[:3, 3]
+        rpy = Rotation.from_matrix(matrix[:3, :3]).as_euler(
+            "xyz", degrees=False
+        )
+
+        origin = ET.Element("origin")
+        origin.set("xyz", " ".join(f"{value:.8g}" for value in xyz))
+        origin.set("rpy", " ".join(f"{value:.8g}" for value in rpy))
+        return origin
+
     def add_geometry(
         self,
         mujoco_element: ET.Element,
@@ -215,6 +333,7 @@ class MeshtoMJCFConverter(AssetConverterBase):
         mesh_name: str,
         material: ET.Element | None = None,
         is_collision: bool = False,
+        body_origin: ET.Element | None = None,
     ) -> None:
         """Adds geometry to MJCF body from URDF link.
 
@@ -228,6 +347,8 @@ class MeshtoMJCFConverter(AssetConverterBase):
             mesh_name (str): Mesh name.
             material (ET.Element, optional): Material element.
             is_collision (bool, optional): If True, treat as collision geometry.
+            body_origin (ET.Element, optional): Link world origin to bake into
+                the mesh vertices; when None only the local origin is applied.
         """
         element = link.find(tag)
         geometry = element.find("geometry")
@@ -238,9 +359,18 @@ class MeshtoMJCFConverter(AssetConverterBase):
         output_mesh = f"{output_dir}/{filename}"
         self._copy_asset_file(input_mesh, output_mesh)
 
-        mesh_origin = element.find("origin")
+        mesh_origin = self._compose_origin(body_origin, element.find("origin"))
         if mesh_origin is not None:
-            self.transform_mesh(input_mesh, output_mesh, mesh_origin)
+            if not is_collision and input_mesh.lower().endswith(".obj"):
+                # Preserve UVs/material atlas for textured visuals; a trimesh
+                # re-export would rewrite mtllib and drop the diffuse atlas.
+                self._bake_obj_vertices(
+                    input_mesh,
+                    output_mesh,
+                    self._origin_to_matrix(mesh_origin),
+                )
+            else:
+                self.transform_mesh(input_mesh, output_mesh, mesh_origin)
 
         if is_collision:
             mesh_parts = trimesh.load(
@@ -251,11 +381,13 @@ class MeshtoMJCFConverter(AssetConverterBase):
             mesh_parts = [trimesh.load(output_mesh, force="mesh")]
         for idx, mesh_part in enumerate(mesh_parts):
             if is_collision:
+                mesh_part = self._ensure_collision_volume(mesh_part)
                 idx_mesh_name = f"{mesh_name}_{idx}"
                 base, ext = os.path.splitext(filename)
                 idx_filename = f"{base}_{idx}{ext}"
-                base_outdir = os.path.dirname(output_mesh)
-                mesh_part.export(os.path.join(base_outdir, '..', idx_filename))
+                idx_output_mesh = os.path.join(output_dir, idx_filename)
+                os.makedirs(os.path.dirname(idx_output_mesh), exist_ok=True)
+                mesh_part.export(idx_output_mesh)
                 geom_attrs = {
                     "contype": "1",
                     "conaffinity": "1",
@@ -263,7 +395,11 @@ class MeshtoMJCFConverter(AssetConverterBase):
                 }
             else:
                 idx_mesh_name, idx_filename = mesh_name, filename
-                geom_attrs = {"contype": "0", "conaffinity": "0"}
+                geom_attrs = {
+                    "contype": "0",
+                    "conaffinity": "0",
+                    "density": "0",
+                }
 
             ET.SubElement(
                 mujoco_element,
@@ -271,6 +407,7 @@ class MeshtoMJCFConverter(AssetConverterBase):
                 name=idx_mesh_name,
                 file=idx_filename,
                 scale=scale,
+                inertia="shell",
             )
             geom = ET.SubElement(body, "geom", type="mesh", mesh=idx_mesh_name)
             geom.attrib.update(geom_attrs)
@@ -286,7 +423,7 @@ class MeshtoMJCFConverter(AssetConverterBase):
         output_dir: str,
         name: str,
         reflectance: float = 0.2,
-    ) -> ET.Element:
+    ) -> ET.Element | None:
         """Adds materials to MJCF asset from URDF link.
 
         Args:
@@ -306,37 +443,51 @@ class MeshtoMJCFConverter(AssetConverterBase):
         mesh = geometry.find("mesh")
         filename = mesh.get("filename")
         dirname = os.path.dirname(filename)
-        material = None
-        for path in glob(f"{input_dir}/{dirname}/*.png"):
-            file_name = os.path.basename(path)
-            if "keep_materials" in self.kwargs:
-                find_flag = False
-                for keep_key in self.kwargs["keep_materials"]:
-                    if keep_key in file_name.lower():
-                        find_flag = True
-                if find_flag is False:
-                    continue
+        texture_paths = sorted(glob(f"{input_dir}/{dirname}/*.png"))
+        keep_materials = self.kwargs.get("keep_materials")
+        if keep_materials:
+            texture_paths = [
+                path
+                for path in texture_paths
+                if any(
+                    key.lower() in os.path.basename(path).lower()
+                    for key in keep_materials
+                )
+            ]
+        if not texture_paths:
+            return None
 
-            self._copy_asset_file(
-                path,
-                f"{output_dir}/{dirname}/{file_name}",
-            )
-            texture_name = f"texture_{name}_{os.path.splitext(file_name)[0]}"
-            material = ET.SubElement(
-                mujoco_element,
-                "material",
-                name=f"material_{name}",
-                texture=texture_name,
-                reflectance=str(reflectance),
-            )
-            ET.SubElement(
-                mujoco_element,
-                "texture",
-                name=texture_name,
-                type="2d",
-                file=f"{dirname}/{file_name}",
-            )
-
+        texture_path = next(
+            (
+                path
+                for path in texture_paths
+                if "diffuse" in os.path.basename(path).lower()
+            ),
+            texture_paths[0],
+        )
+        file_name = os.path.basename(texture_path)
+        texture_file = (
+            os.path.join(dirname, file_name) if dirname else file_name
+        )
+        self._copy_asset_file(
+            texture_path,
+            os.path.join(output_dir, texture_file),
+        )
+        texture_name = f"texture_{name}_{os.path.splitext(file_name)[0]}"
+        material = ET.SubElement(
+            mujoco_element,
+            "material",
+            name=f"material_{name}",
+            texture=texture_name,
+            reflectance=str(reflectance),
+        )
+        ET.SubElement(
+            mujoco_element,
+            "texture",
+            name=texture_name,
+            type="2d",
+            file=texture_file,
+        )
         return material
 
     def convert(self, urdf_path: str, mjcf_path: str):
@@ -369,7 +520,7 @@ class MeshtoMJCFConverter(AssetConverterBase):
                 output_dir,
                 name=str(idx),
             )
-            joint = ET.SubElement(body, "joint", attrib={"type": "free"})
+            ET.SubElement(body, "joint", attrib={"type": "free"})
             self.add_geometry(
                 mujoco_asset,
                 link,
@@ -427,6 +578,37 @@ class URDFtoMJCFConverter(MeshtoMJCFConverter):
         output_dir = os.path.dirname(mjcf_path)
         os.makedirs(output_dir, exist_ok=True)
 
+        parent_by_child = {}
+        origin_by_child = {}
+        for joint in root.findall("joint"):
+            joint_type = joint.get("type")
+            if joint_type != "fixed":
+                raise NotImplementedError(
+                    f"URDFtoMJCFConverter only supports fixed joints, got "
+                    f"{joint_type!r} for joint {joint.get('name')!r}."
+                )
+            parent_by_child[joint.find("child").get("link")] = joint.find(
+                "parent"
+            ).get("link")
+            origin_by_child[joint.find("child").get("link")] = joint.find(
+                "origin"
+            )
+
+        link_world_origins = {}
+
+        def get_link_world_origin(link_name: str) -> ET.Element | None:
+            if link_name in link_world_origins:
+                return link_world_origins[link_name]
+            parent_link = parent_by_child.get(link_name)
+            if parent_link is None:
+                link_world_origins[link_name] = None
+            else:
+                link_world_origins[link_name] = self._compose_origin(
+                    get_link_world_origin(parent_link),
+                    origin_by_child.get(link_name),
+                )
+            return link_world_origins[link_name]
+
         body_dict = {}
         for idx, link in enumerate(root.findall("link")):
             link_name = link.get("name", f"unnamed_link_{idx}")
@@ -450,6 +632,7 @@ class URDFtoMJCFConverter(MeshtoMJCFConverter):
                     output_dir,
                     f"visual_mesh_{idx}",
                     material,
+                    body_origin=get_link_world_origin(link_name),
                 )
             if link.find("collision") is not None:
                 self.add_geometry(
@@ -461,18 +644,15 @@ class URDFtoMJCFConverter(MeshtoMJCFConverter):
                     output_dir,
                     f"collision_mesh_{idx}",
                     is_collision=True,
+                    body_origin=get_link_world_origin(link_name),
                 )
 
-        # Process joints to set transformations and hierarchy
+        # Fixed-joint world transforms are baked into the mesh vertices above,
+        # so here we only rebuild the body hierarchy (all bodies stay at the
+        # identity frame), keeping the output identical across MuJoCo/Isaac Gym.
         for joint in root.findall("joint"):
-            joint_type = joint.get("type")
-            if joint_type != "fixed":
-                logger.warning("Only support fixed joints in conversion now.")
-                continue
-
             parent_link = joint.find("parent").get("link")
             child_link = joint.find("child").get("link")
-            origin = joint.find("origin")
             if parent_link not in body_dict or child_link not in body_dict:
                 logger.warning(
                     f"Parent or child link not found for joint: {joint.get('name')}"
@@ -483,11 +663,6 @@ class URDFtoMJCFConverter(MeshtoMJCFConverter):
             mujoco_worldbody.remove(child_body)
             parent_body = body_dict[parent_link]
             parent_body.append(child_body)
-            if origin is not None:
-                xyz = origin.get("xyz", "0 0 0")
-                rpy = origin.get("rpy", "0 0 0")
-                child_body.set("pos", xyz)
-                child_body.set("euler", rpy)
 
         tree = ET.ElementTree(mujoco_struct)
         ET.indent(tree, space="  ", level=0)
@@ -916,13 +1091,6 @@ if __name__ == "__main__":
 
     urdf_paths = [
         'outputs/EmbodiedGenData/demo_assets/banana/result/banana.urdf',
-        'outputs/EmbodiedGenData/demo_assets/book/result/book.urdf',
-        'outputs/EmbodiedGenData/demo_assets/lamp/result/lamp.urdf',
-        'outputs/EmbodiedGenData/demo_assets/mug/result/mug.urdf',
-        'outputs/EmbodiedGenData/demo_assets/remote_control/result/remote_control.urdf',
-        "outputs/EmbodiedGenData/demo_assets/rubik's_cube/result/rubik's_cube.urdf",
-        'outputs/EmbodiedGenData/demo_assets/table/result/table.urdf',
-        'outputs/EmbodiedGenData/demo_assets/vase/result/vase.urdf',
     ]
 
     if target_asset_type == AssetType.MJCF:
@@ -937,13 +1105,6 @@ if __name__ == "__main__":
     elif target_asset_type == AssetType.USD:
         output_files = [
             'outputs/EmbodiedGenData/demo_assets/banana/usd/banana.usd',
-            'outputs/EmbodiedGenData/demo_assets/book/usd/book.usd',
-            'outputs/EmbodiedGenData/demo_assets/lamp/usd/lamp.usd',
-            'outputs/EmbodiedGenData/demo_assets/mug/usd/mug.usd',
-            'outputs/EmbodiedGenData/demo_assets/remote_control/usd/remote_control.usd',
-            "outputs/EmbodiedGenData/demo_assets/rubik's_cube/usd/rubik's_cube.usd",
-            'outputs/EmbodiedGenData/demo_assets/table/usd/table.usd',
-            'outputs/EmbodiedGenData/demo_assets/vase/usd/vase.usd',
         ]
         asset_converter = AssetConverterFactory.create(
             target_type=AssetType.USD,
@@ -979,8 +1140,21 @@ if __name__ == "__main__":
 
     # # Convert infinigen usdc to physics usdc
     # converter = PhysicsUSDAdder()
+    # usd_paths = [
+    #     "outputs/gen_rooms_v2/simple/House_seed0/usd/export_scene/export_scene.usdc",
+    # ]
     # with converter:
-    #     converter.convert(
-    #         usd_path="/home/users/xinjie.wang/xinjie/infinigen/outputs/usdc/export_scene/export_scene.usdc",
-    #         output_file="/home/users/xinjie.wang/xinjie/infinigen/outputs/usdc_p3/export_scene/export_scene.usdc",
-    #     )
+    #     for usd_path in usd_paths:
+    #         output_path = usd_path.replace("/export_scene/", "/export_scene_physics/")
+    #         converter.convert(usd_path=usd_path, output_file=output_path)
+
+    # converter = URDFtoMJCFConverter()
+    # urdf_paths = [
+    #     "outputs/gen_rooms_v2/simple/House_seed0/urdf/export_scene/scene.urdf",
+
+    #     # "outputs/gen_rooms_v2/detail/House_seed0/urdf/export_scene/scene.urdf",
+    # ]
+    # for urdf_path in urdf_paths:
+    #     output_path = urdf_path.replace("/urdf/export_scene/", "/mjcf/export_scene/").replace(".urdf", ".xml")
+    #     os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    #     converter.convert(urdf_path=urdf_path, mjcf_path=output_path)

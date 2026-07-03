@@ -41,13 +41,30 @@ from common import (
 
 app_name = os.getenv("GRADIO_APP")
 if app_name == "imageto3d_sam3d":
-    enable_pre_resize = False
+    _enable_pre_resize_default = False
     sample_step = 25
     bg_rm_model_name = "rembg"  # "rembg", "rmbg14"
 elif app_name == "imageto3d":
-    enable_pre_resize = True
+    _enable_pre_resize_default = True
     sample_step = 12
     bg_rm_model_name = "rembg"  # "rembg", "rmbg14"
+
+current_rmbg_tag = bg_rm_model_name
+
+
+def set_current_rmbg_tag(rmbg: str) -> None:
+    global current_rmbg_tag
+    current_rmbg_tag = rmbg
+
+
+def preprocess_example_image(
+    img: str,
+) -> tuple[object, object, gr.Button]:
+    image, image_cache = preprocess_image_fn(
+        img, current_rmbg_tag, _enable_pre_resize_default
+    )
+    return image, image_cache, gr.Button(interactive=True)
+
 
 with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
     gr.HTML(image_css, visible=False)
@@ -72,12 +89,10 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
         </p>
 
         🖼️ Generate physically plausible 3D asset from single input image.
-        """.format(
-            VERSION=VERSION
-        ),
+        """.format(VERSION=VERSION),
         elem_classes=["header"],
     )
-
+    enable_pre_resize = gr.State(_enable_pre_resize_default)
     with gr.Row():
         with gr.Column(scale=3):
             with gr.Tabs() as input_tabs:
@@ -98,11 +113,9 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                         height=400,
                         elem_classes=["image_fit"],
                     )
-                    gr.Markdown(
-                        """
+                    gr.Markdown("""
                         If you are not satisfied with the auto segmentation
-                        result, please switch to the `Image(SAM seg)` tab."""
-                    )
+                        result, please switch to the `Image(SAM seg)` tab.""")
                 with gr.Tab(
                     label="Image(SAM seg)", id=1
                 ) as samimage_input_tab:
@@ -159,11 +172,11 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                     )
                 with gr.Row():
                     randomize_seed = gr.Checkbox(
-                        label="Randomize Seed", value=False
+                        label="Randomize Seed", value=True
                     )
                     project_delight = gr.Checkbox(
                         label="Back-project Delight",
-                        value=True,
+                        value=False,
                     )
                 gr.Markdown("Geo Structure Generation")
                 with gr.Row():
@@ -262,7 +275,6 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                 has quality inspection, open with an editor to view details.
             """
             )
-            enable_pre_resize = gr.State(enable_pre_resize)
             with gr.Row() as single_image_example:
                 examples = gr.Examples(
                     label="Image Gallery",
@@ -272,11 +284,12 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                             glob("apps/assets/example_image/*")
                         )
                     ],
-                    inputs=[image_prompt, rmbg_tag, enable_pre_resize],
-                    fn=preprocess_image_fn,
-                    outputs=[image_prompt, raw_image_cache],
+                    inputs=[image_prompt],
+                    fn=preprocess_example_image,
+                    outputs=[image_prompt, raw_image_cache, generate_btn],
                     run_on_click=True,
                     examples_per_page=10,
+                    cache_examples=False,
                 )
 
             with gr.Row(visible=False) as single_sam_image_example:
@@ -339,10 +352,24 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
     )
 
     image_prompt.upload(
-        preprocess_image_fn,
-        inputs=[image_prompt, rmbg_tag, enable_pre_resize],
+        lambda img, rmbg: preprocess_image_fn(
+            img, rmbg, _enable_pre_resize_default
+        ),
+        inputs=[image_prompt, rmbg_tag],
         outputs=[image_prompt, raw_image_cache],
+        queue=False,
+    ).success(
+        active_btn_by_content,
+        inputs=image_prompt,
+        outputs=generate_btn,
     )
+
+    rmbg_tag.change(
+        set_current_rmbg_tag,
+        inputs=[rmbg_tag],
+        outputs=[],
+    )
+
     image_prompt.change(
         lambda: tuple(
             [
@@ -381,10 +408,9 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
             est_mu_text,
         ],
     )
-    image_prompt.change(
-        active_btn_by_content,
-        inputs=image_prompt,
-        outputs=generate_btn,
+    image_prompt.clear(
+        lambda: gr.Button(interactive=False),
+        outputs=[generate_btn],
     )
 
     image_prompt_sam.upload(

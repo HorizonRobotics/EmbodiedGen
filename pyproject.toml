@@ -7,7 +7,7 @@ packages = ["embodied_gen"]
 
 [project]
 name = "embodied_gen"
-version = "v0.1.7"
+version = "v2.0.0"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
@@ -19,15 +19,14 @@ requires-python = ">=3.10"
 dev = [
     "cpplint",
     "pre-commit",
-    "pydocstyle",
-    "black",
-    "isort",
+    "ruff",
     "pytest",
     "pytest-mock",
     "mkdocs",
     "mkdocs-material",
     "mkdocstrings[python]",
     "mkdocs-git-revision-date-localized-plugin",
+    "pycodestyle",
 ]
 
 [project.scripts]
@@ -39,25 +38,37 @@ texture-cli = "embodied_gen.scripts.gen_texture:entrypoint"
 scene3d-cli = "embodied_gen.scripts.gen_scene3d:entrypoint"
 layout-cli = "embodied_gen.scripts.gen_layout:entrypoint"
 sim-cli = "embodied_gen.scripts.simulate_sapien:entrypoint"
+room-cli = "embodied_gen.scripts.gen_room:entrypoint"
+affordance-cli = "embodied_gen.scripts.affordance_annot.affordance_annot:entrypoint"
 
-[tool.pydocstyle]
-match = '(?!test_).*(?!_pb2)\.py'
-match-dir = '^(?!(raw|projects|tools|k8s_submit|thirdparty)$)[\w.-]+$'
-convention = "google"
-add-ignore = 'D104,D107,D202,D105,D100,D102,D103,D101,E203'
-
-[tool.pycodestyle]
-max-line-length = 79
-ignore = "E203"
-
-[tool.black]
+[tool.ruff]
 line-length = 79
-exclude = "thirdparty"
-skip-string-normalization = true
+target-version = "py310"
+extend-exclude = ["thirdparty"]
 
-[tool.isort]
-line_length = 79
-profile = 'black'
-no_lines_before = 'FIRSTPARTY'
-known_first_party = ['embodied_gen']
-skip = "thirdparty/"
+[tool.ruff.lint]
+select = ["D", "E", "F", "I", "W"]
+ignore = [
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D107",
+    "D202",
+    "E203",
+    "E251",
+    "E402",
+    "E501",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+known-first-party = ["embodied_gen"]
+no-lines-before = ["first-party"]
+
+[tool.ruff.format]
+quote-style = "preserve"

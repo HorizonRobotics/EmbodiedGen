@@ -1,0 +1,121 @@
+/* ---- Brand alignment with the EmbodiedGen V2 landing page ---- */
+:root {
+  --md-accent-fg-color: #1E54FF; /* landing --blue */
+}
+[data-md-color-scheme="default"] {
+  --md-typeset-a-color: #1E54FF;
+}
+[data-md-color-scheme="slate"] {
+  --md-typeset-a-color: #7C9AFF; /* lighter blue for dark background */
+}
+
+/* Header logo: fit within the 2.4rem header bar */
+.md-header__button.md-logo {
+  height: 2.4rem;
+  padding: 0.2rem 0;
+  display: inline-flex;
+  align-items: center;
+}
+.md-header__button.md-logo img {
+  height: 100%;
+  width: auto;
+}
+
+/* Rounded corners for content media (skip badges/shields) */
+.md-typeset img:not([src*="shields.io"]),
+.md-typeset video,
+.md-typeset model-viewer {
+  border-radius: 12px;
+}
+
+.md-typeset pre code {
+  font-size: 0.7rem;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  font-size: 0.77rem;
+}
+
+/* ---- Feature grid cards ("What can it do?") ----
+   Subtle brand-blue tint that reads well in both light and dark schemes. */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > ol > li {
+  border-radius: 14px;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+[data-md-color-scheme="default"] .md-typeset .grid.cards > ul > li,
+[data-md-color-scheme="default"] .md-typeset .grid.cards > ol > li {
+  background: linear-gradient(158deg, #ffffff 0%, #f4f6ff 62%, #eef2ff 100%);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, .05);
+}
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ul > li,
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ol > li {
+  background: linear-gradient(158deg, rgba(124, 154, 255, .10) 0%, rgba(124, 154, 255, .22) 100%);
+  border-color: rgba(124, 154, 255, .30);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+}
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > ol > li:hover {
+  transform: translateY(-3px);
+  border-color: var(--md-accent-fg-color);
+  box-shadow: 0 10px 26px rgba(30, 84, 255, .14);
+}
+
+/* ---- Header / footer: deep brand-navy gradient (no black) ----
+   Horizontal gradient so the header bar and the tabs bar blend seamlessly. */
+.md-header,
+.md-tabs {
+  background: linear-gradient(90deg, #0e1739 0%, #1A2C6E 55%, #2246B4 100%);
+}
+.md-header {
+  box-shadow: 0 1px 0 rgba(124, 154, 255, .22);
+}
+.md-footer {
+  background: linear-gradient(90deg, #0e1739 0%, #1A2C6E 55%, #2246B4 100%);
+}
+.md-footer-meta {
+  background: rgba(11, 20, 56, .45);
+}
+
+/* ---- Page background: landing-style paper + faded blueprint grid ----
+   Base: warm paper (light) / deep blue-ink (dark), with soft color washes
+   for depth. The grid lives on body::before and fades out downward via a
+   radial mask — same technique as the landing `.sect--alt::before` wash. */
+body[data-md-color-scheme="default"] {
+  --md-default-bg-color: #FAFAF7;
+  background:
+    radial-gradient(90rem 34rem at 85% -8%, rgba(30, 84, 255, .06), transparent 70%),
+    radial-gradient(70rem 30rem at -12% 2%, rgba(228, 176, 82, .07), transparent 70%),
+    #FAFAF7;
+  background-attachment: fixed;
+}
+body[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #151926;
+  background:
+    radial-gradient(90rem 34rem at 85% -8%, rgba(83, 118, 255, .12), transparent 70%),
+    radial-gradient(70rem 30rem at -12% 2%, rgba(124, 154, 255, .05), transparent 70%),
+    #151926;
+  background-attachment: fixed;
+}
+body[data-md-color-scheme="default"]::before,
+body[data-md-color-scheme="slate"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--eg-grid-line) 1px, transparent 1px) 0 0/30px 30px,
+    linear-gradient(90deg, var(--eg-grid-line) 1px, transparent 1px) 0 0/30px 30px;
+  -webkit-mask-image: radial-gradient(135% 92% at 50% -8%, #000 40%, transparent 85%);
+          mask-image: radial-gradient(135% 92% at 50% -8%, #000 40%, transparent 85%);
+}
+body[data-md-color-scheme="default"] {
+  --eg-grid-line: rgba(18, 20, 23, .05);
+}
+body[data-md-color-scheme="slate"] {
+  --eg-grid-line: rgba(124, 154, 255, .07);
+}

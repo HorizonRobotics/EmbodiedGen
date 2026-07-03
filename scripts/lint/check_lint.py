@@ -1,7 +1,6 @@
 import argparse
 import os
 import subprocess
-import sys
 
 
 def get_root():
@@ -19,7 +18,7 @@ def cpp_lint(root_path: str):
             [
                 "python3",
                 f"{root_path}/scripts/lint_src/lint.py",
-                "--project=asset_recons",
+                "--project=embodied_gen",
                 "--path",
                 f"{root_path}/src/",
                 f"{root_path}/include/",

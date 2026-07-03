@@ -28,7 +28,6 @@ from scipy.spatial.transform import Rotation
 from embodied_gen.data.convex_decomposer import decompose_convex_mesh
 from embodied_gen.utils.gpt_clients import GPT_CLIENT, GPTclient
 from embodied_gen.utils.process_media import (
-    combine_images_to_grid,
     render_asset3d,
 )
 from embodied_gen.utils.tags import VERSION
@@ -75,7 +74,7 @@ URDF_TEMPLATE = """
             <min_mass>0.0</min_mass>
             <max_mass>0.0</max_mass>
             <generate_time>"-1"</generate_time>
-            <gs_model>""</gs_model>
+            <gs_model></gs_model>
         </extra_info>
     </link>
 </robot>
@@ -400,7 +399,7 @@ class URDFGenerator(object):
                 mesh_attr = scale_element.text
                 try:
                     mesh_attr = float(mesh_attr)
-                except ValueError as e:
+                except ValueError:
                     pass
 
         return mesh_attr

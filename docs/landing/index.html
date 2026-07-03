@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EmbodiedGen V2 — An Agentic, Simulation-Ready 3D World Engine for Embodied AI</title>
+<meta name="description" content="EmbodiedGen V2 compiles language, images, and edit commands into simulation-ready 3D worlds for embodied intelligence." />
+<meta property="og:title" content="EmbodiedGen V2" />
+<meta property="og:description" content="From intent to executable 3D worlds." />
+<meta property="og:type" content="website" />
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+<link rel="apple-touch-icon" href="favicon-180.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,wght@1,400;1,500;1,600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+<!-- model-viewer is injected lazily by script.js when the Assets section nears the viewport -->
+</head>
+<body>
+
+<!-- ========================= NAV ========================= -->
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="nav__brand" href="#top">EmbodiedGen</a>
+    <nav class="nav__links" aria-label="Section navigation">
+      <a href="#overview" class="nav__link" data-sect="overview">Overview</a>
+      <a href="#assets" class="nav__link" data-sect="assets">Assets</a>
+      <a href="#scenes" class="nav__link" data-sect="scenes">Scenes</a>
+      <a href="#worlds" class="nav__link" data-sect="worlds">Worlds</a>
+      <a href="#vibe" class="nav__link" data-sect="vibe">Vibe&nbsp;Coding</a>
+      <a href="#crosssim" class="nav__link" data-sect="crosssim">Cross-Sim</a>
+      <a href="#learning" class="nav__link" data-sect="learning">Learning</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ========================= HERO (video bg) ========================= -->
+<main id="top">
+<section class="hero">
+  <div class="hero__bg">
+    <video class="hero__video" data-autoplay poster="assets/img/hero_poster.jpg"
+           muted loop playsinline autoplay preload="auto">
+      <source src="assets/video/hero_bg.mp4" type="video/mp4" />
+    </video>
+    <div class="hero__scrim" aria-hidden="true"></div>
+  </div>
+
+  <img src="assets/img/logo.png" alt="EmbodiedGen" class="hero__logo" decoding="async" />
+
+  <div class="hero__content">
+    <h1 class="hero__title"><span class="hero__word">EmbodiedGen<span class="hero__ver">V2</span></span></h1>
+    <p class="hero__subtitle">An Agentic, Simulation-Ready 3D World Engine<br/>for Embodied AI</p>
+    <p class="hero__taglinewrap">
+      <span class="hero__rule"></span>
+      <span class="hero__tagline">From intent to executable 3D worlds</span>
+      <span class="hero__rule"></span>
+    </p>
+
+    <p class="hero__authors">
+      Xinjie Wang<sup>1</sup> · Liu Liu<sup>1</sup> · Taojun Ding<sup>1</sup> · Andrew Choi<sup>1</sup> ·
+      Chaodong Huang<sup>1</sup> · Mengao Zhao<sup>1</sup> · Ziang Li<sup>1</sup> ·
+      Jackson Jiang<sup>2</sup> · Chunlei Yu<sup>2</sup> · Shengxiang Liu<sup>2</sup> ·
+      Wei Xu<sup>1</sup> · Zhizhong Su<sup>1</sup>
+    </p>
+    <p class="hero__affil"><sup>1</sup>Horizon Robotics&nbsp;·&nbsp;<sup>2</sup>WuwenAI</p>
+
+    <div class="hero__btns">
+      <a class="btn btn--glass" href="https://arxiv.org/abs/2506.10600" target="_blank" rel="noopener">
+        <img class="btn__ic" src="https://cdn.simpleicons.org/arxiv/b31b1b" alt="" />Paper</a>
+      <a class="btn btn--glass" href="https://github.com/HorizonRobotics/EmbodiedGen" target="_blank" rel="noopener">
+        <img class="btn__ic" src="https://cdn.simpleicons.org/github/white" alt="" />Code</a>
+      <a class="btn btn--glass" href="https://www.youtube.com/watch?v=rG4odybuJRk" target="_blank" rel="noopener">
+        <img class="btn__ic" src="https://cdn.simpleicons.org/youtube/white" alt="" />Video</a>
+      <a class="btn btn--glass" href="https://huggingface.co/collections/HorizonRobotics/embodiedgen" target="_blank" rel="noopener">
+        <img class="btn__ic" src="https://cdn.simpleicons.org/huggingface/white" alt="" />HuggingFace</a>
+      <a class="btn btn--glass" href="https://huggingface.co/datasets/HorizonRobotics/EmbodiedGenData" target="_blank" rel="noopener">
+        <svg class="btn__ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>
+        </svg>Dataset</a>
+      <a class="btn btn--glass" href="docs/" target="_blank" rel="noopener">
+        <svg class="btn__ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22.5z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M8 7h8M8 11h6"/>
+        </svg>Documentation</a>
+    </div>
+  </div>
+
+  <a href="#assets" class="hero__scroll" aria-label="Scroll to content"><span></span></a>
+</section>
+
+<!-- ========================= OVERVIEW ========================= -->
+<section class="sect sect--alt" id="overview">
+  <div class="wrap">
+    <header class="sect__head reveal">
+      <span class="verb verb--accent">Overview</span>
+      <h2 class="sect__title">Generative simulation infrastructure for embodied AI</h2>
+      <p class="sect__lede">
+        From text, images, and natural-language dialogue to <strong>simulation-ready 3D worlds</strong> —
+        assets, interactive scenes, and large-scale environments, deployable across every major simulator.
+      </p>
+    </header>
+    <div class="caps reveal stagger">
+      <a class="cap" href="#assets">
+        <div class="cap__head"><span class="cap__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4 7v10l8 4.5L20 17V7z"/><path d="M4 7l8 4.5L20 7"/><path d="M12 11.5v10"/></svg></span>
+        <h3 class="cap__t"><span class="cap__verb">Generate</span> Sim-Ready Assets</h3></div>
+        <p class="cap__d">Metric geometry, collision proxies, and physical properties in one package.</p><span class="cap__go">↓</span></a>
+      <a class="cap" href="#scenes">
+        <div class="cap__head"><span class="cap__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5"/><path d="M5 9.5V20h14V9.5"/><path d="M12 20v-5.5M5 14.5h14"/></svg></span>
+        <h3 class="cap__t"><span class="cap__verb">Scale</span> Large-Scale Scenes</h3></div>
+        <p class="cap__d">Multi-room, navigable environments with editable furniture instances.</p><span class="cap__go">↓</span></a>
+      <a class="cap" href="#worlds">
+        <div class="cap__head"><span class="cap__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.4"/><circle cx="5.5" cy="18" r="2.4"/><circle cx="18.5" cy="18" r="2.4"/><path d="M10.8 7.1 6.7 15.8M13.2 7.1l4.1 8.7"/></svg></span>
+        <h3 class="cap__t"><span class="cap__verb">Compose</span> Task-Driven Worlds</h3></div>
+        <p class="cap__d">Natural-language tasks become physically stable, simulator-ready layouts.</p><span class="cap__go">↓</span></a>
+      <a class="cap" href="#vibe">
+        <div class="cap__head"><span class="cap__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v10H9l-4 4z"/><path d="M8 9.5h6M8 12h4"/></svg></span>
+        <h3 class="cap__t"><span class="cap__verb">Edit</span> Vibe Coding</h3></div>
+        <p class="cap__d">Refine a deployable world state through natural-language dialogue.</p><span class="cap__go">↓</span></a>
+      <a class="cap" href="#crosssim">
+        <div class="cap__head"><span class="cap__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14V3"/><path d="M8 7l4-4 4 4"/><path d="M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg></span>
+        <h3 class="cap__t"><span class="cap__verb">Export</span> Cross-Simulator</h3></div>
+        <p class="cap__d">One standardized layout, six engines, zero manual adaptation.</p><span class="cap__go">↓</span></a>
+      <a class="cap" href="#learning">
+        <div class="cap__head"><span class="cap__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="8" width="15" height="11" rx="3"/><path d="M12 4v4"/><circle cx="12" cy="4" r="1"/><circle cx="9.3" cy="13" r="1.2"/><circle cx="14.7" cy="13" r="1.2"/><path d="M9.5 16.3h5"/></svg></span>
+        <h3 class="cap__t"><span class="cap__verb">Train</span> Closed-Loop Learning</h3></div>
+        <p class="cap__d">Generated environments as online RL worlds for robot policies.</p><span class="cap__go">↓</span></a>
+    </div>
+
+    <details class="figdrop reveal">
+      <summary>View the system overview figure</summary>
+      <img src="assets/img/overview.jpg" alt="Overview of EmbodiedGen V2: task-driven generation, large-scale worlds, and Vibe Coding, deployable across simulators" loading="lazy" />
+    </details>
+  </div>
+</section>
+
+<!-- ========================= SIM-READY ASSETS ========================= -->
+<section class="sect" id="assets">
+  <div class="wrap">
+    <header class="sect__head reveal">
+      <span class="verb verb--accent">Generate</span>
+      <h2 class="sect__title">Sim-Ready 3D Assets</h2>
+      <p class="sect__lede">
+        Real generated assets — drag to rotate. Each carries <strong>metric geometry</strong>,
+        a <strong>collision proxy</strong>, <strong>physical properties</strong>, and
+        <strong>cross-simulator interfaces</strong>.
+      </p>
+    </header>
+
+    <!-- interactive 3D viewer -->
+    <div class="viewer reveal">
+      <div class="viewer__stage">
+        <model-viewer id="mv"
+          camera-controls touch-action="pan-y" interaction-prompt="none"
+          auto-rotate rotation-per-second="18deg"
+          shadow-intensity="0.9" shadow-softness="1" exposure="1.45"
+          tone-mapping="neutral" environment-image="neutral"
+          camera-orbit="35deg 75deg 170%"
+          min-camera-orbit="auto auto 35%"
+          max-camera-orbit="auto auto 300%"
+          loading="lazy" reveal="auto"
+          alt="Interactive sim-ready 3D asset">
+        </model-viewer>
+
+        <div class="viewer__modes">
+          <button class="mode is-active" data-mode="visual">Visual mesh</button>
+          <button class="mode" data-mode="collision">Collision proxy</button>
+          <button class="mode" data-mode="affordance">Affordance</button>
+        </div>
+        <div class="viewer__hint">drag to orbit · scroll to zoom</div>
+      </div>
+
+      <aside class="viewer__side">
+        <!-- affordance view (shown only in Affordance mode) -->
+        <div class="card card--afford" id="affCard" hidden>
+          <div class="meta__top">
+            <h3 class="meta__name">Semantic parts &amp; grasps</h3>
+            <span class="meta__cat">affordance</span>
+          </div>
+          <ul class="parts" id="affParts"></ul>
+          <div class="partdetail" id="affDetail"></div>
+          <div class="afford__hint">Gripper markers show grasp poses, colored by part.</div>
+        </div>
+
+        <div class="card card--meta" id="metaCard">
+          <div class="meta__top">
+            <h3 class="meta__name" id="m-name">—</h3>
+            <span class="meta__cat" id="m-cat">—</span>
+          </div>
+          <p class="meta__desc" id="m-desc">—</p>
+          <dl class="meta__grid">
+            <div><dt>Height</dt><dd id="m-h">—</dd></div>
+            <div><dt>Mass</dt><dd id="m-m">—</dd></div>
+            <div><dt>Friction μ</dt><dd id="m-f">—</dd></div>
+            <div><dt>Aesthetic</dt><dd id="m-a">—</dd></div>
+          </dl>
+          <div class="meta__qc">
+            <span class="qc qc--ok">geometry ✓</span>
+            <span class="qc qc--ok">segmentation ✓</span>
+            <span class="qc qc--ok">sim-ready ✓</span>
+          </div>
+        </div>
+
+        <div class="card card--fmt" id="fmtCard">
+          <span class="card__label">Exports to<em class="fmt__gs">+ 3DGS&nbsp;splat</em></span>
+          <ul class="fmtmap">
+            <li><span class="fmt__b">URDF</span><span class="fmt__s">SAPIEN3 · PyBullet</span></li>
+            <li><span class="fmt__b">USD</span><span class="fmt__s">Isaac&nbsp;Sim</span></li>
+            <li><span class="fmt__b">MJCF</span><span class="fmt__s">Isaac&nbsp;Gym · Genesis · MuJoCo</span></li>
+          </ul>
+        </div>
+      </aside>
+
+      <div class="gallery" id="gallery" role="tablist" aria-label="Choose an asset"></div>
+    </div>
+
+    <!-- pipeline stepper -->
+    <div class="reveal">
+      <p class="block-eyebrow"><span class="verb">Pipeline</span> text or a single image → a sim-ready asset</p>
+      <ol class="pipe" aria-label="Sim-ready asset pipeline">
+        <li class="pipe__step"><span class="pipe__n">01</span><h3 class="pipe__t">Input Preparation</h3><p class="pipe__d">Text → image, or segment the foreground — even under occlusion.</p></li>
+        <li class="pipe__step"><span class="pipe__n">02</span><h3 class="pipe__t">3D Generation &amp; QC</h3><p class="pipe__d">Pluggable image-to-3D, gated by semantic, geometric &amp; aesthetic checks.</p><span class="pipe__retry">↻ auto-retry</span></li>
+        <li class="pipe__step"><span class="pipe__n">03</span><h3 class="pipe__t">Geometry &amp; Texture</h3><p class="pipe__d">Mesh repair, simplification, convex decomposition, baked texture.</p></li>
+        <li class="pipe__step"><span class="pipe__n">04</span><h3 class="pipe__t">Physical Recovery</h3><p class="pipe__d">A VLM infers real-world scale, mass and friction for metric rescaling.</p></li>
+        <li class="pipe__step"><span class="pipe__n">05</span><h3 class="pipe__t">Cross-Format Export</h3><p class="pipe__d">One URDF intermediate → URDF · USD · MJCF for every major engine.</p></li>
+      </ol>
+    </div>
+
+    <!-- collapsibles, one row -->
+    <div class="figrow reveal">
+      <details class="figdrop">
+        <summary>View the full pipeline figure</summary>
+        <img src="assets/img/sim_pipeline.jpg" alt="Full sim-ready asset generation pipeline" loading="lazy" />
+      </details>
+      <details class="figdrop figdrop--soft">
+        <summary>Beyond rigid bodies — soft-body simulation</summary>
+        <p class="figdrop__note">
+          The same generate-and-export path reaches soft bodies: 12 text-conditioned garments deploy
+          as deformable meshes in Genesis, with no manual preparation.
+        </p>
+        <video data-autoplay muted loop playsinline preload="none"
+               aria-label="Twelve generated garments simulated as deformable meshes in Genesis">
+          <source src="assets/video/soft_sim_6x2_16x9_captioned.mp4" type="video/mp4" />
+        </video>
+        <p class="figdrop__cap">12 generated garments · per-vertex displacement · Genesis</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= LARGE-SCALE SCENES ========================= -->
+<section class="sect sect--alt" id="scenes">
+  <div class="wrap">
+    <header class="sect__head reveal">
+      <span class="verb verb--accent">Scale</span>
+      <h2 class="sect__title">Large-Scale Scenes</h2>
+      <p class="sect__lede">
+        Beyond tabletops — multi-room, navigable, instance-editable houses, generated as
+        <strong>sim-ready backgrounds</strong> at a controllable complexity tier.
+      </p>
+    </header>
+
+    <!-- Temporarily hidden until tier-specific media is available.
+    <div class="tiers reveal">
+      <span class="tier">Minimalist</span><span class="tier">Simple</span>
+      <span class="tier">Medium</span><span class="tier tier--on">Detail</span>
+    </div>
+    -->
+
+    <figure class="crossfig reveal">
+      <video data-autoplay muted loop playsinline controls preload="none" poster="assets/img/worlds_poster.jpg">
+        <source src="assets/video/worlds.mp4" type="video/mp4" />
+      </video>
+    </figure>
+
+    <details class="figdrop reveal">
+      <summary>View the large-scale generation pipeline</summary>
+      <img src="assets/img/large_scale.jpg" alt="Large-scale scene generation: scene router, world solver, canonicalizer, sim-ready scene" loading="lazy" />
+    </details>
+  </div>
+</section>
+
+<!-- ========================= TASK-DRIVEN WORLDS ========================= -->
+<section class="sect" id="worlds">
+  <div class="wrap">
+    <header class="sect__head reveal">
+      <span class="verb verb--accent">Compose</span>
+      <h2 class="sect__title">Task-Driven Worlds</h2>
+      <p class="sect__lede">
+        From a natural-language task, EmbodiedGen parses a <strong>Scene Graph</strong> and composes a
+        physically stable, directly loadable layout — then settles it under gravity in simulation.
+      </p>
+    </header>
+
+    <div class="taskflow reveal">
+      <span class="taskflow__prompt"><span class="taskflow__caret">›</span> Put the broccoli on the white dish</span>
+      <span class="taskflow__arrow">→</span>
+      <div class="roles">
+        <span class="role role--bg">Background</span>
+        <span class="role role--ctx">Context</span>
+        <span class="role role--tgt">Manipulated</span>
+        <span class="role role--dis">Distractor</span>
+        <span class="role role--bot">Robot</span>
+      </div>
+    </div>
+
+    <figure class="crossfig reveal">
+      <video data-autoplay muted loop playsinline controls preload="none" poster="assets/img/scenes_gen_poster.jpg">
+        <source src="assets/video/scenes_gen.mp4" type="video/mp4" />
+      </video>
+    </figure>
+
+    <details class="figdrop reveal">
+      <summary>View the scene-generation pipeline</summary>
+      <img src="assets/img/layout_pipe.jpg" alt="Task-driven scene generation pipeline: scene graph, asset instantiation, BFS spatial placement" loading="lazy" />
+    </details>
+  </div>
+</section>
+
+<!-- ========================= VIBE CODING ========================= -->
+<section class="sect sect--alt" id="vibe">
+  <div class="wrap">
+    <header class="sect__head reveal">
+      <span class="verb verb--accent">Edit</span>
+      <h2 class="sect__title">Vibe Coding for Sim-Ready 3D Worlds</h2>
+      <p class="sect__lede">
+        Build and edit worlds through natural-language dialogue. Each instruction is a
+        <strong>bounded, physics-validated</strong> skill call that preserves a deployable,
+        sim-ready world state — add, remove, replace, refine.
+      </p>
+    </header>
+
+    <div class="vibe reveal">
+      <div class="vibe__panel">
+        <div class="vibe__tabs" role="tablist">
+          <button class="vtab is-active" data-sess="kitchen">Kitchen</button>
+          <button class="vtab" data-sess="living">Living room</button>
+        </div>
+        <ol class="vibe__hist" id="vibeHist"></ol>
+      </div>
+      <div class="vibe__stage">
+        <video id="vibeVid" muted loop playsinline preload="none"></video>
+        <span class="vibe__badge" id="vibeBadge">S0</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= CROSS-SIMULATOR ========================= -->
+<section class="sect" id="crosssim">
+  <div class="wrap">
+    <header class="sect__head reveal">
+      <span class="verb verb--accent">Export</span>
+      <h2 class="sect__title">One World, Every Simulator</h2>
+      <p class="sect__lede">
+        One standardized layout — <strong>no manual adaptation</strong>. The same generated scene loads
+        with consistent geometry, collision, textures, and physical metadata across six mainstream
+        physics simulators.
+      </p>
+    </header>
+    <figure class="crossfig reveal">
+      <video data-autoplay muted loop playsinline preload="none" poster="assets/img/multi_sim_poster.jpg">
+        <source src="assets/video/multi_sim.mp4" type="video/mp4" />
+      </video>
+    </figure>
+    <div class="simbar reveal">
+      <span class="sim">Genesis</span><span class="sim">Isaac&nbsp;Gym</span><span class="sim">Isaac&nbsp;Sim</span>
+      <span class="sim">MuJoCo</span><span class="sim">PyBullet</span><span class="sim">SAPIEN3</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= CLOSED-LOOP LEARNING ========================= -->
+<section class="sect sect--alt" id="learning">
+  <div class="wrap">
+    <header class="sect__head reveal">
+      <span class="verb verb--accent">Train</span>
+      <h2 class="sect__title">Closed-Loop Robot Learning</h2>
+      <p class="sect__lede">
+        Generated worlds are not just viewable — they are <strong>online training environments</strong>.
+        Policies trained purely in EmbodiedGen-generated worlds transfer to real robots.
+      </p>
+    </header>
+
+    <figure class="crossfig reveal">
+      <video data-autoplay muted loop playsinline controls preload="none" poster="assets/img/closed_loop_poster.jpg">
+        <source src="assets/video/closed_loop.mp4" type="video/mp4" />
+      </video>
+    </figure>
+
+    <div class="results reveal">
+      <div class="result">
+        <div class="result__nums"><span class="result__from">9.7</span><span class="result__to">→</span><span class="result__val" data-from="9.7" data-to="79.8">79.8</span><span class="result__u">%</span></div>
+        <div class="result__label">Simulation task success</div>
+      </div>
+      <div class="result">
+        <div class="result__nums"><span class="result__from">21.7</span><span class="result__to">→</span><span class="result__val" data-from="21.7" data-to="75.0">75.0</span><span class="result__u">%</span></div>
+        <div class="result__label">Real-robot task success</div>
+      </div>
+      <p class="result__cap">
+        Results from a companion sim-to-real RL study; policies trained in EmbodiedGen-generated worlds.
+      </p>
+    </div>
+
+    <details class="figdrop reveal">
+      <summary>View the policy-learning &amp; deployment figure</summary>
+      <img src="assets/img/policy_deploy.jpg" alt="Policy learning in generated environments and real-robot deployment" loading="lazy" />
+    </details>
+  </div>
+</section>
+
+<!-- ========================= BIBTEX ========================= -->
+<section class="sect" id="bibtex">
+  <div class="wrap">
+    <header class="sect__head reveal">
+      <span class="verb verb--accent">Cite</span>
+      <h2 class="sect__title">BibTeX</h2>
+    </header>
+    <div class="cite reveal">
+      <button class="cite__copy" type="button">Copy</button>
+<pre class="cite__code">@article{wang2026embodiedgenv2,
+  title   = {EmbodiedGen V2: An Agentic, Simulation-Ready 3D World
+             Engine for Embodied AI},
+  author  = {Xinjie Wang and Liu Liu and Taojun Ding and Andrew Choi and
+             Chaodong Huang and Mengao Zhao and Ziang Li and Jackson Jiang and
+             Chunlei Yu and Shengxiang Liu and Wei Xu and Zhizhong Su},
+  journal = {arXiv preprint arXiv:2506.10600},
+  year    = {2026}
+}</pre>
+    </div>
+    <div class="cite reveal">
+      <button class="cite__copy" type="button">Copy</button>
+<pre class="cite__code">@misc{wang2025embodiedgengenerative3dworld,
+  title         = {EmbodiedGen: Towards a Generative 3D World Engine for
+                   Embodied Intelligence},
+  author        = {Xinjie Wang and Liu Liu and Yu Cao and Ruiqi Wu and
+                   Wenkang Qin and Dehui Wang and Wei Sui and Zhizhong Su},
+  year          = {2025},
+  eprint        = {2506.10600},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.RO},
+  url           = {https://arxiv.org/abs/2506.10600}
+}</pre>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__inner">
+    <nav class="foot__links" aria-label="Resources">
+      <a href="https://arxiv.org/abs/2506.10600" target="_blank" rel="noopener">Paper</a>
+      <a href="https://github.com/HorizonRobotics/EmbodiedGen" target="_blank" rel="noopener">Code</a>
+      <a href="https://www.youtube.com/watch?v=rG4odybuJRk" target="_blank" rel="noopener">Video</a>
+      <a href="https://huggingface.co/collections/HorizonRobotics/embodiedgen" target="_blank" rel="noopener">HuggingFace</a>
+      <a href="https://huggingface.co/datasets/HorizonRobotics/EmbodiedGenData" target="_blank" rel="noopener">Dataset</a>
+      <a href="docs/" target="_blank" rel="noopener">Documentation</a>
+    </nav>
+    <div class="foot__meta">
+      <span class="foot__brand">EmbodiedGen</span>
+      <span class="foot__dot">·</span>
+      <span>Horizon Robotics</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -17,6 +17,7 @@
 
 import base64
 import logging
+import math
 import os
 from io import BytesIO
 from typing import Optional
@@ -29,9 +30,9 @@ from tenacity import (
     retry,
     retry_if_not_exception_type,
     stop_after_attempt,
+    stop_after_delay,
     wait_random_exponential,
 )
-from embodied_gen.utils.process_media import combine_images_to_grid
 
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.basicConfig(level=logging.WARNING)
@@ -44,6 +45,42 @@ __all__ = [
 
 _CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.join(_CURRENT_DIR, "gpt_config.yaml")
+DEFAULT_GPT_TIMEOUT = float(os.environ.get("GPT_TIMEOUT", 120))
+# GPT-5.x counts reasoning tokens against this cap, so it must be high
+# enough to leave room for both reasoning and the visible reply.
+GPT5_DEFAULT_MAX_COMPLETION_TOKENS = 8192
+
+
+def combine_images_to_grid(
+    images: list[str | Image.Image],
+    cat_row_col: tuple[int, int] = None,
+    target_wh: tuple[int, int] = (512, 512),
+    image_mode: str = "RGB",
+) -> list[Image.Image]:
+    n_images = len(images)
+    if n_images == 1:
+        return images
+
+    if cat_row_col is None:
+        n_col = math.ceil(math.sqrt(n_images))
+        n_row = math.ceil(n_images / n_col)
+    else:
+        n_row, n_col = cat_row_col
+
+    images = [
+        Image.open(p).convert(image_mode) if isinstance(p, str) else p
+        for p in images
+    ]
+    images = [img.resize(target_wh) for img in images]
+
+    grid_w, grid_h = n_col * target_wh[0], n_row * target_wh[1]
+    grid = Image.new(image_mode, (grid_w, grid_h), (0, 0, 0))
+
+    for idx, img in enumerate(images):
+        row, col = divmod(idx, n_col)
+        grid.paste(img, (col * target_wh[0], row * target_wh[1]))
+
+    return [grid]
 
 
 class GPTclient:
@@ -58,6 +95,7 @@ class GPTclient:
         api_version (str, optional): API version (for Azure).
         check_connection (bool, optional): Whether to check API connection.
         verbose (bool, optional): Enable verbose logging.
+        timeout (float, optional): Max seconds for a single GPT request.
 
     Example:
         ```sh
@@ -85,21 +123,27 @@ class GPTclient:
         api_version: str = None,
         check_connection: bool = True,
         verbose: bool = False,
+        timeout: float = DEFAULT_GPT_TIMEOUT,
     ):
         if api_version is not None:
             self.client = AzureOpenAI(
                 azure_endpoint=endpoint,
                 api_key=api_key,
                 api_version=api_version,
+                timeout=timeout,
+                max_retries=0,
             )
         else:
             self.client = OpenAI(
                 base_url=endpoint,
                 api_key=api_key,
+                timeout=timeout,
+                max_retries=0,
             )
 
         self.endpoint = endpoint
         self.model_name = model_name
+        self.timeout = timeout
         self.image_formats = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif"}
         self.verbose = verbose
         if check_connection:
@@ -107,10 +151,15 @@ class GPTclient:
 
         logger.info(f"Using GPT model: {self.model_name}.")
 
+    @staticmethod
+    def _is_gpt5_model(model_name: str) -> bool:
+        name = (model_name or "").lower()
+        return "gpt-5" in name or "gpt5" in name
+
     @retry(
         retry=retry_if_not_exception_type(openai.BadRequestError),
         wait=wait_random_exponential(min=1, max=10),
-        stop=stop_after_attempt(5),
+        stop=stop_after_attempt(5) | stop_after_delay(DEFAULT_GPT_TIMEOUT),
     )
     def completion_with_backoff(self, **kwargs):
         """Performs a chat completion request with retry/backoff."""
@@ -174,21 +223,52 @@ class GPTclient:
                     }
                 )
 
-        payload = {
-            "messages": [
-                {"role": "system", "content": system_role},
-                {"role": "user", "content": content_user},
-            ],
-            "temperature": 0.1,
-            "max_tokens": 500,
-            "top_p": 0.1,
-            "frequency_penalty": 0,
-            "presence_penalty": 0,
-            "stop": None,
-            "model": self.model_name,
-        }
+        is_gpt5 = self._is_gpt5_model(self.model_name)
+        if is_gpt5:
+            # GPT-5.x only supports default temperature/top_p and uses
+            # `max_completion_tokens` instead of `max_tokens`.
+            payload = {
+                "messages": [
+                    {"role": "system", "content": system_role},
+                    {"role": "user", "content": content_user},
+                ],
+                "max_completion_tokens": GPT5_DEFAULT_MAX_COMPLETION_TOKENS,
+                "model": self.model_name,
+            }
+        else:
+            payload = {
+                "messages": [
+                    {"role": "system", "content": system_role},
+                    {"role": "user", "content": content_user},
+                ],
+                "temperature": 0.1,
+                "max_tokens": 500,
+                "top_p": 0.1,
+                "frequency_penalty": 0,
+                "presence_penalty": 0,
+                "stop": None,
+                "model": self.model_name,
+            }
 
         if params:
+            params = dict(params)
+            if is_gpt5:
+                # GPT-5.x rejects custom temperature/top_p/penalty/stop and
+                # uses `max_completion_tokens` instead of `max_tokens`.
+                if (
+                    "max_tokens" in params
+                    and "max_completion_tokens" not in params
+                ):
+                    params["max_completion_tokens"] = params.pop("max_tokens")
+                for k in (
+                    "temperature",
+                    "top_p",
+                    "frequency_penalty",
+                    "presence_penalty",
+                    "stop",
+                    "max_tokens",
+                ):
+                    params.pop(k, None)
             payload.update(params)
 
         response = None
@@ -212,18 +292,22 @@ class GPTclient:
             ConnectionError: If connection fails.
         """
         try:
-            response = self.completion_with_backoff(
+            probe_kwargs = dict(
                 messages=[
                     {"role": "system", "content": "You are a test system."},
                     {"role": "user", "content": "Hello"},
                 ],
                 model=self.model_name,
-                temperature=0,
-                max_tokens=100,
             )
-            content = response.choices[0].message.content
-            logger.info(f"Connection check success.")
-        except Exception as e:
+            if self._is_gpt5_model(self.model_name):
+                probe_kwargs["max_completion_tokens"] = 100
+            else:
+                probe_kwargs["temperature"] = 0
+                probe_kwargs["max_tokens"] = 100
+            response = self.completion_with_backoff(**probe_kwargs)
+            response.choices[0].message.content
+            logger.info("Connection check success.")
+        except Exception:
             raise ConnectionError(
                 f"Failed to connect to GPT API at {self.endpoint}, "
                 f"please check setting in `{CONFIG_FILE}` and `README`."
@@ -241,6 +325,7 @@ endpoint = os.environ.get("ENDPOINT", agent_config.get("endpoint"))
 api_key = os.environ.get("API_KEY", agent_config.get("api_key"))
 api_version = os.environ.get("API_VERSION", agent_config.get("api_version"))
 model_name = os.environ.get("MODEL_NAME", agent_config.get("model_name"))
+timeout = DEFAULT_GPT_TIMEOUT
 
 GPT_CLIENT = GPTclient(
     endpoint=endpoint,
@@ -248,6 +333,7 @@ GPT_CLIENT = GPTclient(
     api_version=api_version,
     model_name=model_name,
     check_connection=False,
+    timeout=timeout,
 )
 
 

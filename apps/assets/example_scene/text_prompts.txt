@@ -1,75 +1,57 @@
 # Living Room
-Cozy living room with soft sofa and warm lighting
-Spacious living room with wooden floor and large windows
-Modern living room with neutral colors and minimalist decor
-Bright living room with plants and natural sunlight
-Classic living room with comfortable armchairs and carpet
+Rustic spacious living room with wooden beams and stone fireplace
+Minimalist spacious living room with neutral tones and plush throw blankets
 
 # Kitchen
 Clean kitchen with white cabinets and stainless steel appliances
-Kitchen with wooden countertops and hanging pots
 Rustic kitchen with brick walls and vintage stove
-Bright kitchen with large island and bar stools
-Modern kitchen with sleek design and open shelves
+Farmhouse kitchen with open shelves and ceramic sink
 
 # Bedroom
-Minimalist bedroom with white walls and cozy bed
-Warm bedroom with wooden furniture and soft rugs
-Bedroom with desk and natural light
-Classic bedroom with bedside lamps and curtains
-Bright bedroom with colorful pillows and plants
-
-# Dining Room
-Elegant dining room with wooden table and chandelier
-Casual dining room with bench seating and simple decor
-Bright dining room with large windows and natural light
-Rustic dining room with exposed beams and farmhouse table
-Modern dining room with glass table and sleek chairs
+Classic spacious bedroom with bedside lamps and curtains
+Minimalist bedroom with white linens and wooden bedframe
+Modern bedroom with sleek furniture and abstract wall art
 
 # Office Room
 Organized office with wooden desk and ergonomic chair
-Office with computer setup and bookshelves
-Bright office with large windows and plants
-Minimalist office with clean desk and laptop
-Cozy office with soft lighting and storage cabinets
+Industrial office with metal desk and exposed brick wall
+Bright office with large windows and potted plants
 
 # Study Room
-Quiet study room with large desk and bookshelf
-Study room with comfortable chair and lamp
-Bright study room with natural light and workspace
 Classic study room with wooden furniture and papers
-Modern study room with clean design and minimal clutter
+Rustic study room with wooden bookshelves and woven rug
 
 # Gym Room
-Home gym with treadmill and free weights
-Gym with yoga mats and dumbbells
-Bright gym with large mirrors and exercise bike
 Minimalist gym with clean floor and resistance bands
-Spacious gym with bench press and fitness equipment
+Home gym with yoga mats and natural light
 
 # Workshop
-Woodworking workshop with tools and workbench
 Workshop with organized tool storage
 Bright workshop with large windows and materials
-Metalworking workshop with machines and safety gear
 Creative workshop with paint and crafting supplies
-
-# Bathroom
-Bright modern bathroom with wooden accents
-Cozy tiled bathroom with warm lighting
-
-# Toilet Room
-Minimalist toilet room with white ceramic fixtures
-Compact toilet room with wall-mounted sink
 
 # Storage Room
 Organized storage room with labeled boxes
-Cluttered storage room with metal shelves
-
-# Meeting Room
-Bright meeting room with glass walls
-Classic meeting room with wooden table
+Minimalist storage room with stackable bins and clean floor
+Compact storage room with foldable shelves and bright lighting
 
 # Studio Room
 Art studio with easel and canvas
-Music studio with acoustic foam panels
+Dance studio with mirrored walls and wooden floor
+Creative studio with mixed media supplies and colorful decor
+
+# Bathroom
+Modern bathroom with white tiles and glass shower
+Cozy bathroom with clawfoot tub and soft towels
+Minimalist bathroom with clean lines and monochrome palette
+
+# Lab or Office Room
+Sleek, sterile modern laboratory with bright white surfaces
+Spotless laboratory with labeled shelves and tools
+Well-lit clean lab with uncluttered work surfaces
+Plain, clean laboratory with basic lab furniture
+Bright, organized laboratory with advanced digital displays
+Modern workspace mixing sterile lab benches and casual seating
+Immaculate lab filled with advanced scientific devices
+Simple sterile lab with white walls and clear counters
+Minimalist office laboratory with seamless white surfaces

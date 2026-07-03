@@ -13,3 +13,16 @@
 	url = https://github.com/HochCC/sam-3d-objects.git
 	branch = main
 	shallow = true
+[submodule "thirdparty/GraspGen"]
+	path = thirdparty/GraspGen
+	url = https://github.com/NVlabs/GraspGen.git
+	branch = main
+	shallow = true
+[submodule "thirdparty/Hunyuan3D-Part"]
+	path = thirdparty/Hunyuan3D-Part
+	url = https://github.com/Tencent-Hunyuan/Hunyuan3D-Part.git
+	branch = main
+	shallow = true
+[submodule "thirdparty/infinigen"]
+	path = thirdparty/infinigen
+	url = https://github.com/princeton-vl/infinigen.git

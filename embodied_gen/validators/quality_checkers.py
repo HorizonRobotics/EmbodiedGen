@@ -30,6 +30,8 @@ logger = logging.getLogger(__name__)
 __all__ = [
     "MeshGeoChecker",
     "ImageSegChecker",
+    "PartSemanticsChecker",
+    "PartSegChecker",
     "ImageAestheticChecker",
     "SemanticConsistChecker",
     "TextGenAlignChecker",
@@ -228,6 +230,163 @@ class ImageSegChecker(BaseChecker):
         return self.gpt_client.query(
             text_prompt=self.prompt,
             image_base64=image_paths,
+        )
+
+
+class PartSemanticsChecker(BaseChecker):
+    """An affordance annotation quality checker using GPT-based reasoning.
+
+    This checker validates whether an affordance annotation result is
+    consistent with the RGB multi-view grid and the aligned colored part-mask
+    grid.
+
+    Attributes:
+        gpt_client (GPTclient): GPT client used for multi-modal analysis.
+        prompt (str): Prompt used to evaluate affordance annotations.
+        verbose (bool): Whether to enable verbose logging.
+    """
+
+    def __init__(
+        self,
+        gpt_client: GPTclient,
+        prompt: str = None,
+        verbose: bool = False,
+    ) -> None:
+        super().__init__(prompt, verbose)
+        self.gpt_client = gpt_client
+        if self.prompt is None:
+            self.prompt = """
+            Task: Check whether the candidate affordance annotation is correct.
+
+            You will receive:
+            - Image 1: an RGB multi-view grid of the object.
+            - Image 2: part mask multi-view grid aligned with Image 1. Different colors indicate different segmented parts.
+            - Candidate affordance annotation JSON/text.
+
+            Evaluate every annotated part against both images. The annotation is acceptable only when all important fields are reasonable.
+
+            For each part, check:
+            - part_name: it must accurately describe the corresponding physical part shown in the RGB image and selected by the mask. It should be specific enough to distinguish that part from other parts.
+            - graspable: the true/false label must be realistic for robotic gripper use, considering whether the part is a useful place to hold, pick up, stabilize, pull, press, or manipulate the object.
+            - grasp_scenarios: each scenario must be concrete and plausible for the part. Confidence values must be consistent with how likely or useful that grasp is; high confidence should be reserved for common, robust grasps, while marginal or delicate grasps should have low confidence.
+            - functional_labels: labels must describe real functions, roles, or possible uses of that physical part. They should not be generic, unrelated, or copied from another part.
+            - semantic_description: it must match the RGB appearance of the same part, including visible color, material, surface finish, texture, shape, size, position, and markings when these can be inferred. The visible color means the real color in Image 1, not the segmentation mask color in Image 2.
+
+            Be strict about clear mismatches in part identity, mask color, graspability, function, or visual description. Accept minor uncertainty only when the images are genuinely ambiguous or the annotation is still broadly correct.
+
+            Output Rules:
+            - If the annotation is acceptable, respond exactly with: YES
+            - If the annotation is not acceptable, respond with one valid JSON object only:
+              {"status": "NO", "reason": "brief reason, max 30 words", "modified_response": <corrected affordance annotation JSON object>}
+            - The modified_response must preserve the required annotation schema and fix the identified issue.
+            - In a failure response, do not include the word YES anywhere.
+            - Do not use Markdown, code fences, bullets, or bold text outside the JSON object.
+            """
+
+    def query(
+        self,
+        result: str,
+        grid_rgb_path: str | Image.Image,
+        grid_mask_path: str | Image.Image,
+    ) -> str:
+        text_prompt = (
+            f"{self.prompt}\n\n"
+            "Candidate affordance annotation result:\n"
+            f"{result}"
+        )
+        return self.gpt_client.query(
+            text_prompt=text_prompt,
+            image_base64=[grid_rgb_path, grid_mask_path],
+            params={"max_tokens": 10240},
+        )
+
+    def __call__(self, *args, **kwargs) -> tuple[bool, str]:
+        response = self.query(*args, **kwargs)
+        if self.verbose:
+            logger.info(response)
+
+        if response is None:
+            return None, (
+                "Error when calling GPT api, check config in "
+                "`embodied_gen/utils/gpt_config.yaml` or net connection."
+            )
+
+        response = response.strip()
+        if response == "YES":
+            return True, "YES"
+        return False, response
+
+
+class PartSegChecker(BaseChecker):
+    """A part segmentation quality checker using GPT-based reasoning.
+
+    This checker validates whether a colored part-mask multi-view grid
+    correctly segments the object parts shown in an aligned RGB multi-view grid.
+    """
+
+    def __init__(
+        self,
+        gpt_client: GPTclient,
+        prompt: str = None,
+        verbose: bool = False,
+    ) -> None:
+        super().__init__(prompt, verbose)
+        self.gpt_client = gpt_client
+        if self.prompt is None:
+            self.prompt = """
+            Task: Check whether a functional part segmentation result is accurate and actionable.
+
+            You will receive:
+            - Object category: {category}
+            - Mask color list: {color_names}
+            - Image 1: an RGB multi-view grid of the object.
+            - Image 2: part mask multi-view grid aligned with Image 1. Different colors indicate different segmented parts.
+
+            The goal is to judge whether Image 2 correctly segments the object into functional physical parts. A functional part is a region that has a distinct physical role or affordance for the object category, such as a handle, lid, wheel, leg, blade, screen, button, base, stem, cap, seat, backrest, or main body.
+
+            Criteria:
+            - Use Image 1 to understand the real object shape and functional parts.
+            - Use Image 2 and the mask color list to identify which segmented regions exist. Only refer to colors from the provided color list.
+            - Meaningful functional parts should be separated when their boundary is visually clear.
+            - For simple single-piece categories with few mechanical parts, accept stable fine-grained regions that follow visible geometry or usable surfaces, even if they share the same broad function.
+            - A single functional part should not appear as many small fragments or several colors unless those pieces are genuinely separate repeated parts.
+            - Different functional parts should not be merged into one color when they have clear boundaries and different roles.
+            - Ignore tiny boundary noise, minor holes, occluded-view ambiguity, and reasonable simplification for smooth objects with few natural parts.
+
+            When the result is too fragmented, give modification advice that can be applied by code. The only supported modification is merging multiple mask colors into one functional part:
+            - merge colors that belong to the same functional part.
+            - merge small noisy fragments into the neighboring major color only when they are not meaningful functional parts.
+            - For simple single-piece objects, prefer keeping coherent fine regions separate unless the colors are clearly accidental fragments of the same visible surface.
+            - keep repeated symmetric parts separate only if the downstream task needs individual instances; otherwise they may share one color when they have the same function.
+            - Do not suggest any operation other than color merging.
+
+            Output Rules:
+            - If the part segmentation is accurate enough, respond exactly with: YES
+            - If the part segmentation is not accurate enough, respond with exactly one line starting with "NO: " followed by valid compact JSON.
+            - The JSON must follow this schema:
+              {{"summary":"brief reason","merge_groups":[{{"colors":["ColorName"],"target_part":"functional part name","reason":"why these colors should be merged"}}]}}
+            - Each merge group must contain at least two colors from the provided mask color list.
+            - Only include merge groups that are clearly supported by the images.
+            - If the segmentation has problems that cannot be fixed by merging colors, still output the closest useful merge groups if any; otherwise use an empty merge_groups list and explain the unsupported issue in summary.
+            - Keep the JSON concise, with at most 3 merge groups and reasons under 20 words each.
+            - In a failure response, do not include the word YES anywhere.
+            - Do not use Markdown, code fences, bullets, or bold text.
+            """
+
+    def query(
+        self,
+        category: str,
+        color_names: str,
+        grid_rgb_path: str | Image.Image,
+        grid_mask_path: str | Image.Image,
+    ) -> str:
+        text_prompt = self.prompt.format(
+            category=category, color_names=color_names
+        )
+        return self.gpt_client.query(
+            text_prompt=text_prompt,
+            image_base64=[grid_rgb_path, grid_mask_path],
+            params={"max_tokens": 10240},
         )
 
 

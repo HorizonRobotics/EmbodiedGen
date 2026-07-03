@@ -61,6 +61,7 @@ def render_asset3d(
     num_images: int = 1,
     elevation: list[float] = (0.0,),
     pbr_light_factor: float = 1.2,
+    pbr_metallic: bool = False,
     return_key: str = "image_color/*",
     output_subdir: str = "renders",
     gen_color_mp4: bool = False,
@@ -78,6 +79,7 @@ def render_asset3d(
         num_images (int, optional): Number of views to render.
         elevation (list[float], optional): Camera elevation angles.
         pbr_light_factor (float, optional): PBR lighting factor.
+        pbr_metallic (bool, optional): Keep metallic material properties for PBR rendering.
         return_key (str, optional): Glob pattern for output images.
         output_subdir (str, optional): Subdirectory for outputs.
         gen_color_mp4 (bool, optional): Generate color MP4 video.
@@ -111,6 +113,7 @@ def render_asset3d(
         num_images=num_images,
         elevation=elevation,
         pbr_light_factor=pbr_light_factor,
+        pbr_metallic=pbr_metallic,
         with_mtl=with_mtl,
         gen_color_mp4=gen_color_mp4,
         gen_viewnormal_mp4=gen_viewnormal_mp4,

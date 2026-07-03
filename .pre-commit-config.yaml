@@ -8,6 +8,7 @@ repos:
         description: Prevent giant files from being committed
         entry: check-added-large-files
         language: python
+        exclude: ^docs/
         args: ["--maxkb=1024"]
   - repo: local
     hooks:
@@ -18,18 +19,18 @@ repos:
         language: system
         exclude: (?x)(^tools/|^thirdparty/|^patch_files/)
         files: \.(c|cc|cxx|cpp|cu|h|hpp)$
-        args: [--project=asset_recons, --path]
+        args: [--project=embodied_gen, --path]
   - repo: local
     hooks:
-      - id: pycodestyle-python
-        name: pep8-exclude-docs
-        description: Check python code style.
-        entry: pycodestyle
+      - id: ruff-check-python
+        name: ruff-check
+        description: Check and fix python lint issues.
+        entry: ruff check --fix
         language: system
         exclude: (?x)(^docs/|^thirdparty/|^scripts/build/)
         files: \.(py)$
         types: [file, python]
-        args: [--config=setup.cfg]
+        args: [--config=pyproject.toml]
 
 
   # pre-commit install --hook-type commit-msg to enable it
@@ -44,35 +45,12 @@ repos:
 
   - repo: local
     hooks:
-      - id: pydocstyle-python
-        name: pydocstyle-change-exclude-docs
-        description: Check python doc style.
-        entry: pydocstyle
+      - id: ruff-format-python
+        name: ruff-format
+        description: Format python code.
+        entry: ruff format
         language: system
         exclude: (?x)(^docs/|^thirdparty/)
         files: \.(py)$
         types: [file, python]
         args: [--config=pyproject.toml]
-  - repo: local
-    hooks:
-      - id: black
-        name: black-exclude-docs
-        description: black format
-        entry: black
-        language: system
-        exclude: (?x)(^docs/|^thirdparty/)
-        files: \.(py)$
-        types: [file, python]
-        args: [--config=pyproject.toml]
-
-  - repo: local
-    hooks:
-      - id: isort
-        name: isort
-        description: isort format
-        entry: isort
-        language: system
-        exclude: (?x)(^thirdparty/)
-        files: \.(py)$
-        types: [file, python]
-        args: [--settings-file=pyproject.toml]

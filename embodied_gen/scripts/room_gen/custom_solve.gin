@@ -1,0 +1,30 @@
+FloorPlanSolver.n_divide_trials = 25
+FloorPlanSolver.iters_mult = 50
+
+home_room_constraints.has_fewer_rooms = False
+
+compose_indoors.place_cameras = False
+
+solve_objects.addition_weight_scalar = 3.0
+compose_indoors.solve_steps_large = 30
+compose_indoors.solve_steps_medium = 20
+compose_indoors.solve_steps_small = 5
+
+compose_indoors.invisible_room_ceilings_enabled = False
+compose_indoors.hide_other_rooms_enabled = True
+
+compose_indoors.terrain_enabled = False
+
+compose_indoors.pose_cameras_enabled = False
+compose_indoors.animate_cameras_enabled = False
+compose_indoors.overhead_cam_enabled = True
+
+compose_indoors.nature_backdrop_enabled = False
+
+compose_indoors.lights_off_chance = 0.0
+
+compose_indoors.skirting_floor_enabled = False
+compose_indoors.skirting_ceiling_enabled = False
+BlueprintSolidifier.enable_open = False
+
+compose_indoors.room_doors_enabled = False

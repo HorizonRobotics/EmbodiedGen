@@ -19,7 +19,6 @@ import sys
 from collections import defaultdict
 
 import numpy as np
-import spaces
 import torch
 from easydict import EasyDict as edict
 from tqdm import tqdm
@@ -43,7 +42,6 @@ __all__ = [
 ]
 
 
-@spaces.GPU
 def render_mesh_frames(sample, extrinsics, intrinsics, options={}, **kwargs):
     renderer = MeshRenderer()
     renderer.rendering_options.resolution = options.get("resolution", 512)
@@ -66,7 +64,6 @@ def render_mesh_frames(sample, extrinsics, intrinsics, options={}, **kwargs):
     return rets
 
 
-@spaces.GPU
 def render_gs_frames(
     sample,
     extrinsics,
@@ -117,7 +114,6 @@ def render_gs_frames(
     return dict(outputs)
 
 
-@spaces.GPU
 def render_video(
     sample,
     resolution=512,
@@ -149,7 +145,6 @@ def render_video(
     return result
 
 
-@spaces.GPU
 def pack_state(gs: Gaussian, mesh: MeshExtractResult) -> dict:
     return {
         "gaussian": {

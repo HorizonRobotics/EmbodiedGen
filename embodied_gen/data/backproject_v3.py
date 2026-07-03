@@ -419,7 +419,7 @@ def parse_args():
     parser.add_argument(
         "--save_glb_path", type=str, default=None, help="Save glb path."
     )
-    parser.add_argument("--n_max_faces", type=int, default=30000)
+    parser.add_argument("--n_max_faces", type=int, default=50000)
     args, unknown = parser.parse_known_args()
 
     return args

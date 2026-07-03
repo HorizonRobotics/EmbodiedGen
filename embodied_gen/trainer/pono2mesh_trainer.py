@@ -15,7 +15,7 @@
 # permissions and limitations under the License.
 
 
-from embodied_gen.utils.monkey_patches import monkey_patch_pano2room
+from embodied_gen.utils.monkey_patch.pano2room import monkey_patch_pano2room
 
 monkey_patch_pano2room()
 

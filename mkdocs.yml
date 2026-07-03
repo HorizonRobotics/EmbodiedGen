@@ -1,35 +1,44 @@
-site_name: Documentation
-site_url: https://horizonrobotics.github.io/EmbodiedGen/
+site_name: EmbodiedGen Documentation
+site_url: https://horizonrobotics.github.io/EmbodiedGen/docs/
+docs_dir: docs/documentation
 repo_name: "EmbodiedGen"
 repo_url: https://github.com/HorizonRobotics/EmbodiedGen
-copyright: "Copyright (c) 2025 Horizon Robotics"
+copyright: "Copyright (c) 2026 Horizon Robotics"
 use_directory_urls: false
 
 nav:
   - 🏠 Home: index.md
   - 🚀 Installation: install.md
+  - 📘 Tutorials:
+    - Overview: tutorials/index.md
+    - 🧱 Asset Generation:
+      - Image-to-3D: tutorials/image_to_3d.md
+      - Text-to-3D: tutorials/text_to_3d.md
+      - Texture Generation: tutorials/texture_edit.md
+      - Soft-Body Simulation: tutorials/soft_body.md
+      - Articulated Objects (DIPO): tutorials/articulated_gen.md
+      - Affordance: tutorials/affordance.md
+    - 🏠 Scene Generation:
+      - Room Generation: tutorials/room_gen.md
+      - 3D Scene Generation: tutorials/scene_gen.md
+    - 🌍 World Composition:
+      - Layout Generation: tutorials/layout_gen.md
+      - Digital Twin Creation: tutorials/digital_twin.md
+    - 💬 3D Vibe Coding: tutorials/vibe_coding.md
+    - 📦 Any Simulators: tutorials/any_simulators.md
+    - 🤖 Robot Learning: tutorials/robot_learning.md
   - 🧩 Services:
     - Overview: services/index.md
     - Image-to-3D: services/image_to_3d.md
     - Text-to-3D: services/text_to_3d.md
     - Texture Generation: services/texture_edit.md
     - Asset Visualizer: services/visualize_asset.md
-  - 📘 Tutorials:
-    - Overview: tutorials/index.md
-    - Image-to-3D: tutorials/image_to_3d.md
-    - Text-to-3D: tutorials/text_to_3d.md
-    - Texture Generation: tutorials/texture_edit.md
-    # - Articulated Object Generation: tutorials/articulated_gen.md
-    - 3D Scene Generation: tutorials/scene_gen.md
-    - Interactive 3D Scenes: tutorials/layout_gen.md
-    - Gym Parallel Envs: tutorials/gym_env.md
-    - Any Simulators: tutorials/any_simulators.md
-    - Digital Twin Creation: tutorials/digital_twin.md
   - 📚 API Reference:
     - Overview: api/index.md
     - Data: api/data.md
     - Envs: api/envs.md
     - Models: api/models.md
+    - Skills: api/skills.md
     - Trainer: api/trainer.md
     - Utilities: api/utils.md
     - Validators: api/validators.md
@@ -52,7 +61,10 @@ theme:
   name: material
   language: en
   logo: assets/logo.png
-  favicon: assets/logo.png
+  favicon: assets/favicon.svg
+  font:
+    text: Hanken Grotesk
+    code: JetBrains Mono
   icon:
     repo: fontawesome/brands/github
   features:
@@ -68,15 +80,15 @@ theme:
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: brown
-      accent: red
+      primary: indigo
+      accent: indigo
       toggle:
         icon: material/weather-sunny
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: brown
-      accent: red
+      primary: indigo
+      accent: indigo
       toggle:
         icon: material/weather-night
         name: Switch to light mode
@@ -114,4 +126,6 @@ markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
   - admonition
+  - attr_list
+  - md_in_html
 

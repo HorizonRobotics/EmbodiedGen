@@ -1,4 +1,8 @@
-name: Deploy MkDocs Documentation
+name: Deploy Site (landing + docs)
+
+# Publishes to gh-pages:
+#   /        -> docs/landing  (the EmbodiedGen V2 project landing page)
+#   /docs/   -> MkDocs documentation (built from docs/documentation)
 
 on:
   push:
@@ -33,7 +37,7 @@ jobs:
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
-      - name: Build docs
+      - name: Build docs (validation)
         run: mkdocs build
 
   deploy:
@@ -59,5 +63,21 @@ jobs:
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
-      - name: Deploy docs
-        run: mkdocs gh-deploy --force
+      - name: Build docs -> site/
+        run: mkdocs build
+
+      - name: Assemble publish dir (landing at root, docs under /docs/)
+        run: |
+          rm -rf public
+          mkdir -p public/docs
+          cp -a docs/landing/. public/
+          rm -rf public/tools public/README.md   # build tooling / readme are not part of the published site
+          cp -a site/. public/docs/
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Publish to gh-pages
+        run: ghp-import -n -p -f -m "Deploy landing + docs ${GITHUB_SHA}" public
