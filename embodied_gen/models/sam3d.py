@@ -14,7 +14,7 @@
 # implied. See the License for the specific language governing
 # permissions and limitations under the License.
 
-from embodied_gen.utils.monkey_patches import monkey_patch_sam3d
+from embodied_gen.utils.monkey_patch.sam3d import monkey_patch_sam3d
 
 monkey_patch_sam3d()
 import os
@@ -30,7 +30,7 @@ current_file_path = os.path.abspath(__file__)
 current_dir = os.path.dirname(current_file_path)
 sys.path.append(os.path.join(current_dir, "../.."))
 from loguru import logger
-from thirdparty.sam3d.sam3d_objects.pipeline.inference_pipeline_pointmap import (
+from sam3d_objects.pipeline.inference_pipeline_pointmap import (
     InferencePipelinePointMap,
 )
 
@@ -51,6 +51,7 @@ class Sam3dInference:
     Args:
         local_dir (str): Directory to store or load model weights and configs.
         compile (bool): Whether to compile the model for faster inference.
+        device (str): Device to run the model on (e.g., "cuda" or "cpu").
 
     Methods:
         merge_mask_to_rgba(image, mask):
@@ -62,7 +63,10 @@ class Sam3dInference:
     """
 
     def __init__(
-        self, local_dir: str = "weights/sam-3d-objects", compile: bool = False
+        self,
+        local_dir: str = "weights/sam-3d-objects",
+        compile: bool = False,
+        device: str = "cuda",
     ) -> None:
         if not os.path.exists(local_dir):
             snapshot_download("facebook/sam-3d-objects", local_dir=local_dir)
@@ -78,6 +82,7 @@ class Sam3dInference:
         config["slat_decoder_gs_ckpt_path"] = config.pop(
             "slat_decoder_gs_4_ckpt_path", "slat_decoder_gs_4.ckpt"
         )
+        config["device"] = device
         self.pipeline: InferencePipelinePointMap = instantiate(config)
 
     def merge_mask_to_rgba(

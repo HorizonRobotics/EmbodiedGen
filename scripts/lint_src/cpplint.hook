@@ -6,5 +6,5 @@ if [[ ! $(which cpplint) ]]; then
 fi
 # diff files on local machine.
 files=$(git diff --cached --name-status | awk '$1 != "D" {print $2}')
-python3 scripts/lint_src/lint.py  --project=asset_recons --path $files --exclude_path thirdparty patch_files;
+python3 scripts/lint_src/lint.py  --project=embodied_gen --path $files --exclude_path thirdparty patch_files;
 

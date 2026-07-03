@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="EmbodiedGen">
+  <rect width="32" height="32" rx="7" fill="#1E54FF"/>
+  <!-- isometric 3D asset cube -->
+  <path d="M16 5 L26 10.5 L16 16 L6 10.5 Z" fill="#ffffff"/>
+  <path d="M6 10.5 L16 16 L16 27 L6 21.5 Z" fill="#c9d6ff"/>
+  <path d="M26 10.5 L16 16 L16 27 L26 21.5 Z" fill="#9fb8ff"/>
+</svg>

@@ -55,10 +55,19 @@ SIM_COORD_ALIGN = np.array(
 __all__ = [
     "SIM_COORD_ALIGN",
     "FrankaPandaGrasper",
-    "load_assets_from_layout_file",
-    "load_mani_skill_robot",
-    "render_images",
+    "capture_frame",
+    "create_panda_agent",
+    "create_recording_camera",
+    "estimate_grasp_width",
+    "get_actor_bottom_z",
+    "get_actor_mesh",
     "is_urdf_articulated",
+    "load_assets_from_layout_file",
+    "load_collision_mesh_from_urdf",
+    "load_mani_skill_robot",
+    "quat_from_yaw",
+    "render_images",
+    "set_ground_base_color",
 ]
 
 
@@ -722,6 +731,8 @@ class FrankaPandaGrasper(object):
         result[action_key] = result[action_key][::sample_ratio]
 
         n_step = len(result[action_key])
+        if n_step == 0:
+            return None
         actions = []
         for i in range(n_step):
             qpos = result[action_key][i]
@@ -805,10 +816,14 @@ class FrankaPandaGrasper(object):
                 gripper_state=1,
                 env_idx=env_idx,
             )
+            if grasp_actions is None:
+                logger.warning(
+                    f"Failed to move from reach pose to grasp pose for `{actor.name}`."
+                )
+                return None
             actions.append(grasp_actions)
             close_actions = self.control_gripper(
                 gripper_state=-1,
-                env_idx=env_idx,
             )
             actions.append(close_actions)
             back_actions = self.move_to_pose(
@@ -817,6 +832,181 @@ class FrankaPandaGrasper(object):
                 gripper_state=-1,
                 env_idx=env_idx,
             )
+            if back_actions is None:
+                logger.warning(
+                    f"Failed to retreat after grasping `{actor.name}`."
+                )
+                return None
             actions.append(back_actions)
 
         return np.concatenate(actions, axis=0)
+
+
+def load_collision_mesh_from_urdf(urdf_path: str) -> trimesh.Trimesh:
+    """Load the collision mesh referenced by a URDF in its link frame.
+
+    Applies the optional collision/origin transform so the returned mesh sits
+    in the same frame the simulator will use; required for correct spawn-z
+    estimation downstream.
+    """
+    root = ET.parse(urdf_path).getroot()
+    collision_mesh = root.find(".//collision/geometry/mesh")
+    if collision_mesh is None:
+        raise ValueError(f"Collision mesh not found in URDF: {urdf_path}")
+
+    collision_file = collision_mesh.get("filename")
+    if not collision_file:
+        raise ValueError(f"Collision mesh filename missing in {urdf_path}")
+
+    scale_attr = collision_mesh.get("scale", "1.0 1.0 1.0")
+    mesh_scale = np.array([float(x) for x in scale_attr.split()])
+    mesh_path = os.path.join(os.path.dirname(urdf_path), collision_file)
+    mesh = trimesh.load(mesh_path)
+    if isinstance(mesh, trimesh.Scene):
+        mesh = mesh.dump(concatenate=True)
+    mesh.apply_scale(mesh_scale)
+
+    collision_origin = root.find(".//collision/origin")
+    if collision_origin is not None:
+        xyz = [float(v) for v in collision_origin.get("xyz", "0 0 0").split()]
+        rpy = [float(v) for v in collision_origin.get("rpy", "0 0 0").split()]
+        transform = np.eye(4, dtype=np.float64)
+        transform[:3, :3] = R.from_euler("xyz", rpy, degrees=False).as_matrix()
+        transform[:3, 3] = np.array(xyz, dtype=np.float64)
+        mesh.apply_transform(transform)
+
+    return mesh
+
+
+def estimate_grasp_width(mesh: trimesh.Trimesh) -> float:
+    """Estimate a conservative top-down grasp width from OBB extents."""
+    extents = np.sort(mesh.bounding_box_oriented.extents)
+    return float(extents[1])
+
+
+def get_actor_mesh(actor: sapien.Entity) -> trimesh.Trimesh:
+    """Get the actor collision mesh in world coordinates."""
+    physx_rigid = actor.components[1]
+    mesh = get_component_mesh(physx_rigid, to_world_frame=True)
+    if mesh is None or mesh.is_empty:
+        raise ValueError(f"Actor `{actor.name}` has no valid collision mesh.")
+
+    return mesh
+
+
+def get_actor_bottom_z(actor: sapien.Entity) -> float:
+    """Get the actor world-space bottom z from its collision mesh."""
+    return float(get_actor_mesh(actor).bounds[0, 2])
+
+
+def quat_from_yaw(yaw_deg: float) -> list[float]:
+    """Convert z-axis yaw angle (degrees) to a SAPIEN quaternion (w,x,y,z)."""
+    yaw = np.deg2rad(yaw_deg)
+    return [float(np.cos(yaw / 2)), 0.0, 0.0, float(np.sin(yaw / 2))]
+
+
+def set_ground_base_color(scene: sapien.Scene, rgba: list[float]) -> None:
+    """Update the default ground plane material color for this scene."""
+    for actor in scene.get_all_actors():
+        if actor.name != "ground":
+            continue
+        for component in actor.components:
+            render_shapes = getattr(component, "render_shapes", None)
+            if render_shapes is None:
+                continue
+            for render_shape in render_shapes:
+                render_shape.material.set_base_color(rgba)
+        return
+
+    raise ValueError("Ground actor not found in the scene.")
+
+
+def capture_frame(
+    scene: sapien.Scene,
+    camera: sapien.render.RenderCameraComponent,
+) -> np.ndarray:
+    """Capture a single RGB frame from the camera (updates render first)."""
+    scene.update_render()
+    camera.take_picture()
+    return np.array(render_images(camera, ["Color"])["Color"])
+
+
+def create_recording_camera(
+    scene_manager: "SapienSceneManager",
+    eye_pos: list[float],
+    target_pt: list[float],
+    image_hw: tuple[int, int],
+    fovy_deg: float = 45.0,
+    cam_name: str = "recording_camera",
+) -> sapien.render.RenderCameraComponent:
+    """Create a camera looking from eye_pos at target_pt for video capture."""
+    eye_pos = np.array(eye_pos, dtype=np.float32)
+    target_pt = np.array(target_pt, dtype=np.float32)
+    world_up_vec = np.array([0.0, 0.0, 1.0], dtype=np.float32)
+    forward_vec = target_pt - eye_pos
+    forward_vec = forward_vec / np.linalg.norm(forward_vec)
+    temp_right_vec = np.cross(forward_vec, world_up_vec)
+    if np.linalg.norm(temp_right_vec) < 1e-6:
+        temp_right_vec = np.array([1.0, 0.0, 0.0], dtype=np.float32)
+    right_vec = temp_right_vec / np.linalg.norm(temp_right_vec)
+    up_vec = np.cross(right_vec, forward_vec)
+    rotation_matrix = np.array([forward_vec, -right_vec, up_vec]).T
+    scipy_quat = R.from_matrix(rotation_matrix).as_quat()
+    quat = [
+        float(scipy_quat[3]),
+        float(scipy_quat[0]),
+        float(scipy_quat[1]),
+        float(scipy_quat[2]),
+    ]
+
+    return scene_manager.create_camera(
+        cam_name,
+        pose=sapien.Pose(p=eye_pos.tolist(), q=quat),
+        image_hw=image_hw,
+        fovy_deg=fovy_deg,
+    )
+
+
+def create_panda_agent(
+    scene: sapien.Scene,
+    control_freq: int,
+    sim_backend: str,
+    render_backend: str,
+    initial_qpos: np.ndarray | None = None,
+    control_mode: str = "pd_joint_pos",
+) -> BaseAgent:
+    """Create a ManiSkill Panda agent attached to a SAPIEN scene."""
+    from mani_skill.agents import REGISTERED_AGENTS
+    from mani_skill.envs.utils.system.backend import (
+        parse_sim_and_render_backend,
+    )
+
+    backend = parse_sim_and_render_backend(sim_backend, render_backend)
+    ms_scene = ManiSkillScene([scene], device=sim_backend, backend=backend)
+    robot_cls = REGISTERED_AGENTS["panda"].agent_cls
+    agent = robot_cls(
+        scene=ms_scene,
+        control_freq=control_freq,
+        control_mode=control_mode,
+        initial_pose=sapien.Pose([0, 0, 0], [1, 0, 0, 0]),
+    )
+    if initial_qpos is None:
+        initial_qpos = np.array(
+            [
+                0.0,
+                np.pi / 8,
+                0.0,
+                -np.pi * 3 / 8,
+                0.0,
+                np.pi * 3 / 4,
+                np.pi / 4,
+                0.04,
+                0.04,
+            ],
+            dtype=np.float32,
+        )
+    agent.reset(initial_qpos[None, ...].copy())
+    agent.init_qpos = agent.robot.qpos
+    agent.controller.controllers["gripper"].reset()
+
+    return agent

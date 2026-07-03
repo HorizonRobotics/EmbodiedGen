@@ -14,12 +14,15 @@
 # implied. See the License for the specific language governing
 # permissions and limitations under the License.
 
+from __future__ import annotations
+
 import json
 import os
 import random
 from collections import defaultdict, deque
+from dataclasses import dataclass
 from functools import wraps
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 import torch
@@ -32,8 +35,20 @@ from shapely.geometry import Polygon
 from embodied_gen.utils.enum import LayoutInfo, Scene3DItemEnum
 from embodied_gen.utils.log import logger
 
+if TYPE_CHECKING:
+    import sapien.core as sapien
+
 __all__ = [
+    "EnclosedFaceLabelFillConfig",
+    "MeshInfo",
+    "SmoothFaceLabelMergeConfig",
     "with_seed",
+    "fill_small_enclosed_face_labels",
+    "normalize_mesh",
+    "merge_smooth_face_labels",
+    "nearest_faces",
+    "sample_surface_points",
+    "gripper_finger_center",
     "matrix_to_pose",
     "pose_to_matrix",
     "quaternion_multiply",
@@ -42,6 +57,423 @@ __all__ = [
     "compose_mesh_scene",
     "compute_pinhole_intrinsics",
 ]
+
+
+@dataclass
+class MeshInfo:
+    actor_name: str
+    collision_mesh_path: str
+    collision_mesh_scale: np.ndarray
+    collision_local_pose: sapien.Pose
+    visual_mesh_path: str
+    visual_mesh_scale: np.ndarray
+    visual_local_pose: sapien.Pose
+    transformed_mesh: trimesh.Trimesh
+    object_height: float
+    mass: float | None
+    static_friction: float
+    dynamic_friction: float
+
+
+@dataclass(frozen=True)
+class SmoothFaceLabelMergeConfig:
+    max_smooth_angle_deg: float = 18.0
+    vertex_merge_tolerance: float = 0.0
+    min_component_area_ratio: float = 0.0
+    min_component_faces: int = 1
+    preserve_negative: bool = False
+
+
+@dataclass(frozen=True)
+class EnclosedFaceLabelFillConfig:
+    max_component_area_ratio: float = 0.005
+    max_component_faces: int = 100
+    min_enclosure_neighbor_ratio: float = 0.8
+    vertex_merge_tolerance: float = 0.0
+
+
+class _UnionFind:
+    def __init__(self, size: int):
+        self.parent = np.arange(size, dtype=np.int64)
+        self.rank = np.zeros(size, dtype=np.uint8)
+
+    def find(self, item: int) -> int:
+        parent = int(self.parent[item])
+        if parent != item:
+            parent = self.find(parent)
+            self.parent[item] = parent
+        return parent
+
+    def union(self, left: int, right: int) -> None:
+        left_root = self.find(left)
+        right_root = self.find(right)
+        if left_root == right_root:
+            return
+        if self.rank[left_root] < self.rank[right_root]:
+            left_root, right_root = right_root, left_root
+        self.parent[right_root] = left_root
+        if self.rank[left_root] == self.rank[right_root]:
+            self.rank[left_root] += 1
+
+
+def normalize_mesh(mesh: trimesh.Trimesh) -> trimesh.Trimesh:
+    mesh_unit = mesh.copy()
+    scale = float(np.ptp(mesh_unit.vertices, axis=0).max())
+    if scale <= 0.0:
+        raise ValueError("mesh has zero extent and cannot be normalized")
+    mesh_unit.apply_scale(1.0 / scale)
+    return mesh_unit
+
+
+def sample_surface_points(
+    mesh: trimesh.Trimesh, num_sample_points: int
+) -> np.ndarray:
+    points, _ = trimesh.sample.sample_surface(mesh, num_sample_points)
+    points = np.asarray(points, dtype=np.float32)
+
+    if len(points) > num_sample_points:
+        indices = np.random.choice(
+            len(points), num_sample_points, replace=False
+        )
+        points = points[indices]
+
+    return points
+
+
+def nearest_faces(mesh: trimesh.Trimesh, points: np.ndarray) -> np.ndarray:
+    points = np.asarray(points, dtype=np.float64)
+    if not isinstance(mesh, trimesh.Trimesh) or len(mesh.faces) == 0:
+        return np.full(len(points), -1, dtype=np.int64)
+
+    try:
+        _, _, face_ids = trimesh.proximity.closest_point(mesh, points)
+        return np.asarray(face_ids, dtype=np.int64)
+    except Exception as exc:
+        logger.warning(
+            "Failed to query closest mesh faces with trimesh proximity, "
+            f"falling back to triangle-center KDTree: {exc}"
+        )
+        from scipy.spatial import cKDTree
+
+        _, face_ids = cKDTree(mesh.triangles_center).query(points)
+        return np.asarray(face_ids, dtype=np.int64)
+
+
+def _auto_vertex_merge_tolerance(mesh: trimesh.Trimesh) -> float:
+    bounds = np.asarray(mesh.bounds, dtype=np.float64)
+    if bounds.shape != (2, 3) or not np.all(np.isfinite(bounds)):
+        return 1e-8
+    diag = float(np.linalg.norm(bounds[1] - bounds[0]))
+    return max(diag * 1e-8, 1e-10)
+
+
+def _vertex_key(vertex: np.ndarray, tolerance: float) -> tuple[int, int, int]:
+    return tuple(np.rint(vertex / tolerance).astype(np.int64).tolist())
+
+
+def _edge_face_groups_by_position(
+    mesh: trimesh.Trimesh,
+    vertex_merge_tolerance: float = 0.0,
+) -> dict[tuple[tuple[int, int, int], tuple[int, int, int]], list[int]]:
+    faces = np.asarray(mesh.faces, dtype=np.int64)
+    vertices = np.asarray(mesh.vertices, dtype=np.float64)
+    if len(faces) == 0:
+        return {}
+
+    tolerance = (
+        float(vertex_merge_tolerance)
+        if vertex_merge_tolerance > 0.0
+        else _auto_vertex_merge_tolerance(mesh)
+    )
+    edge_to_faces: dict[
+        tuple[tuple[int, int, int], tuple[int, int, int]], list[int]
+    ] = {}
+    edge_offsets = ((0, 1), (1, 2), (2, 0))
+    for face_idx, face in enumerate(faces):
+        for left_offset, right_offset in edge_offsets:
+            left_key = _vertex_key(vertices[face[left_offset]], tolerance)
+            right_key = _vertex_key(vertices[face[right_offset]], tolerance)
+            edge_key = tuple(sorted((left_key, right_key)))
+            edge_to_faces.setdefault(edge_key, []).append(face_idx)
+    return edge_to_faces
+
+
+def _face_adjacency_by_position(
+    mesh: trimesh.Trimesh,
+    vertex_merge_tolerance: float = 0.0,
+) -> np.ndarray:
+    edge_to_faces = _edge_face_groups_by_position(mesh, vertex_merge_tolerance)
+    adjacent_pairs = []
+    for face_indices in edge_to_faces.values():
+        if len(face_indices) < 2:
+            continue
+        for idx in range(len(face_indices) - 1):
+            adjacent_pairs.append((face_indices[idx], face_indices[idx + 1]))
+
+    if not adjacent_pairs:
+        return np.empty((0, 2), dtype=np.int64)
+    return np.asarray(adjacent_pairs, dtype=np.int64)
+
+
+def _face_adjacency_lists(
+    n_faces: int,
+    adjacency: np.ndarray,
+) -> list[list[int]]:
+    adjacency_lists = [[] for _ in range(n_faces)]
+    for left, right in adjacency:
+        adjacency_lists[int(left)].append(int(right))
+        adjacency_lists[int(right)].append(int(left))
+    return adjacency_lists
+
+
+def _smooth_face_components(
+    mesh: trimesh.Trimesh,
+    max_smooth_angle_deg: float,
+    vertex_merge_tolerance: float = 0.0,
+) -> list[np.ndarray]:
+    if len(mesh.faces) == 0:
+        return []
+
+    face_normals = np.asarray(mesh.face_normals, dtype=np.float64)
+    adjacency = _face_adjacency_by_position(mesh, vertex_merge_tolerance)
+    union_find = _UnionFind(len(mesh.faces))
+    if len(adjacency) > 0:
+        normal_dot = np.einsum(
+            "ij,ij->i",
+            face_normals[adjacency[:, 0]],
+            face_normals[adjacency[:, 1]],
+        )
+        normal_dot = np.clip(normal_dot, -1.0, 1.0)
+        angles = np.degrees(np.arccos(normal_dot))
+        smooth_pairs = adjacency[angles <= max_smooth_angle_deg]
+        for left, right in smooth_pairs:
+            union_find.union(int(left), int(right))
+
+    groups: dict[int, list[int]] = {}
+    for face_idx in range(len(mesh.faces)):
+        groups.setdefault(union_find.find(face_idx), []).append(face_idx)
+    return [np.asarray(indices, dtype=np.int64) for indices in groups.values()]
+
+
+def _same_label_components(
+    face_labels: np.ndarray,
+    adjacency_lists: list[list[int]],
+) -> list[np.ndarray]:
+    visited = np.zeros(len(face_labels), dtype=bool)
+    components = []
+    for face_idx, label in enumerate(face_labels):
+        if visited[face_idx] or label < 0:
+            continue
+
+        visited[face_idx] = True
+        stack = [face_idx]
+        component = []
+        while stack:
+            current = stack.pop()
+            component.append(current)
+            for neighbor in adjacency_lists[current]:
+                if visited[neighbor] or face_labels[neighbor] != label:
+                    continue
+                visited[neighbor] = True
+                stack.append(neighbor)
+        components.append(np.asarray(component, dtype=np.int64))
+    return components
+
+
+def _dominant_face_label(
+    face_labels: np.ndarray,
+    face_areas: np.ndarray,
+    face_indices: np.ndarray,
+) -> int | None:
+    labels = face_labels[face_indices]
+    valid_mask = labels >= 0
+    if not np.any(valid_mask):
+        return None
+
+    valid_labels = labels[valid_mask]
+    valid_areas = face_areas[face_indices][valid_mask]
+    area_by_label: dict[int, float] = {}
+    for label, area in zip(valid_labels, valid_areas):
+        area_by_label[int(label)] = area_by_label.get(int(label), 0.0) + float(
+            area
+        )
+    return max(area_by_label.items(), key=lambda item: item[1])[0]
+
+
+def fill_small_enclosed_face_labels(
+    mesh: trimesh.Trimesh,
+    face_labels: np.ndarray,
+    cfg: EnclosedFaceLabelFillConfig | None = None,
+) -> tuple[np.ndarray, dict[str, int]]:
+    if cfg is None:
+        cfg = EnclosedFaceLabelFillConfig()
+    if len(face_labels) != len(mesh.faces):
+        raise ValueError(
+            "face_labels length must match mesh faces, got "
+            f"{len(face_labels)} and {len(mesh.faces)}"
+        )
+
+    new_face_labels = np.asarray(face_labels, dtype=np.int64).copy()
+    edge_to_faces = _edge_face_groups_by_position(
+        mesh,
+        cfg.vertex_merge_tolerance,
+    )
+    adjacency = _face_adjacency_by_position(mesh, cfg.vertex_merge_tolerance)
+    adjacency_lists = _face_adjacency_lists(len(mesh.faces), adjacency)
+    open_boundary_faces = {
+        face_indices[0]
+        for face_indices in edge_to_faces.values()
+        if len(face_indices) == 1
+    }
+
+    face_areas = np.asarray(mesh.area_faces, dtype=np.float64)
+    total_area = float(np.sum(face_areas))
+    max_area = max(0.0, cfg.max_component_area_ratio) * total_area
+    max_faces = int(cfg.max_component_faces)
+
+    component_mask = np.zeros(len(mesh.faces), dtype=bool)
+    filled_components = 0
+    skipped_components = 0
+    for face_indices in _same_label_components(face_labels, adjacency_lists):
+        source_label = int(face_labels[face_indices[0]])
+        component_area = float(np.sum(face_areas[face_indices]))
+        if max_area <= 0.0 or component_area > max_area:
+            skipped_components += 1
+            continue
+        if max_faces > 0 and len(face_indices) > max_faces:
+            skipped_components += 1
+            continue
+        if any(
+            int(face_idx) in open_boundary_faces for face_idx in face_indices
+        ):
+            skipped_components += 1
+            continue
+
+        component_mask[face_indices] = True
+        outside_labels = []
+        for face_idx in face_indices:
+            for neighbor in adjacency_lists[int(face_idx)]:
+                if component_mask[neighbor]:
+                    continue
+                outside_labels.append(int(face_labels[neighbor]))
+
+        target_counts: dict[int, int] = {}
+        for label in outside_labels:
+            if label >= 0 and label != source_label:
+                target_counts[label] = target_counts.get(label, 0) + 1
+
+        target_label = None
+        if outside_labels and target_counts:
+            target_label, target_count = max(
+                target_counts.items(),
+                key=lambda item: item[1],
+            )
+            enclosure_ratio = target_count / len(outside_labels)
+            if enclosure_ratio < cfg.min_enclosure_neighbor_ratio:
+                target_label = None
+
+        if target_label is None:
+            skipped_components += 1
+        else:
+            new_face_labels[face_indices] = target_label
+            filled_components += 1
+        component_mask[face_indices] = False
+
+    stats = {
+        "components_filled": filled_components,
+        "components_skipped": skipped_components,
+        "faces_changed": int(np.count_nonzero(new_face_labels != face_labels)),
+    }
+    return new_face_labels, stats
+
+
+def merge_smooth_face_labels(
+    mesh: trimesh.Trimesh,
+    face_labels: np.ndarray,
+    cfg: SmoothFaceLabelMergeConfig | None = None,
+) -> tuple[np.ndarray, dict[str, int]]:
+    if cfg is None:
+        cfg = SmoothFaceLabelMergeConfig()
+    if len(face_labels) != len(mesh.faces):
+        raise ValueError(
+            "face_labels length must match mesh faces, got "
+            f"{len(face_labels)} and {len(mesh.faces)}"
+        )
+
+    new_face_labels = np.asarray(face_labels, dtype=np.int64).copy()
+    face_areas = np.asarray(mesh.area_faces, dtype=np.float64)
+    total_area = float(np.sum(face_areas))
+    min_area = max(0.0, cfg.min_component_area_ratio) * total_area
+
+    changed_components = 0
+    skipped_components = 0
+    for face_indices in _smooth_face_components(
+        mesh,
+        cfg.max_smooth_angle_deg,
+        cfg.vertex_merge_tolerance,
+    ):
+        if len(face_indices) < cfg.min_component_faces:
+            skipped_components += 1
+            continue
+        component_area = float(np.sum(face_areas[face_indices]))
+        if component_area < min_area:
+            skipped_components += 1
+            continue
+
+        labels = new_face_labels[face_indices]
+        valid_unique = np.unique(labels[labels >= 0])
+        if len(valid_unique) <= 1:
+            continue
+
+        target_label = _dominant_face_label(
+            new_face_labels,
+            face_areas,
+            face_indices,
+        )
+        if target_label is None:
+            continue
+
+        if cfg.preserve_negative:
+            assign_mask = new_face_labels[face_indices] >= 0
+            assign_faces = face_indices[assign_mask]
+        else:
+            assign_faces = face_indices
+
+        new_face_labels[assign_faces] = target_label
+        changed_components += 1
+
+    stats = {
+        "components_changed": changed_components,
+        "components_skipped": skipped_components,
+        "faces_changed": int(np.count_nonzero(new_face_labels != face_labels)),
+    }
+    return new_face_labels, stats
+
+
+def gripper_finger_center(
+    gripper_urdf_path: str,
+    geometry_type: Literal["collision", "visual"] = "collision",
+) -> np.ndarray:
+    from embodied_gen.utils.io_utils import URDFFile
+
+    gripper_urdf = URDFFile(gripper_urdf_path)
+    finger_link_names = gripper_urdf.get_child_link_names(
+        name_contains="finger"
+    )
+    if len(finger_link_names) != 2:
+        raise ValueError(
+            "expected exactly two finger links in gripper URDF, got "
+            f"{finger_link_names}: {gripper_urdf_path}"
+        )
+
+    link_transforms = gripper_urdf.get_link_transforms()
+    finger_centers = []
+    for link_name in finger_link_names:
+        mesh = gripper_urdf.load_link_geometry_mesh(link_name, geometry_type)
+        mesh.apply_transform(link_transforms[link_name])
+        finger_centers.append(np.asarray(mesh.centroid, dtype=np.float64))
+
+    return np.mean(np.stack(finger_centers, axis=0), axis=0)
 
 
 def matrix_to_pose(matrix: np.ndarray) -> list[float]:

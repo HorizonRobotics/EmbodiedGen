@@ -14,10 +14,19 @@
 # implied. See the License for the specific language governing
 # permissions and limitations under the License.
 
-import spaces
-from embodied_gen.utils.monkey_patches import monkey_path_trellis
+import spaces  # noqa: E402
+from embodied_gen.utils.monkey_patch.gradio import (
+    _disable_xformers_flash3,
+    _neutralize_warp_in_parent,
+    _patch_open3d_cuda_device_count_bug,
+)
+from embodied_gen.utils.monkey_patch.trellis import monkey_path_trellis
 
+_neutralize_warp_in_parent()
+_patch_open3d_cuda_device_count_bug()
+_disable_xformers_flash3()
 monkey_path_trellis()
+
 
 import gc
 import logging
@@ -45,7 +54,7 @@ from embodied_gen.models.segment_model import (
     RembgRemover,
     SAMPredictor,
 )
-from embodied_gen.models.sr_model import ImageRealESRGAN, ImageStableSR
+from embodied_gen.models.sr_model import ImageRealESRGAN
 from embodied_gen.scripts.render_gs import entrypoint as render_gs_api
 from embodied_gen.scripts.render_mv import build_texture_gen_pipe, infer_pipe
 from embodied_gen.scripts.text2image import (
@@ -73,7 +82,6 @@ current_file_path = os.path.abspath(__file__)
 current_dir = os.path.dirname(current_file_path)
 sys.path.append(os.path.join(current_dir, ".."))
 from thirdparty.TRELLIS.trellis.pipelines import TrellisImageTo3DPipeline
-from thirdparty.TRELLIS.trellis.utils import postprocessing_utils
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -81,18 +89,20 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "false"
-
+os.environ.setdefault("OPENAI_API_KEY", "sk-placeholder")
 MAX_SEED = 100000
+
+# Global variables for lazy initialization
+_RBG_REMOVER = None
+_RBG14_REMOVER = None
 
 # DELIGHT = DelightingModel()
 # IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
 # IMAGESR_MODEL = ImageStableSR()
 if os.getenv("GRADIO_APP").startswith("imageto3d"):
-    RBG_REMOVER = RembgRemover()
-    RBG14_REMOVER = BMGG14Remover()
     SAM_PREDICTOR = SAMPredictor(model_type="vit_h", device="cpu")
     if "sam3d" in os.getenv("GRADIO_APP"):
-        PIPELINE = Sam3dInference()
+        PIPELINE = Sam3dInference(device="cuda")
     else:
         PIPELINE = TrellisImageTo3DPipeline.from_pretrained(
             "microsoft/TRELLIS-image-large"
@@ -107,10 +117,8 @@ if os.getenv("GRADIO_APP").startswith("imageto3d"):
     )
     os.makedirs(TMP_DIR, exist_ok=True)
 elif os.getenv("GRADIO_APP").startswith("textto3d"):
-    RBG_REMOVER = RembgRemover()
-    RBG14_REMOVER = BMGG14Remover()
     if "sam3d" in os.getenv("GRADIO_APP"):
-        PIPELINE = Sam3dInference()
+        PIPELINE = Sam3dInference(device="cuda")
     else:
         PIPELINE = TrellisImageTo3DPipeline.from_pretrained(
             "microsoft/TRELLIS-image-large"
@@ -130,11 +138,7 @@ elif os.getenv("GRADIO_APP").startswith("textto3d"):
 elif os.getenv("GRADIO_APP") == "texture_edit":
     DELIGHT = DelightingModel()
     IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
-    PIPELINE_IP = build_texture_gen_pipe(
-        base_ckpt_dir="./weights",
-        ip_adapt_scale=0.7,
-        device="cuda",
-    )
+    PIPELINE_HAS_IP_ADAPTER = False
     PIPELINE = build_texture_gen_pipe(
         base_ckpt_dir="./weights",
         ip_adapt_scale=0,
@@ -163,6 +167,9 @@ def preprocess_image_fn(
     rmbg_tag: str = "rembg",
     preprocess: bool = True,
 ) -> tuple[Image.Image, Image.Image]:
+    """Preprocess image with lazy model initialization to avoid CUDA init at import time."""
+    global _RBG_REMOVER, _RBG14_REMOVER
+
     if isinstance(image, str):
         image = Image.open(image)
     elif isinstance(image, np.ndarray):
@@ -170,7 +177,16 @@ def preprocess_image_fn(
 
     image_cache = image.copy()  # resize_pil(image.copy(), 1024)
 
-    bg_remover = RBG_REMOVER if rmbg_tag == "rembg" else RBG14_REMOVER
+    # Lazy initialization - models are created on first call within @spaces.GPU context
+    if rmbg_tag == "rembg":
+        if _RBG_REMOVER is None:
+            _RBG_REMOVER = RembgRemover()
+        bg_remover = _RBG_REMOVER
+    else:
+        if _RBG14_REMOVER is None:
+            _RBG14_REMOVER = BMGG14Remover()
+        bg_remover = _RBG14_REMOVER
+
     image = bg_remover(image)
     image = keep_largest_connected_component(image)
 
@@ -276,7 +292,7 @@ def image_to_3d(
     sam_image: Image.Image = None,
     is_sam_image: bool = False,
     req: gr.Request = None,
-) -> tuple[dict, str]:
+) -> tuple[object, str]:
     if is_sam_image:
         seg_image = filter_image_small_connected_components(sam_image)
         seg_image = Image.fromarray(seg_image, mode="RGBA")
@@ -286,6 +302,7 @@ def image_to_3d(
     if isinstance(seg_image, np.ndarray):
         seg_image = Image.fromarray(seg_image)
 
+    logger.info("Start generating 3D representation from image...")
     if isinstance(PIPELINE, Sam3dInference):
         outputs = PIPELINE.run(
             seg_image,
@@ -334,7 +351,7 @@ def image_to_3d(
 
 
 def extract_3d_representations_v2(
-    state: dict,
+    state: object,
     enable_delight: bool,
     texture_size: int,
     req: gr.Request,
@@ -401,7 +418,7 @@ def extract_3d_representations_v2(
 
 
 def extract_3d_representations_v3(
-    state: dict,
+    state: object,
     enable_delight: bool,
     texture_size: int,
     req: gr.Request,
@@ -650,27 +667,62 @@ def generate_texture_mvimages(
     sub_idxs: tuple[tuple[int]] = ((0, 1, 2), (3, 4, 5)),
     req: gr.Request = None,
 ) -> list[str]:
+    global PIPELINE, PIPELINE_HAS_IP_ADAPTER
+
     output_root = os.path.join(TMP_DIR, str(req.session_hash))
     use_ip_adapter = True if ip_img_path and ip_adapt_scale > 0 else False
-    PIPELINE_IP.set_ip_adapter_scale([ip_adapt_scale])
-    img_save_paths = infer_pipe(
-        index_file=f"{output_root}/condition/index.json",
-        controlnet_cond_scale=controlnet_cond_scale,
-        guidance_scale=guidance_scale,
-        strength=strength,
-        num_inference_steps=num_inference_steps,
-        ip_adapt_scale=ip_adapt_scale,
-        ip_img_path=ip_img_path,
-        uid=uid,
-        prompt=prompt,
-        save_dir=f"{output_root}/multi_view",
-        sub_idxs=sub_idxs,
-        pipeline=PIPELINE_IP if use_ip_adapter else PIPELINE,
-        seed=seed,
-    )
 
-    gc.collect()
-    torch.cuda.empty_cache()
+    if PIPELINE is None:
+        PIPELINE = build_texture_gen_pipe(
+            base_ckpt_dir="./weights",
+            ip_adapt_scale=0,
+            device="cuda",
+        )
+
+    if use_ip_adapter and not PIPELINE_HAS_IP_ADAPTER:
+        logger.info("Load IP adapter into default texture pipeline")
+        if hasattr(PIPELINE.unet, "encoder_hid_proj"):
+            PIPELINE.unet.text_encoder_hid_proj = (
+                PIPELINE.unet.encoder_hid_proj
+            )
+        PIPELINE.load_ip_adapter(
+            "./weights/Kolors-IP-Adapter-Plus",
+            subfolder="",
+            weight_name=["ip_adapter_plus_general.bin"],
+        )
+        PIPELINE_HAS_IP_ADAPTER = True
+
+    if PIPELINE_HAS_IP_ADAPTER:
+        PIPELINE.set_ip_adapter_scale(
+            [ip_adapt_scale if use_ip_adapter else 0.0]
+        )
+
+    try:
+        img_save_paths = infer_pipe(
+            index_file=f"{output_root}/condition/index.json",
+            controlnet_cond_scale=controlnet_cond_scale,
+            guidance_scale=guidance_scale,
+            strength=strength,
+            num_inference_steps=num_inference_steps,
+            ip_adapt_scale=ip_adapt_scale if use_ip_adapter else 0.0,
+            ip_img_path=ip_img_path if use_ip_adapter else None,
+            uid=uid,
+            prompt=prompt,
+            save_dir=f"{output_root}/multi_view",
+            sub_idxs=sub_idxs,
+            pipeline=PIPELINE,
+            seed=seed,
+        )
+    finally:
+        if use_ip_adapter and PIPELINE_HAS_IP_ADAPTER:
+            logger.info("Unload IP adapter from default texture pipeline")
+            if hasattr(PIPELINE, "unload_ip_adapter"):
+                PIPELINE.unload_ip_adapter()
+            else:
+                PIPELINE = None
+            PIPELINE_HAS_IP_ADAPTER = False
+        gc.collect()
+        torch.cuda.empty_cache()
 
     return img_save_paths + img_save_paths
 

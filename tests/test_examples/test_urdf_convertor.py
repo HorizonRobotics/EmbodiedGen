@@ -14,6 +14,9 @@
 # implied. See the License for the specific language governing
 # permissions and limitations under the License.
 
+import os
+
+import pytest
 from embodied_gen.utils.gpt_clients import GPT_CLIENT
 from embodied_gen.validators.urdf_convertor import URDFGenerator
 
@@ -41,15 +44,18 @@ def test_urdf_convertor():
         "outputs/test_urdf/pen2/result/mesh/pen.obj",
         "outputs/test_urdf/pen3/result/mesh/pen.obj",
     ]
+    mesh_paths = [p for p in mesh_paths if os.path.exists(p)]
+    if not mesh_paths:
+        pytest.skip("No mesh test assets available under outputs/test_urdf/")
+
     for idx, mesh_path in enumerate(mesh_paths):
         filename = mesh_path.split("/")[-1].split(".")[0]
         urdf_path = urdf_gen(
             mesh_path=mesh_path,
             output_root=f"outputs/test_urdf2/sample_{idx}",
             category=filename,
-            # min_height=1.0,
-            # max_height=1.2,
         )
+        assert urdf_path is not None and os.path.exists(urdf_path)
 
 
 def test_decompose_convex_mesh():
@@ -61,7 +67,7 @@ def test_decompose_convex_mesh():
     ]
     for idx, mesh_path in enumerate(mesh_paths):
         filename = mesh_path.split("/")[-1].split(".")[0]
-        urdf_path = urdf_gen(
+        urdf_gen(
             mesh_path=mesh_path,
             output_root=f"outputs/test_urdf3/sample_{idx}",
             category=filename,

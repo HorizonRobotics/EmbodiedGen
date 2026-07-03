@@ -1,11 +1,17 @@
 # config.yaml
-agent_type: "qwen2.5-vl" # gpt-4o or qwen2.5-vl
+agent_type: "gpt-5.4" # gpt-4o, gpt-5.4 or qwen2.5-vl
 
 gpt-4o:
   endpoint: https://xxx.openai.azure.com
   api_key: xxx
   api_version: 2025-xx-xx
   model_name: yfb-gpt-4o
+
+gpt-5.4:
+  endpoint: https://yfb-openai-sweden.openai.azure.com/
+  api_key: xxx
+  api_version: 2024-12-01-preview
+  model_name: gpt-5.4
 
 qwen2.5-vl:
   endpoint: https://openrouter.ai/api/v1

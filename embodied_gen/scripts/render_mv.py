@@ -130,11 +130,22 @@ def infer_pipe(
             device=device,
         )
 
-    if ip_adapt_scale > 0 and ip_img_path is not None and len(ip_img_path) > 0:
+    has_ip_adapter = any(
+        hasattr(attn_processor, "to_k_ip")
+        for attn_processor in pipeline.unet.attn_processors.values()
+    )
+    use_ip_adapter = (
+        ip_adapt_scale > 0 and ip_img_path is not None and len(ip_img_path) > 0
+    )
+    effective_ip_adapt_scale = ip_adapt_scale if use_ip_adapter else 0.0
+    if use_ip_adapter:
         ip_image = Image.open(ip_img_path).convert("RGB")
         ip_image = ip_image.resize(target_hw[::-1])
         ip_image = [ip_image]
-        pipeline.set_ip_adapter_scale([ip_adapt_scale])
+        pipeline.set_ip_adapter_scale([effective_ip_adapt_scale])
+    elif has_ip_adapter:
+        ip_image = [Image.new("RGB", target_hw[::-1], color=(0, 0, 0))]
+        pipeline.set_ip_adapter_scale([0.0])
     else:
         ip_image = None
 
@@ -182,7 +193,7 @@ def infer_pipe(
         [str(item) for sublist in sub_idxs for item in sublist]
     )
     save_path = os.path.join(
-        save_dir, f"sample_idx{str(sub_idxs)}_ip{ip_adapt_scale}.jpg"
+        save_dir, f"sample_idx{str(sub_idxs)}_ip{effective_ip_adapt_scale}.jpg"
     )
     make_image_grid(grid_image, row_num, col_num).save(save_path)
     logger.info(f"Visualize in {save_path}")

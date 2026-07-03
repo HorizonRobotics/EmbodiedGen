@@ -69,9 +69,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
         </p>
 
         📝 Create 3D assets from text descriptions for a wide range of geometry and styles.
-        """.format(
-            VERSION=VERSION
-        ),
+        """.format(VERSION=VERSION),
         elem_classes=["header"],
     )
 
@@ -106,7 +104,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                         0, MAX_SEED, label="Seed", value=0, step=1
                     )
                     randomize_seed = gr.Checkbox(
-                        label="Randomize Seed", value=False
+                        label="Randomize Seed", value=True
                     )
                 rmbg_tag = gr.Radio(
                     choices=["rembg", "rmbg14"],
@@ -159,7 +157,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
                         label="Randomize Seed", value=False
                     )
                     project_delight = gr.Checkbox(
-                        label="Back-project Delight", value=True
+                        label="Back-project Delight", value=False
                     )
                 gr.Markdown("Geo Structure Generation")
                 with gr.Row():

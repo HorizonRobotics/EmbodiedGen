@@ -1,4 +1,21 @@
-from embodied_gen.utils.monkey_patches import monkey_path_trellis
+# Project EmbodiedGen
+#
+# Copyright (c) 2025 Horizon Robotics. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied. See the License for the specific language governing
+# permissions and limitations under the License.
+
+
+from embodied_gen.utils.monkey_patch.trellis import monkey_path_trellis
 
 monkey_path_trellis()
 import random
@@ -21,6 +38,7 @@ def image3d_model_infer(
     seed: int = None,
     **kwargs: dict,
 ) -> dict[str, any]:
+    """Execute 3D generation using Trellis or SAM3D pipeline on input image."""
     if isinstance(pipe, TrellisImageTo3DPipeline):
         pipe.cuda()
         seg_image = trellis_preprocess(seg_image)

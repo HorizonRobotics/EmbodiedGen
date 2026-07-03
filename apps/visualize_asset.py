@@ -23,14 +23,18 @@ gradio_tmp_dir = os.path.join(
 os.makedirs(gradio_tmp_dir, exist_ok=True)
 os.environ["GRADIO_TEMP_DIR"] = gradio_tmp_dir
 
+import colorsys
 import shutil
 import uuid
 import xml.etree.ElementTree as ET
+import zipfile
 from pathlib import Path
 
 import gradio as gr
+import numpy as np
 import pandas as pd
-from app_style import custom_theme, lighting_css
+import trimesh
+from app_style import custom_theme
 from embodied_gen.utils.tags import VERSION
 
 try:
@@ -49,24 +53,64 @@ except Exception as e:
 # --- Configuration & Data Loading ---
 RUNNING_MODE = "local"  # local or hf_remote
 CSV_FILE = "dataset_index.csv"
+HF_REPO_ID = "HorizonRobotics/EmbodiedGenData"
+HF_LOCAL_DIR = "EmbodiedGenData"
+CAMERA_ZOOM = 3.2
+
+# Compatible with huggingface space zero GPU
+import spaces
+from huggingface_hub import snapshot_download
+
+
+@spaces.GPU
+def fake_gpu_init():
+    pass
+
+
+fake_gpu_init()
 
 if RUNNING_MODE == "local":
-    DATA_ROOT = "/horizon-bucket/robot_lab/datasets/embodiedgen/assets"
+    DATA_ROOT = "/horizon-bucket/robot_lab/datasets/embodiedgen/assets_v2"
 elif RUNNING_MODE == "hf_remote":
-    from huggingface_hub import snapshot_download
-
+    # Only fetch the index and preview videos up front; per-asset mesh/urdf/
+    # usd/mjcf files are pulled lazily on demand (see `ensure_hf_files`).
     snapshot_download(
-        repo_id="HorizonRobotics/EmbodiedGenData",
+        repo_id=HF_REPO_ID,
         repo_type="dataset",
-        allow_patterns=f"dataset/**",
-        local_dir="EmbodiedGenData",
+        allow_patterns=[
+            f"dataset/{CSV_FILE}",
+            "dataset/**/*.mp4",
+        ],
+        local_dir=HF_LOCAL_DIR,
         local_dir_use_symlinks=False,
     )
-    DATA_ROOT = "EmbodiedGenData/dataset"
+    DATA_ROOT = os.path.join(HF_LOCAL_DIR, "dataset")
 else:
     raise ValueError(
         f"Unknown RUNNING_MODE: {RUNNING_MODE}, must be 'local' or 'hf_remote'."
     )
+
+
+def ensure_hf_files(rel_patterns: list[str]) -> None:
+    """Lazily download files for one asset in hf_remote mode.
+
+    Args:
+        rel_patterns: Glob patterns relative to ``DATA_ROOT`` (the repo's
+            ``dataset/`` folder), e.g. ``"cat/sub/uid/mesh/**"``.
+
+    No-op when running locally, where all files already exist on disk.
+    Progress toasts are emitted by the calling action handlers.
+    """
+    if RUNNING_MODE != "hf_remote":
+        return
+    snapshot_download(
+        repo_id=HF_REPO_ID,
+        repo_type="dataset",
+        allow_patterns=[f"dataset/{p}" for p in rel_patterns],
+        local_dir=HF_LOCAL_DIR,
+        local_dir_use_symlinks=False,
+    )
+
 
 csv_path = os.path.join(DATA_ROOT, CSV_FILE)
 df = pd.read_csv(csv_path)
@@ -118,6 +162,82 @@ def _unique_path(
     prev[kind] = dst
     _prev_temp[session_hash] = prev
     return str(dst)
+
+
+def _bounding_radius(mesh: trimesh.Trimesh | trimesh.Scene) -> float:
+    """Radius of the mesh/scene bounding sphere (half the diagonal)."""
+    lo, hi = mesh.bounds
+    return float(np.linalg.norm(np.asarray(hi) - np.asarray(lo)) / 2)
+
+
+def _camera_position(radius: float | None) -> tuple:
+    """Initial camera `(alpha, beta, radius)`; only push the distance."""
+    if not radius or radius <= 0:
+        return (None, None, None)
+    return (None, None, CAMERA_ZOOM * radius)
+
+
+def _visual_radius(visual_path: str | None) -> float | None:
+    if not visual_path:
+        return None
+    return _bounding_radius(trimesh.load(visual_path, process=False))
+
+
+def _pastel_color(i: int) -> list[int]:
+    """Distinct pastel RGBA for the i-th convex piece (golden-ratio hues)."""
+    h = (i * 0.6180339887498949) % 1.0
+    r, g, b = colorsys.hsv_to_rgb(h, 0.45, 0.98)
+    return [int(r * 255), int(g * 255), int(b * 255), 255]
+
+
+def _colored_collision_path(
+    collision_path: str | None, session_hash: str
+) -> tuple[str | None, float | None]:
+    """Export the collision mesh as a GLB with one color per convex piece.
+
+    The convex-decomposition pieces are stored as separate objects inside the
+    single collision ``.obj``; they are recovered via connected-component split
+    and each is tinted a distinct pastel color for visualization.
+
+    Returns ``(glb_path, bounding_radius)`` for camera framing.
+    """
+    if not collision_path:
+        return None, None
+
+    tmp_root = (
+        Path(os.environ.get("GRADIO_TEMP_DIR", "/tmp"))
+        / "model3d-cache"
+        / session_hash
+    )
+    tmp_root.mkdir(parents=True, exist_ok=True)
+
+    # rolling cleanup for same kind
+    prev = _prev_temp.get(session_hash, {})
+    old = prev.get("collision")
+    if old and old.exists():
+        old.unlink()
+
+    loaded = trimesh.load(collision_path, process=False)
+    if isinstance(loaded, trimesh.Scene):
+        parts = list(loaded.geometry.values())
+    else:
+        parts = loaded.split(only_watertight=False)
+        if len(parts) == 0:
+            parts = [loaded]
+
+    scene = trimesh.Scene()
+    for i, part in enumerate(parts):
+        part.visual = trimesh.visual.ColorVisuals(
+            mesh=part, vertex_colors=_pastel_color(i)
+        )
+        scene.add_geometry(part)
+
+    dst = tmp_root / f"collision-{uuid.uuid4().hex}.glb"
+    scene.export(str(dst))
+
+    prev["collision"] = dst
+    _prev_temp[session_hash] = prev
+    return str(dst), _bounding_radius(scene)
 
 
 # --- Helper Functions (data filtering) ---
@@ -345,6 +465,20 @@ def show_asset_from_gallery(
         )
 
     row = subset.iloc[index]
+
+    # In hf_remote mode, pull only what the two mesh viewers need: the visual
+    # GLB + collision OBJ (mesh/), plus the tiny URDF used to locate them and
+    # show metadata. USD/MJCF/USD-textures are fetched only on button click.
+    gr.Info("⏳ Loading 3D model, please wait...")
+    rel_dir = row["asset_dir"]
+    urdf_name = os.path.basename(row["urdf_path"])
+    ensure_hf_files(
+        [
+            f"{rel_dir}/{urdf_name}",
+            f"{rel_dir}/mesh/**",
+        ]
+    )
+
     visual_path, collision_path, desc = _extract_mesh_paths(row)
 
     urdf_path = os.path.join(DATA_ROOT, row["urdf_path"])
@@ -416,41 +550,217 @@ def render_meshes(
         if visual_path
         else None
     )
-    collision_unique = (
-        _unique_path(collision_path, session_hash, "collision")
-        if collision_path
-        else None
-    )
+    visual_cam = _camera_position(_visual_radius(visual_path))
+
+    if collision_path:
+        collision_unique, collision_r = _colored_collision_path(
+            collision_path, session_hash
+        )
+    else:
+        collision_unique, collision_r = None, None
+    collision_cam = _camera_position(collision_r)
+
+    if visual_unique or collision_unique:
+        gr.Info("✅ 3D model loaded.")
 
     if switch_viewer:
         yield (
-            gr.update(value=visual_unique),
+            gr.update(value=visual_unique, camera_position=visual_cam),
             gr.update(value=None, visible=False),
-            gr.update(value=collision_unique, visible=True),
+            gr.update(
+                value=collision_unique,
+                visible=True,
+                camera_position=collision_cam,
+            ),
             False,
         )
     else:
         yield (
-            gr.update(value=visual_unique),
-            gr.update(value=collision_unique, visible=True),
+            gr.update(value=visual_unique, camera_position=visual_cam),
+            gr.update(
+                value=collision_unique,
+                visible=True,
+                camera_position=collision_cam,
+            ),
             gr.update(value=None, visible=False),
             True,
         )
 
 
-def create_asset_zip(asset_dir: str, req: gr.Request):
+def _rel_dir(asset_dir: str) -> str:
+    """Repo-relative asset dir (path under DATA_ROOT), for HF glob patterns."""
+    return os.path.relpath(asset_dir, DATA_ROOT)
+
+
+def _find_urdf_stem(asset_dir: str) -> str | None:
+    for f in os.listdir(asset_dir):
+        if f.lower().endswith(".urdf"):
+            return os.path.splitext(f)[0]
+    return None
+
+
+def _zip_items(
+    zip_path: str,
+    items: list[tuple[str, str]],
+    exclude_suffixes: tuple[str, ...] = (),
+) -> str:
+    """Write files/dirs into a zip.
+
+    Args:
+        zip_path: Output archive path.
+        items: ``(src_abspath, arcname)`` pairs. Directories are walked and
+            stored under ``arcname``.
+        exclude_suffixes: Lowercase filename suffixes to skip when walking
+            directories, e.g. ``(".glb",)``.
+    """
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+        for src, arcname in items:
+            if os.path.isdir(src):
+                for root_d, _, files in os.walk(src):
+                    for fn in files:
+                        if exclude_suffixes and fn.lower().endswith(
+                            exclude_suffixes
+                        ):
+                            continue
+                        fp = os.path.join(root_d, fn)
+                        rel = os.path.relpath(fp, src)
+                        zf.write(fp, os.path.join(arcname, rel))
+            elif os.path.isfile(src):
+                zf.write(src, arcname)
+    return zip_path
+
+
+def _fmt_zip_path(
+    asset_dir: str, fmt: str, req: gr.Request
+) -> tuple[str, str, str]:
+    """Build the per-format output zip path named ``<uid>_<fmt>.zip``.
+
+    Returns ``(zip_path, uid, zip_name)``.
+    """
+    uid = os.path.basename(os.path.normpath(asset_dir))
     user_dir = os.path.join(TMP_DIR, str(req.session_hash))
     os.makedirs(user_dir, exist_ok=True)
+    zip_name = f"{uid}_{fmt}.zip"
+    return os.path.join(user_dir, zip_name), uid, zip_name
 
-    asset_folder_name = os.path.basename(os.path.normpath(asset_dir))
-    zip_path_base = os.path.join(user_dir, asset_folder_name)
 
-    archive_path = shutil.make_archive(
-        base_name=zip_path_base, format='zip', root_dir=asset_dir
+def download_urdf(asset_dir: str, req: gr.Request) -> str | None:
+    """Package the ``.urdf`` file(s) and the ``mesh/`` folder (minus ``.glb``).
+
+    The visual/collision meshes referenced by the URDF live in ``mesh/`` as
+    ``.obj`` + material files; the ``.glb`` (a separate viewer asset) and all
+    other formats (USD/MJCF/video/...) are intentionally excluded.
+    """
+    if not asset_dir or not os.path.isdir(asset_dir):
+        gr.Warning("Please select an asset first.")
+        return None
+    gr.Info("⏳ Preparing URDF asset for download, please wait...")
+    rel = _rel_dir(asset_dir)
+    ensure_hf_files([f"{rel}/*.urdf", f"{rel}/mesh/**"])
+
+    items: list[tuple[str, str]] = [
+        (os.path.join(asset_dir, f), f)
+        for f in os.listdir(asset_dir)
+        if f.lower().endswith(".urdf")
+    ]
+    mesh_dir = os.path.join(asset_dir, "mesh")
+    if os.path.isdir(mesh_dir):
+        items.append((mesh_dir, "mesh"))
+
+    zip_path, uid, zip_name = _fmt_zip_path(asset_dir, "urdf", req)
+    _zip_items(zip_path, items, exclude_suffixes=(".glb",))
+    gr.Info(f"✅ {zip_name} is ready.")
+    return zip_path
+
+
+def download_usd(asset_dir: str, req: gr.Request) -> str | None:
+    """Package the ``.usd`` file together with its ``textures/`` folder."""
+    if not asset_dir or not os.path.isdir(asset_dir):
+        gr.Warning("Please select an asset first.")
+        return None
+
+    gr.Info("⏳ Preparing USD asset for download, please wait...")
+    rel = _rel_dir(asset_dir)
+    stem = _find_urdf_stem(asset_dir)
+    if stem is not None:
+        ensure_hf_files([f"{rel}/{stem}.usd", f"{rel}/textures/**"])
+    else:
+        ensure_hf_files([f"{rel}/*.usd", f"{rel}/textures/**"])
+
+    items: list[tuple[str, str]] = []
+    for f in os.listdir(asset_dir):
+        if f.lower().endswith(".usd"):
+            items.append((os.path.join(asset_dir, f), f))
+    tex_dir = os.path.join(asset_dir, "textures")
+    if os.path.isdir(tex_dir):
+        items.append((tex_dir, "textures"))
+
+    if not any(s.lower().endswith(".usd") for s, _ in items):
+        gr.Warning("No USD file available for this asset.")
+        return None
+
+    zip_path, uid, zip_name = _fmt_zip_path(asset_dir, "usd", req)
+    _zip_items(zip_path, items)
+    gr.Info(f"✅ {zip_name} is ready.")
+    return zip_path
+
+
+def download_mjcf(asset_dir: str, req: gr.Request) -> str | None:
+    """Package the ``mjcf/`` folder."""
+    if not asset_dir or not os.path.isdir(asset_dir):
+        gr.Warning("Please select an asset first.")
+        return None
+
+    gr.Info("⏳ Preparing MJCF asset for download, please wait...")
+    ensure_hf_files([f"{_rel_dir(asset_dir)}/mjcf/**"])
+    mjcf_dir = os.path.join(asset_dir, "mjcf")
+    if not os.path.isdir(mjcf_dir):
+        gr.Warning("No MJCF folder available for this asset.")
+        return None
+
+    zip_path, uid, zip_name = _fmt_zip_path(asset_dir, "mjcf", req)
+    _zip_items(zip_path, [(mjcf_dir, "mjcf")])
+    gr.Info(f"✅ {zip_name} is ready.")
+    return zip_path
+
+
+# Download buttons keyed by format; order matches the outputs list used when
+# locking/unlocking them together.
+_DL_KEYS = ("urdf", "usd", "mjcf")
+_DL_LABELS = {
+    "urdf": "⬇️ Download URDF",
+    "usd": "⬇️ Download USD",
+    "mjcf": "⬇️ Download MJCF",
+}
+
+
+def _lock_downloads(active: str) -> tuple:
+    """Disable all download buttons; show a persistent hint on the clicked one.
+
+    Keeps the user from spamming clicks while the (possibly slow) zip is being
+    prepared, since a toast alone neither blocks clicks nor stays put.
+    """
+    return tuple(
+        gr.update(interactive=False, label=f"⏳ Preparing {k.upper()}...")
+        if k == active
+        else gr.update(interactive=False)
+        for k in _DL_KEYS
     )
-    gr.Info(f"✅ {asset_folder_name}.zip is ready and can be downloaded.")
 
-    return archive_path
+
+def _unlock_downloads() -> tuple:
+    """Re-enable buttons and restore labels; keep the freshly built file value."""
+    return tuple(
+        gr.update(interactive=True, label=_DL_LABELS[k]) for k in _DL_KEYS
+    )
+
+
+def _reset_downloads() -> tuple:
+    """Enable + restore labels + clear stale file value (used on asset switch)."""
+    return tuple(
+        gr.update(interactive=True, label=_DL_LABELS[k], value=None)
+        for k in _DL_KEYS
+    )
 
 
 def start_session(req: gr.Request) -> None:
@@ -493,9 +803,7 @@ with gr.Blocks(
 
         Browse and visualize the EmbodiedGen 3D asset database. Select categories to filter and click on a preview to load the model.
 
-        """.format(
-            VERSION=VERSION
-        ),
+        """.format(VERSION=VERSION),
         elem_classes=["header"],
     )
 
@@ -573,21 +881,21 @@ with gr.Blocks(
                     with gr.TabItem("Visual Mesh") as t1:
                         viewer = gr.Model3D(
                             label="🧊 3D Model Viewer",
-                            height=500,
+                            height=380,
                             clear_color=[0.95, 0.95, 0.95],
                             elem_id="visual_mesh",
                         )
                     with gr.TabItem("Collision Mesh") as t2:
                         collision_viewer_a = gr.Model3D(
                             label="🧊 Collision Mesh",
-                            height=500,
+                            height=380,
                             clear_color=[0.95, 0.95, 0.95],
                             elem_id="collision_mesh_a",
                             visible=True,
                         )
                         collision_viewer_b = gr.Model3D(
                             label="🧊 Collision Mesh",
-                            height=500,
+                            height=380,
                             clear_color=[0.95, 0.95, 0.95],
                             elem_id="collision_mesh_b",
                             visible=False,
@@ -624,13 +932,23 @@ with gr.Blocks(
                         label="URDF File Path", interactive=False, lines=2
                     )
                 with gr.Row():
-                    extract_btn = gr.Button(
-                        "📥 Extract Asset",
+                    # DownloadButtons that build their zip into their own value
+                    # on click; a chained JS handler then triggers the browser
+                    # download from that value (one-click). If the JS ever
+                    # fails, the value is still populated, so a second manual
+                    # click downloads it via the button's native behavior.
+                    urdf_dl_btn = gr.DownloadButton(
+                        label="⬇️ Download URDF",
                         variant="primary",
                         interactive=False,
                     )
-                    download_btn = gr.DownloadButton(
-                        label="⬇️ Download Asset",
+                    usd_dl_btn = gr.DownloadButton(
+                        label="⬇️ Download USD",
+                        variant="primary",
+                        interactive=False,
+                    )
+                    mjcf_dl_btn = gr.DownloadButton(
+                        label="⬇️ Download MJCF",
                         variant="primary",
                         interactive=False,
                     )
@@ -711,22 +1029,61 @@ with gr.Blocks(
             switch_viewer_state,
         ],
     ).success(
-        lambda: (gr.Button(interactive=True), gr.Button(interactive=False)),
-        outputs=[extract_btn, download_btn],
+        fn=_reset_downloads,
+        outputs=[urdf_dl_btn, usd_dl_btn, mjcf_dl_btn],
     )
 
-    extract_btn.click(
-        fn=create_asset_zip, inputs=[asset_folder], outputs=[download_btn]
-    ).success(fn=lambda: gr.update(interactive=True), outputs=download_btn)
+    # After the zip is built into the button's own value, pass that file value
+    # straight into the JS handler and trigger the browser download from its
+    # URL. Reading the value via `inputs` avoids DOM-timing/selector issues.
+    download_js = """
+    (f) => {
+        if (f && f.url) {
+            const a = document.createElement('a');
+            a.href = f.url;
+            a.download = (f.orig_name || 'asset.zip').split('/').pop();
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        return [];
+    }
+    """
+
+    dl_btns = [urdf_dl_btn, usd_dl_btn, mjcf_dl_btn]
+
+    # Each flow: lock all buttons (prevent spam clicks) -> build the zip ->
+    # JS-trigger the browser download -> unlock. Selecting another asset
+    # resets the buttons independently (see `.success` above).
+    urdf_dl_btn.click(
+        fn=lambda: _lock_downloads("urdf"), outputs=dl_btns
+    ).then(
+        fn=download_urdf, inputs=[asset_folder], outputs=[urdf_dl_btn]
+    ).then(fn=lambda *a: None, inputs=[urdf_dl_btn], js=download_js).then(
+        fn=_unlock_downloads, outputs=dl_btns
+    )
+
+    usd_dl_btn.click(fn=lambda: _lock_downloads("usd"), outputs=dl_btns).then(
+        fn=download_usd, inputs=[asset_folder], outputs=[usd_dl_btn]
+    ).then(fn=lambda *a: None, inputs=[usd_dl_btn], js=download_js).then(
+        fn=_unlock_downloads, outputs=dl_btns
+    )
+
+    mjcf_dl_btn.click(
+        fn=lambda: _lock_downloads("mjcf"), outputs=dl_btns
+    ).then(
+        fn=download_mjcf, inputs=[asset_folder], outputs=[mjcf_dl_btn]
+    ).then(fn=lambda *a: None, inputs=[mjcf_dl_btn], js=download_js).then(
+        fn=_unlock_downloads, outputs=dl_btns
+    )
 
     demo.load(start_session)
     demo.unload(end_session)
 
 
 if __name__ == "__main__":
+    # Serve gallery videos / meshes that live under DATA_ROOT (outside cwd).
     demo.launch(
         server_port=8088,
-        allowed_paths=[
-            "/horizon-bucket/robot_lab/datasets/embodiedgen/assets"
-        ],
+        allowed_paths=[os.path.abspath(DATA_ROOT)],
     )

@@ -1,338 +1,270 @@
-# *EmbodiedGen*: Towards a Generative 3D World Engine for Embodied Intelligence
+# *EmbodiedGen V2*: An Agentic, Simulation-Ready 3D World Engine for Embodied AI
 
-[![📖 Documentation](https://img.shields.io/badge/📖-Documentation-blue)](https://horizonrobotics.github.io/EmbodiedGen/)
+[![🌐 Project Page](https://img.shields.io/badge/🌐-Project_Page-blue)](https://horizonrobotics.github.io/EmbodiedGen/)
+[![📖 Documentation](https://img.shields.io/badge/📖-Documentation-blue)](https://horizonrobotics.github.io/EmbodiedGen/docs/)
 [![GitHub](https://img.shields.io/badge/GitHub-EmbodiedGen-black?logo=github)](https://github.com/HorizonRobotics/EmbodiedGen)
 [![📄 arXiv](https://img.shields.io/badge/📄-arXiv-b31b1b)](https://arxiv.org/abs/2506.10600)
 [![🎥 Video](https://img.shields.io/badge/🎥-Video-red)](https://www.youtube.com/watch?v=rG4odybuJRk)
+[![🤗 Dataset](https://img.shields.io/badge/🤗-Dataset-blue)](https://huggingface.co/datasets/HorizonRobotics/EmbodiedGenData)
 [![中文介绍](https://img.shields.io/badge/中文介绍-07C160?logo=wechat&logoColor=white)](https://mp.weixin.qq.com/s/HH1cPBhK2xcDbyCK4BBTbw)
-<!-- [![🌐 Project Page](https://img.shields.io/badge/🌐-Project_Page-blue)](https://horizonrobotics.github.io/robot_lab/embodied_gen/index.html) -->
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-EmbodiedGen_Asset_Gallery-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Gallery-Explorer)
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Image_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Image-to-3D)
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Text_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D)
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Texture_Gen_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Texture-Gen)
 
-> ***EmbodiedGen*** is a generative engine to create diverse and interactive 3D worlds composed of high-quality 3D assets(mesh & 3DGS) with plausible physics, leveraging generative AI to address the challenges of generalization in embodied intelligence related research.
-> It composed of six key modules: `Image-to-3D`, `Text-to-3D`, `Texture Generation`, `Articulated Object Generation`, `Scene Generation` and `Layout Generation`.
+> **From intent to executable 3D worlds.**
+> ***EmbodiedGen*** compiles language, images, and edit commands into **simulation-ready 3D worlds** — physically plausible assets, large-scale scenes, and task-driven interactive environments, deployable across every major robotics simulator.
 
-<img src="docs/assets/overall.jpg" alt="Overall Framework" width="700"/>
+<img src="docs/landing/assets/img/overview.jpg" alt="EmbodiedGen V2 Overview" width="800"/>
 
 ---
 
-## ✨ Table of Contents of EmbodiedGen
-[![📖 Documentation](https://img.shields.io/badge/📖-Documentation-blue)](https://horizonrobotics.github.io/EmbodiedGen/) Follow the documentation to get started!
+## ✨ What's New in V2
 
-- [🖼️ Image-to-3D](#image-to-3d)
-- [📝 Text-to-3D](#text-to-3d)
-- [🎨 Texture Generation](#texture-generation)
-- [🌍 3D Scene Generation](#3d-scene-generation)
+- 💬 **3D Vibe Coding** — build and edit sim-ready scenes through natural-language dialogue via Claude Code slash commands (`/embodiedgen:*`), each edit a bounded, physics-validated skill call.
+- 🏠 **Large-scale scene generation** — multi-room, navigable, instance-editable houses at controllable complexity tiers (`minimalist` → `detail`).
+- 📦 **One world, every simulator** — a standardized layout loads with consistent geometry, collision, and physics across **SAPIEN, Isaac Sim, Isaac Gym, MuJoCo, Genesis, and PyBullet**.
+- 🧩 **Pluggable 3D backends** — switch between **SAM3D**, **TRELLIS**, and the **Hunyuan3D Pro** cloud API with a single flag.
+- 🧥 **Beyond rigid bodies** — text-conditioned garments deploy as deformable meshes in Genesis.
+- 🦾 **Part-level affordance** — functional part segmentation, per-part semantics, and simulation-validated 6-DoF grasp poses for any generated asset.
+- 🤖 **Closed-loop robot learning** — policies trained purely in EmbodiedGen-generated worlds transfer to real robots (task success **9.7 → 79.8%** in sim, **21.7 → 75.0%** on real robots, from a companion [sim-to-real RL study](https://arxiv.org/abs/2603.18532)).
+
+## 📋 Table of Contents
+
+- [🚀 Quick Start](#quick-start)
+- [🧱 Generate — Sim-Ready 3D Assets](#generate-assets)
+- [🏠 Scale — Large-Scale Scenes](#scale-scenes)
+- [🌍 Compose — Task-Driven Worlds](#compose-worlds)
+- [💬 Edit — 3D Vibe Coding](#vibe-coding)
+- [📦 Export — Any Simulators](#any-simulators)
+- [🤖 Train — Robot Learning](#robot-learning)
 - [⚙️ Articulated Object Generation](#articulated-object-generation)
-- [🏞️ Layout (Interactive 3D Worlds) Generation](#layout-generation)
-- [🎮 Any Simulators](#any-simulators)
+- [🧩 3D Scene Completion](#3d-scene-completion)
 
-[💬 Feedback Wanted: How Do You Use EmbodiedGen & What’s Missing?](https://github.com/HorizonRobotics/EmbodiedGen/issues/66)
+---
 
-## 🚀 Quick Start
+<h2 id="quick-start">🚀 Quick Start</h2>
 
-[![📖 Documentation](https://img.shields.io/badge/📖-Documentation-blue)](https://horizonrobotics.github.io/EmbodiedGen/)
-
-### ✅ Setup Environment
 ```sh
 git clone https://github.com/HorizonRobotics/EmbodiedGen.git
 cd EmbodiedGen
-git checkout v0.1.7
-git submodule update --init --recursive --progress
-conda create -n embodiedgen python=3.10.13 -y # recommended to use a new env.
+git checkout v2.0.0
+bash install/init_submodules.sh
+conda create -n embodiedgen python=3.10.13 -y
 conda activate embodiedgen
-bash install.sh basic # around 20 mins
-# Optional: `bash install.sh extra` for scene3d-cli
+# bash install.sh cu126 && conda deactivate && conda activate embodiedgen # Optional: if you don't have local cuda126.
+bash install.sh basic # around 10 mins
 ```
 
-### ✅ Starting from Docker
-
-We provide a pre-built Docker image on [Docker Hub](https://hub.docker.com/repository/docker/wangxinjie/embodiedgen) with a configured environment for your convenience. For more details, please refer to [Docker documentation](https://github.com/HorizonRobotics/EmbodiedGen/tree/master/docker).
-
-> **Note:** Model checkpoints are not included in the image, they will be automatically downloaded on first run. You still need to set up the GPT Agent manually.
+Set up the GPT agent (required by most pipelines): update the API key in `embodied_gen/utils/gpt_config.yaml`. Then generate your first sim-ready asset:
 
 ```sh
-IMAGE=wangxinjie/embodiedgen:env_v0.1.x
-CONTAINER=EmbodiedGen-docker-${USER}
-docker pull ${IMAGE}
-docker run -itd --shm-size="64g" --gpus all --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --privileged --net=host --name ${CONTAINER} ${IMAGE}
-docker exec -it ${CONTAINER} bash
+img3d-cli --image_path apps/assets/example_image/sample_00.jpg \
+    --n_retry 2 --output_root outputs/imageto3d
+# → outputs/imageto3d/sample_00/result: URDF + mesh(.obj/.glb) + 3DGS(.ply) + video
 ```
 
-### ✅ Setup GPT Agent
+A pre-built Docker image is also available on [Docker Hub](https://hub.docker.com/repository/docker/wangxinjie/embodiedgen).
 
-Update the API key in file: `embodied_gen/utils/gpt_config.yaml`.
-
-You can choose between two backends for the GPT agent:
-
-- **`gpt-4o`** (Recommended) – Use this if you have access to **Azure OpenAI**.
-- **`qwen2.5-vl`** – An alternative with free usage via OpenRouter, apply a free key [here](https://openrouter.ai/settings/keys) and update `api_key` in `embodied_gen/utils/gpt_config.yaml` (50 free requests per day)
-
-
-### 📸 Directly use EmbodiedGen All-Simulators-Ready Assets
-
-[![🤗 Hugging Face](https://img.shields.io/badge/🤗-EmbodiedGen_Asset_Gallery-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Gallery-Explorer) Explore EmbodiedGen generated assets that are ready for simulation across any simulators (SAPIEN, Isaac Sim, MuJoCo, PyBullet, Genesis, Isaac Gym etc.). Details in chapter [any-simulators](#any-simulators).
+➡️ Full guide: [Installation & Setup](https://horizonrobotics.github.io/EmbodiedGen/docs/install.html) · [Docker](docker/README.md)
 
 ---
 
-<h2 id="image-to-3d">🖼️ Image-to-3D</h2>
+<h2 id="generate-assets">🧱 Generate — Sim-Ready 3D Assets</h2>
 
-[![🤗 Hugging Face](https://img.shields.io/badge/🤗-Image_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Image-to-3D) Generate physically plausible 3D asset URDF from single input image, offering high-quality support for digital twin systems.
-(HF space is a simplified demonstration. For the full functionality, please refer to `img3d-cli`.)
+Turn a **single image** or a **text prompt** into a simulation-ready asset: metric geometry, convex collision proxy, VLM-inferred physical properties (scale, mass, friction), quality-checked with automatic retries — packaged as URDF + mesh + 3DGS.
 
-<img src="docs/assets/image_to_3d.jpg" alt="Image to 3D" width="700">
+<img src="docs/documentation/assets/image_to_3d.jpg" alt="Image to 3D" width="700">
 
-### ☁️ Service
-Run the image-to-3D generation service locally.
-Models downloaded automatically on first run, please be patient.
 ```sh
-# Run in foreground
-python apps/image_to_3d.py
-# Or run in the background
-CUDA_VISIBLE_DEVICES=0 nohup python apps/image_to_3d.py > /dev/null 2>&1 &
+# Image → 3D (backends: SAM3D | TRELLIS | HUNYUAN3D, via --image3d_model)
+img3d-cli --image_path apps/assets/example_image/sample_01.jpg --output_root outputs/imageto3d
+
+# Text → 3D
+text3d-cli --prompts "small bronze figurine of a lion" --output_root outputs/textto3d
+
+# Re-texture an existing mesh (Chinese & English prompts)
+texture-cli --mesh_path apps/assets/example_texture/meshes/horse.obj \
+    --prompt "A gray horse head with flying mane and brown eyes" --output_root outputs/texture_gen
 ```
 
-### ⚡ API
-Generate physically plausible 3D assets from image input via the command-line API.
-```sh
-img3d-cli --image_path apps/assets/example_image/sample_00.jpg apps/assets/example_image/sample_01.jpg \
---n_retry 2 --output_root outputs/imageto3d
+The same generate-and-export path reaches **soft bodies**: text-conditioned garments deploy as deformable meshes in Genesis.
 
-# See result(.urdf/mesh.obj/mesh.glb/gs.ply) in ${output_root}/sample_xx/result
+Any generated URDF can be further annotated with **part-level affordances** — functional part segmentation, per-part semantics, and simulation-validated 6-DoF grasps (requires `bash install.sh affordance`):
+
+```sh
+affordance-cli --urdf-paths apps/assets/example_affordance/ear_hear/sample.urdf \
+    --output-dirs outputs/affordance_annotation/ear_hear
 ```
 
-Support the use of [SAM3D](https://github.com/facebookresearch/sam-3d-objects) or [TRELLIS](https://github.com/microsoft/TRELLIS) as 3D generation model, modify `IMAGE3D_MODEL` in `embodied_gen/scripts/imageto3d.py` to switch model.
+➡️ Full guides: [Image-to-3D](https://horizonrobotics.github.io/EmbodiedGen/docs/tutorials/image_to_3d.html) · [Text-to-3D](https://horizonrobotics.github.io/EmbodiedGen/docs/tutorials/text_to_3d.html) · [Texture Generation](https://horizonrobotics.github.io/EmbodiedGen/docs/tutorials/texture_edit.html) · [Soft-Body Simulation](https://horizonrobotics.github.io/EmbodiedGen/docs/tutorials/soft_body.html) · [Affordance](https://horizonrobotics.github.io/EmbodiedGen/docs/tutorials/affordance.html)
 
 ---
 
+<h2 id="scale-scenes">🏠 Scale — Large-Scale Scenes</h2>
 
-<h2 id="text-to-3d">📝 Text-to-3D</h2>
+Go beyond tabletops: generate **multi-room, navigable, instance-editable houses** as sim-ready backgrounds at a controllable complexity tier, or create photo-realistic **3DGS background scenes** from a text prompt.
 
-[![🤗 Hugging Face](https://img.shields.io/badge/🤗-Text_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D) Create 3D assets from text descriptions for a wide range of geometry and styles. (HF space is a simplified demonstration. For the full functionality, please refer to `text3d-cli`.)
-
-<img src="docs/assets/text_to_3d.jpg" alt="Text to 3D" width="700">
-
-### ☁️ Service
-Deploy the text-to-3D generation service locally.
-
-Text-to-image model based on the Kolors model, supporting Chinese and English prompts.
-Models downloaded automatically on first run, please be patient.
-```sh
-python apps/text_to_3d.py
-```
-
-### ⚡ API
-Text-to-image model based on SD3.5 Medium, English prompts only.
-Usage requires agreement to the [model license(click accept)](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium), models downloaded automatically.
-
-For large-scale 3D asset generation, set `--n_image_retry=4` `--n_asset_retry=3` `--n_pipe_retry=2`, slower but better, via automatic checking and retries. For more diverse results, omit `--seed_img`.
+<img src="docs/documentation/assets/worlds.gif" alt="Large-scale multi-room scenes" width="600">
 
 ```sh
-text3d-cli --prompts "small bronze figurine of a lion" "A globe with wooden base" "wooden table with embroidery" \
-    --n_image_retry 1 --n_asset_retry 1 --n_pipe_retry 1 --seed_img 0 \
-    --output_root outputs/textto3d
+# Room / house from a natural-language description (requires `bash install.sh room`)
+room-cli -m embodied_gen.scripts.room_gen.gen_room \
+    --output-root outputs/rooms --prompt "Wipe the table in a simple dining room"
+# or specify the profile explicitly: --room-type Kitchen --seed 42 --complexity simple
+
+# 3DGS background scene from text (requires `bash install.sh scene3d`)
+scene3d-cli --prompts "Art studio with easel and canvas" --output_dir outputs/bg_scenes/ --seed 0
 ```
 
-Text-to-image model based on the Kolors model.
-```sh
-bash embodied_gen/scripts/textto3d.sh \
-    --prompts "A globe with wooden base and latitude and longitude lines" "橙色电动手钻，有磨损细节" \
-    --output_root outputs/textto3d_k
-```
-ps: models with more permissive licenses found in `embodied_gen/models/image_comm_model.py`
+➡️ Full guides: [Room Generation](https://horizonrobotics.github.io/EmbodiedGen/docs/tutorials/room_gen.html) · [3D Scene Generation](https://horizonrobotics.github.io/EmbodiedGen/docs/tutorials/scene_gen.html)
 
 ---
 
+<h2 id="compose-worlds">🌍 Compose — Task-Driven Worlds</h2>
 
-<h2 id="texture-generation">🎨 Texture Generation</h2>
+From a natural-language task description, EmbodiedGen parses a **scene graph** and composes a physically stable, directly loadable **interactive 3D world** — background, context objects, manipulated targets, distractors, and robot.
 
-[![🤗 Hugging Face](https://img.shields.io/badge/🤗-Texture_Gen_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Texture-Gen) Generate visually rich textures for 3D mesh.
+<table>
+  <tr>
+    <td><img src="docs/documentation/assets/layout1.gif" alt="layout1" width="320"/></td>
+    <td><img src="docs/documentation/assets/layout2.gif" alt="layout2" width="320"/></td>
+  </tr>
+</table>
 
-<img src="docs/assets/texture_gen.jpg" alt="Texture Gen" width="700">
-
-
-### ☁️ Service
-Run the texture generation service locally.
-Models downloaded automatically on first run, see `download_kolors_weights`, `geo_cond_mv`.
 ```sh
-python apps/texture_edit.py
+layout-cli --task_descs "Place the pen in the mug on the desk" \
+    --bg_list "outputs/example_gen_scenes/scene_part_list.txt" \
+    --output_root "outputs/layouts_gen" --insert_robot
+
+# Load the generated layout into SAPIEN simulation
+sim-cli --layout_path "outputs/layouts_gen/task_0000/layout.json" \
+    --output_dir "outputs/layouts_gen/task_0000/sapien_render" --insert_robot
 ```
 
-### ⚡ API
-Support Chinese and English prompts.
-```sh
-texture-cli --mesh_path "apps/assets/example_texture/meshes/robot_text.obj" \
-"apps/assets/example_texture/meshes/horse.obj" \
---prompt "举着牌子的写实风格机器人，大眼睛，牌子上写着“Hello”的文字" \
-"A gray horse head with flying mane and brown eyes" \
---output_root "outputs/texture_gen" \
---seed 0
-```
+➡️ Full guide: [Layout Generation](https://horizonrobotics.github.io/EmbodiedGen/docs/tutorials/layout_gen.html) (background download, batch generation, layout randomization)
 
 ---
 
-<h2 id="3d-scene-generation">🌍 3D Scene Generation</h2>
+<h2 id="vibe-coding">💬 Edit — 3D Vibe Coding</h2>
 
-<img src="docs/assets/scene3d.gif" alt="scene3d" style="width: 600px;">
+Build and edit sim-ready 3D worlds **through dialogue**. EmbodiedGen ships a Claude Code plugin whose slash commands wrap the generation and spatial-computing skills — each instruction is a bounded, physics-validated skill call that preserves a deployable world state.
 
-### ⚡ API
-> Run `bash install.sh extra` to install additional requirements if you need to use `scene3d-cli`.
-
-It takes ~30mins to generate a color mesh and 3DGS per scene.
+<img src="docs/documentation/assets/vibe_coding.gif" alt="3D Vibe Coding: editing a sim-ready world through dialogue" width="600">
 
 ```sh
-CUDA_VISIBLE_DEVICES=0 scene3d-cli \
---prompts "Art studio with easel and canvas" \
---output_dir outputs/bg_scenes/ \
---seed 0 \
---gs3d.max_steps 4000 \
---disable_pano_check
+bash install/install_agent_plugin.sh  # register the plugin in Claude Code
 ```
+
+| Command | What it does |
+|---------|--------------|
+| `/embodiedgen:gen_assets` | Generate 3D assets from images or text |
+| `/embodiedgen:gen_indoor` | Generate rooms or multi-room houses |
+| `/embodiedgen:gen_bg` | Generate 3DGS background scenes |
+| `/embodiedgen:gen_layout` | Compose task-driven interactive worlds |
+| `/embodiedgen:vibe3d` | Insert / remove / place objects in a scene via natural language |
+| `/embodiedgen:sim` | Render layouts in SAPIEN simulation |
+| `/embodiedgen:convert` | Export assets to USD / MJCF / URDF |
+| `/embodiedgen:process` | Scale or rotate existing assets |
+
+➡️ Full guide: [3D Vibe Coding](https://horizonrobotics.github.io/EmbodiedGen/docs/tutorials/vibe_coding.html)
 
 ---
 
+<h2 id="any-simulators">📦 Export — Any Simulators</h2>
+
+One standardized asset, six engines, zero manual adaptation — consistent geometry, collision, textures, and physical metadata everywhere.
+
+| Simulator | How to use EmbodiedGen assets |
+|-----------|------------------------------|
+| [SAPIEN](https://github.com/haosulab/SAPIEN) / [IsaacGym](https://github.com/isaac-sim/IsaacGymEnvs) / [PyBullet](https://github.com/bulletphysics/bullet3) | Generated `.urdf` used **directly** |
+| [MuJoCo](https://github.com/google-deepmind/mujoco) / [Genesis](https://github.com/Genesis-Embodied-AI/Genesis) | `MeshtoMJCFConverter` → MJCF |
+| [IsaacSim](https://github.com/isaac-sim/IsaacSim) | `MeshtoUSDConverter` → USD |
+
+<img src="docs/documentation/assets/simulators_collision.jpg" alt="simulators_collision" width="500">
+
+➡️ Full guide: [Any Simulators](https://horizonrobotics.github.io/EmbodiedGen/docs/tutorials/any_simulators.html) (conversion API & examples)
+
+---
+
+<h2 id="robot-learning">🤖 Train — Robot Learning</h2>
+
+Generated worlds are not just viewable — they are **online training environments**. Spin up parallel `gym` environments from a generated layout, record sensor and trajectory data, and evaluate grasp quality of generated assets.
+
+<table>
+  <tr>
+    <td><img src="docs/documentation/assets/parallel_sim.gif" alt="parallel_sim1" width="290"/></td>
+    <td><img src="docs/documentation/assets/parallel_sim2.gif" alt="parallel_sim2" width="290"/></td>
+  </tr>
+</table>
+
+```sh
+# Parallel simulation environments from a generated layout
+python embodied_gen/scripts/parallel_sim.py \
+    --layout_file "outputs/layouts_gen/task_0000/layout.json" \
+    --output_dir "outputs/parallel_sim/task_0000" --num_envs 16
+
+# Grasp-quality evaluation of a generated URDF (ManiSkill + SAPIEN)
+python embodied_gen/scripts/eval_collision_success.py \
+    --urdf-path outputs/imageto3d/sample_00/result/sample_00.urdf --num-trials 4
+```
+
+In a companion [sim-to-real RL study](https://arxiv.org/abs/2603.18532), policies trained purely in EmbodiedGen-generated worlds reached **79.8%** simulation and **75.0%** real-robot task success.
+
+➡️ Full guide: [Robot Learning](https://horizonrobotics.github.io/EmbodiedGen/docs/tutorials/robot_learning.html)
+
+---
 
 <h2 id="articulated-object-generation">⚙️ Articulated Object Generation</h2>
 
-See our paper published in NeurIPS 2025.
-[[Arxiv Paper]](https://arxiv.org/abs/2505.20460) |
-[[Gradio Demo]](https://huggingface.co/spaces/HorizonRobotics/DIPO) |
-[[Code]](https://github.com/RQ-Wu/DIPO)
+See our paper **DIPO** published in NeurIPS 2025:
+[[arXiv]](https://arxiv.org/abs/2505.20460) | [[Gradio Demo]](https://huggingface.co/spaces/HorizonRobotics/DIPO) | [[Code]](https://github.com/RQ-Wu/DIPO)
 
-
-<img src="docs/assets/articulate.gif" alt="articulate" style="width: 500px;">
-
+<img src="docs/documentation/assets/articulate.gif" alt="articulate" width="500">
 
 ---
 
+<h2 id="3d-scene-completion">🧩 3D Scene Completion</h2>
 
-<h2 id="layout-generation">🏞️ Layout(Interactive 3D Worlds) Generation</h2>
+See our paper **3D-Fixer** published in CVPR 2026:
+[[arXiv]](https://arxiv.org/abs/2604.04406) | [[Project Page]](https://zx-yin.github.io/3dfixer/) | [[Online Demo]](https://huggingface.co/spaces/HorizonRobotics/3D-Fixer) | [[Code]](https://github.com/HorizonRobotics/3D-Fixer)
 
-### 💬 Generate Layout from task description
-
-<table>
-  <tr>
-    <td><img src="docs/assets/layout1.gif" alt="layout1" width="320"/></td>
-    <td><img src="docs/assets/layout2.gif" alt="layout2" width="320"/></td>
-  </tr>
-  <tr>
-    <td><img src="docs/assets/layout3.gif" alt="layout3" width="320"/></td>
-    <td><img src="docs/assets/layout4.gif" alt="layout4" width="320"/></td>
-  </tr>
-</table>
-
-Text-to-image model based on SD3.5 Medium, usage requires agreement to the [model license](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium). All models auto-downloaded at the first run.
-
-You can generate any desired room as background using `scene3d-cli`. As each scene takes approximately 30 minutes to generate, we recommend pre-generating them for efficiency and adding them to `outputs/example_gen_scenes/scene_part_list.txt`.
-
-We provided some sample background assets created with `scene3d-cli`. Download them(~2G) using:
-```sh
-hf download HorizonRobotics/EmbodiedGenData \
-  --repo-type dataset --local-dir outputs \
-  --include "example_gen_scenes/scene_00[01][0-9]/**" \
-            "example_gen_scenes/scene_part_list.txt"
-```
-
-Generating one interactive 3D scene from task description with `layout-cli` takes approximately 30 minutes.
-```sh
-layout-cli --task_descs "Place the pen in the mug on the desk" "Put the fruit on the table on the plate" \
---bg_list "outputs/example_gen_scenes/scene_part_list.txt" --output_root "outputs/layouts_gen" --insert_robot
-```
-
-<table>
-  <tr>
-    <td><img src="docs/assets/Iscene_demo1.gif" alt="Iscene_demo1" width="234"/></td>
-    <td><img src="docs/assets/Iscene_demo2.gif" alt="Iscene_demo2" width="350"/></td>
-  </tr>
-</table>
-
-Run multiple tasks defined in `task_list.txt` in the backend.
-Remove `--insert_robot` if you don't consider the robot pose in layout generation.
-```sh
-CUDA_VISIBLE_DEVICES=0 nohup layout-cli \
---task_descs "apps/assets/example_layout/task_list.txt" \
---bg_list "outputs/example_gen_scenes/scene_part_list.txt" \
---n_image_retry 4 --n_asset_retry 3 --n_pipe_retry 3 \
---output_root "outputs/layouts_gens" --insert_robot > layouts_gens.log &
-```
-
-Using `compose_layout.py`, you can recompose the layout of the generated interactive 3D scenes.
-```sh
-python embodied_gen/scripts/compose_layout.py \
---layout_path "outputs/layouts_gens/task_0000/layout.json" \
---output_dir "outputs/layouts_gens/task_0000/recompose" \
---insert_robot
-```
-
-We provide `sim-cli`, that allows users to easily load generated layouts into an interactive 3D simulation using the SAPIEN engine (will support for more simulators in future updates).
-
-```sh
-sim-cli --layout_path "outputs/layouts_gen/task_0000/layout.json" \
---output_dir "outputs/layouts_gen/task_0000/sapien_render" --insert_robot
-```
-
-Example: generate multiple parallel simulation envs with `gym.make` and record sensor and trajectory data.
-
-<table>
-  <tr>
-    <td><img src="docs/assets/parallel_sim.gif" alt="parallel_sim1" width="290"/></td>
-    <td><img src="docs/assets/parallel_sim2.gif" alt="parallel_sim2" width="290"/></td>
-  </tr>
-</table>
-
-```sh
-python embodied_gen/scripts/parallel_sim.py \
---layout_file "outputs/layouts_gen/task_0000/layout.json" \
---output_dir "outputs/parallel_sim/task_0000" \
---num_envs 16
-```
-
-### 🖼️ Real-to-Sim Digital Twin
-
-<img src="docs/assets/real2sim_mujoco.gif" alt="real2sim_mujoco" width="400">
-
----
-
-<h2 id="any-simulators">🎮 Any Simulators</h2>
-
-Use EmbodiedGen-generated assets with correct physical collisions and consistent visual effects in any simulator
-([isaacsim](https://github.com/isaac-sim/IsaacSim), [mujoco](https://github.com/google-deepmind/mujoco), [genesis](https://github.com/Genesis-Embodied-AI/Genesis), [pybullet](https://github.com/bulletphysics/bullet3), [isaacgym](https://github.com/isaac-sim/IsaacGymEnvs), [sapien](https://github.com/haosulab/SAPIEN)).
-Example in `tests/test_examples/test_asset_converter.py`.
-
-| Simulator | Conversion Class |
-|-----------|------------------|
-| [isaacsim](https://github.com/isaac-sim/IsaacSim) | MeshtoUSDConverter |
-| [mujoco](https://github.com/google-deepmind/mujoco) / [genesis](https://github.com/Genesis-Embodied-AI/Genesis) | MeshtoMJCFConverter |
-| [sapien](https://github.com/haosulab/SAPIEN) / [isaacgym](https://github.com/isaac-sim/IsaacGymEnvs) / [pybullet](https://github.com/bulletphysics/bullet3) | EmbodiedGen generated .urdf can be used directly |
-
-
-<img src="docs/assets/simulators_collision.jpg" alt="simulators_collision" width="500">
+<img src="https://raw.githubusercontent.com/HorizonRobotics/3D-Fixer/main/assets/doc/teaser.png" alt="3D-Fixer" width="600">
 
 ---
 
 ## For Developer
+
 ```sh
 pip install -e .[dev] && pre-commit install
 python -m pytest # Pass all unit-test are required.
-# mkdocs serve --dev-addr 0.0.0.0:8000
-# mkdocs gh-deploy --force
 ```
 
 ## 📚 Citation
 
 If you use EmbodiedGen in your research or projects, please cite:
 
+<!-- TODO: the V2 entry below is a placeholder — replace with the real arXiv BibTeX once the V2 paper is announced. -->
+```bibtex
+@article{wang2026embodiedgenv2,
+  title   = {EmbodiedGen V2: An Agentic, Simulation-Ready 3D World Engine for Embodied AI},
+  author  = {Xinjie Wang and Liu Liu and Taojun Ding and Andrew Choi and Chaodong Huang and
+             Mengao Zhao and Ziang Li and Jackson Jiang and Chunlei Yu and Shengxiang Liu and
+             Wei Xu and Zhizhong Su},
+  journal = {arXiv preprint arXiv:2506.10600},
+  year    = {2026}
+}
+```
 ```bibtex
 @misc{wang2025embodiedgengenerative3dworld,
-      title={EmbodiedGen: Towards a Generative 3D World Engine for Embodied Intelligence},
-      author={Xinjie Wang and Liu Liu and Yu Cao and Ruiqi Wu and Wenkang Qin and Dehui Wang and Wei Sui and Zhizhong Su},
-      year={2025},
-      eprint={2506.10600},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO},
-      url={https://arxiv.org/abs/2506.10600},
+  title         = {EmbodiedGen: Towards a Generative 3D World Engine for Embodied Intelligence},
+  author        = {Xinjie Wang and Liu Liu and Yu Cao and Ruiqi Wu and Wenkang Qin and
+                   Dehui Wang and Wei Sui and Zhizhong Su},
+  year          = {2025},
+  eprint        = {2506.10600},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.RO},
+  url           = {https://arxiv.org/abs/2506.10600}
 }
 ```
 
@@ -341,7 +273,8 @@ If you use EmbodiedGen in your research or projects, please cite:
 ## 🙌 Acknowledgement
 
 EmbodiedGen builds upon the following amazing projects and models:
-🌟 [Trellis](https://github.com/microsoft/TRELLIS) | 🌟 [Hunyuan-Delight](https://huggingface.co/tencent/Hunyuan3D-2/tree/main/hunyuan3d-delight-v2-0) | 🌟 [Segment Anything](https://github.com/facebookresearch/segment-anything) | 🌟 [Rembg](https://github.com/danielgatis/rembg) | 🌟 [RMBG-1.4](https://huggingface.co/briaai/RMBG-1.4) | 🌟 [Stable Diffusion x4](https://huggingface.co/stabilityai/stable-diffusion-x4-upscaler) | 🌟 [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) | 🌟 [Kolors](https://github.com/Kwai-Kolors/Kolors) | 🌟 [ChatGLM3](https://github.com/THUDM/ChatGLM3) | 🌟 [Aesthetic Score](http://captions.christoph-schuhmann.de/aesthetic_viz_laion_sac+logos+ava1-l14-linearMSE-en-2.37B.html) | 🌟 [Pano2Room](https://github.com/TrickyGo/Pano2Room) | 🌟 [Diffusion360](https://github.com/ArcherFMY/SD-T2I-360PanoImage) | 🌟 [Kaolin](https://github.com/NVIDIAGameWorks/kaolin) | 🌟 [diffusers](https://github.com/huggingface/diffusers) | 🌟 [gsplat](https://github.com/nerfstudio-project/gsplat) | 🌟 [QWEN-2.5VL](https://github.com/QwenLM/Qwen2.5-VL) | 🌟 [GPT4o](https://platform.openai.com/docs/models/gpt-4o) | 🌟 [SD3.5](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium) | 🌟 [ManiSkill](https://github.com/haosulab/ManiSkill) | 🌟 [SAM3D](https://github.com/facebookresearch/sam-3d-objects)
+🌟 [Trellis](https://github.com/microsoft/TRELLIS) | 🌟 [Hunyuan-Delight](https://huggingface.co/tencent/Hunyuan3D-2/tree/main/hunyuan3d-delight-v2-0) | 🌟 [Segment Anything](https://github.com/facebookresearch/segment-anything) | 🌟 [Rembg](https://github.com/danielgatis/rembg) | 🌟 [RMBG-1.4](https://huggingface.co/briaai/RMBG-1.4) | 🌟 [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) | 🌟 [Kolors](https://github.com/Kwai-Kolors/Kolors) | 🌟 [Aesthetic Score](http://captions.christoph-schuhmann.de/aesthetic_viz_laion_sac+logos+ava1-l14-linearMSE-en-2.37B.html) | 🌟 [Pano2Room](https://github.com/TrickyGo/Pano2Room) | 🌟 [Diffusion360](https://github.com/ArcherFMY/SD-T2I-360PanoImage) | 🌟 [Kaolin](https://github.com/NVIDIAGameWorks/kaolin) | 🌟 [diffusers](https://github.com/huggingface/diffusers) | 🌟 [gsplat](https://github.com/nerfstudio-project/gsplat) | 🌟 [ChatGPT](https://platform.openai.com/docs/models/gpt-4o) | 🌟 [SD3.5](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium) | 🌟 [ManiSkill](https://github.com/haosulab/ManiSkill) | 🌟 [SAM3D](https://github.com/facebookresearch/sam-3d-objects) | 🌟 [infinigen](https://github.com/princeton-vl/infinigen)
+🌟 [Trellis](https://github.com/microsoft/TRELLIS) | 🌟 [Hunyuan-Delight](https://huggingface.co/tencent/Hunyuan3D-2/tree/main/hunyuan3d-delight-v2-0) | 🌟 [Hunyuan3D-Part](https://github.com/Tencent-Hunyuan/Hunyuan3D-Part) | 🌟 [GraspGen](https://github.com/NVlabs/GraspGen) | 🌟 [Segment Anything](https://github.com/facebookresearch/segment-anything) | 🌟 [Rembg](https://github.com/danielgatis/rembg) | 🌟 [RMBG-1.4](https://huggingface.co/briaai/RMBG-1.4) | 🌟 [Stable Diffusion x4](https://huggingface.co/stabilityai/stable-diffusion-x4-upscaler) | 🌟 [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) | 🌟 [Kolors](https://github.com/Kwai-Kolors/Kolors) | 🌟 [ChatGLM3](https://github.com/THUDM/ChatGLM3) | 🌟 [Aesthetic Score](http://captions.christoph-schuhmann.de/aesthetic_viz_laion_sac+logos+ava1-l14-linearMSE-en-2.37B.html) | 🌟 [Pano2Room](https://github.com/TrickyGo/Pano2Room) | 🌟 [Diffusion360](https://github.com/ArcherFMY/SD-T2I-360PanoImage) | 🌟 [Kaolin](https://github.com/NVIDIAGameWorks/kaolin) | 🌟 [diffusers](https://github.com/huggingface/diffusers) | 🌟 [gsplat](https://github.com/nerfstudio-project/gsplat) | 🌟 [QWEN-2.5VL](https://github.com/QwenLM/Qwen2.5-VL) | 🌟 [GPT4o](https://platform.openai.com/docs/models/gpt-4o) | 🌟 [SD3.5](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium) | 🌟 [ManiSkill](https://github.com/haosulab/ManiSkill) | 🌟 [SAM3D](https://github.com/facebookresearch/sam-3d-objects) | 🌟 [infinigen](https://github.com/princeton-vl/infinigen)
 
 ---
 

@@ -18,6 +18,7 @@ Activation: import before loading any spconv checkpoint (e.g. via sitecustomize)
 This is the ROCm-unblock shim; the upstream-appropriate fix belongs in spconv_rocm
 (accept KRSC checkpoints under the Native algo).
 """
+
 import torch
 
 _orig_load_state_dict = torch.nn.Module.load_state_dict
@@ -36,7 +37,9 @@ def _patched_load_state_dict(self, state_dict, strict=True, *args, **kwargs):
     try:
         own = self.state_dict()
     except Exception:
-        return _orig_load_state_dict(self, state_dict, strict=strict, *args, **kwargs)
+        return _orig_load_state_dict(
+            self, state_dict, strict=strict, *args, **kwargs
+        )
 
     converted = 0
     fixed = dict(state_dict)
@@ -52,9 +55,14 @@ def _patched_load_state_dict(self, state_dict, strict=True, *args, **kwargs):
             fixed[name] = native.reshape(inc, out)
             converted += 1
     if converted:
-        print(f"[spconv-rocm-compat] converted {converted} KRSC->Native conv weights")
+        print(
+            f"[spconv-rocm-compat] converted {converted} KRSC->Native conv weights"
+        )
     return _orig_load_state_dict(self, fixed, strict=strict, *args, **kwargs)
 
 
-if getattr(torch.nn.Module.load_state_dict, "__name__", "") != "_patched_load_state_dict":
+if (
+    getattr(torch.nn.Module.load_state_dict, "__name__", "")
+    != "_patched_load_state_dict"
+):
     torch.nn.Module.load_state_dict = _patched_load_state_dict

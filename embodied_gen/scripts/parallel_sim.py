@@ -15,7 +15,7 @@
 # permissions and limitations under the License.
 
 
-from embodied_gen.utils.monkey_patches import monkey_patch_maniskill
+from embodied_gen.utils.monkey_patch.maniskill import monkey_patch_maniskill
 
 monkey_patch_maniskill()
 import json

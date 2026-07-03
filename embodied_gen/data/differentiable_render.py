@@ -80,7 +80,11 @@ def create_mp4_from_images(
     color = (255, 255, 255)
     position = (20, 25)
 
-    with imageio.get_writer(output_path, fps=fps) as writer:
+    with imageio.get_writer(
+        output_path,
+        fps=fps,
+        macro_block_size=1,
+    ) as writer:
         for image in images:
             image = image.clip(min=0, max=1)
             image = (255.0 * image).astype(np.uint8)
@@ -147,6 +151,7 @@ class ImageRender(object):
         gen_viewnormal_mp4 (bool, optional): Generate MP4 of view-space normals. Defaults to False.
         gen_glonormal_mp4 (bool, optional): Generate MP4 of global-space normals. Defaults to False.
         no_index_file (bool, optional): Skip saving index file. Defaults to False.
+        video_fps (int, optional): FPS for generated videos. Defaults to 15.
         light_factor (float, optional): PBR light intensity multiplier. Defaults to 1.0.
 
     Example:
@@ -185,7 +190,9 @@ class ImageRender(object):
         gen_viewnormal_mp4: bool = False,
         gen_glonormal_mp4: bool = False,
         no_index_file: bool = False,
+        video_fps: int = 15,
         light_factor: float = 1.0,
+        metallic: bool = False,
     ) -> None:
         camera = init_kal_camera(camera_params)
         self.camera = camera
@@ -218,7 +225,9 @@ class ImageRender(object):
         self.gen_color_mp4 = gen_color_mp4
         self.gen_viewnormal_mp4 = gen_viewnormal_mp4
         self.gen_glonormal_mp4 = gen_glonormal_mp4
+        self.video_fps = video_fps
         self.light_factor = light_factor
+        self.metallic = metallic
         self.no_index_file = no_index_file
 
     def render_mesh(
@@ -313,7 +322,7 @@ class ImageRender(object):
                 create_mp4_from_images(
                     rendered_normals,
                     output_path=f"{output_dir}/normal.mp4",
-                    fps=15,
+                    fps=self.video_fps,
                     prompt=prompt,
                 )
             else:
@@ -325,9 +334,9 @@ class ImageRender(object):
                 data_dict[RenderItems.GLOBAL_NORMAL.value] = render_paths
 
             if RenderItems.VIEW_NORMAL.value in self.render_items:
-                assert (
-                    RenderItems.GLOBAL_NORMAL in self.render_items
-                ), f"Must render global normal firstly, got render_items: {self.render_items}."  # noqa
+                assert RenderItems.GLOBAL_NORMAL in self.render_items, (
+                    f"Must render global normal firstly, got render_items: {self.render_items}."
+                )  # noqa
                 rendered_view_normals = self.renderer.transform_normal(
                     rendered_normals, self.mv, masks, to_view=True
                 )
@@ -336,7 +345,7 @@ class ImageRender(object):
                     create_mp4_from_images(
                         rendered_view_normals,
                         output_path=f"{output_dir}/view_normal.mp4",
-                        fps=15,
+                        fps=self.video_fps,
                         prompt=prompt,
                     )
                 else:
@@ -388,7 +397,10 @@ class ImageRender(object):
             try:
                 for idx, cam in enumerate(self.camera):
                     image, albedo, diffuse, _ = render_pbr(
-                        mesh, cam, light_factor=self.light_factor
+                        mesh,
+                        cam,
+                        light_factor=self.light_factor,
+                        metallic=self.metallic,
                     )
                     image = torch.cat([image[0], masks[idx]], axis=-1)
                     images.append(image.detach().cpu().numpy())
@@ -409,14 +421,14 @@ class ImageRender(object):
                 create_gif_from_images(
                     images,
                     output_path=f"{output_dir}/color.gif",
-                    fps=15,
+                    fps=self.video_fps,
                 )
 
             if self.gen_color_mp4:
                 create_mp4_from_images(
                     images,
                     output_path=f"{output_dir}/color.mp4",
-                    fps=15,
+                    fps=self.video_fps,
                     prompt=prompt,
                 )
 
@@ -508,6 +520,12 @@ def parse_args():
         help="Light factor for mesh PBR rendering (default: 1.)",
     )
     parser.add_argument(
+        "--pbr_metallic",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Whether to keep metallic material properties for mesh PBR rendering (default: True).",
+    )
+    parser.add_argument(
         "--with_mtl",
         action="store_true",
         help="Whether to render with mesh material.",
@@ -543,6 +561,12 @@ def parse_args():
         nargs="+",
         default=None,
         help="Text prompts for the rendering.",
+    )
+    parser.add_argument(
+        "--video_fps",
+        type=int,
+        default=15,
+        help="FPS for generated video outputs.",
     )
 
     args, unknown = parser.parse_known_args()
@@ -607,7 +631,9 @@ def entrypoint(**kwargs) -> None:
         gen_color_mp4=args.gen_color_mp4,
         gen_viewnormal_mp4=args.gen_viewnormal_mp4,
         gen_glonormal_mp4=args.gen_glonormal_mp4,
+        video_fps=args.video_fps,
         light_factor=args.pbr_light_factor,
+        metallic=args.pbr_metallic,
         no_index_file=gen_video or args.no_index_file,
     )
     image_render.render_mesh(

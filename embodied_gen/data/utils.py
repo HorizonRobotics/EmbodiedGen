@@ -21,6 +21,7 @@ import os
 import time
 import zipfile
 from contextlib import contextmanager
+from copy import deepcopy
 from dataclasses import dataclass, field
 from shutil import rmtree
 from typing import List, Tuple, Union
@@ -441,6 +442,37 @@ def save_images(
     return save_paths
 
 
+def _disable_metallic_for_render(materials):
+    if materials is None:
+        return
+
+    for material in materials:
+        if hasattr(material, "metallic_texture"):
+            material.metallic_texture = None
+        if (
+            hasattr(material, "metallic_value")
+            and material.metallic_value is not None
+        ):
+            if torch.is_tensor(material.metallic_value):
+                material.metallic_value = torch.zeros_like(
+                    material.metallic_value
+                )
+            else:
+                material.metallic_value = 0.0
+
+
+def _build_render_materials(mesh, metallic: bool = False):
+    if metallic:
+        return None
+
+    if mesh.materials is None:
+        return None
+
+    render_materials = deepcopy(mesh.materials)
+    _disable_metallic_for_render(render_materials)
+    return render_materials
+
+
 def _current_lighting(
     azimuths: List[float],
     elevations: List[float],
@@ -471,29 +503,59 @@ def _current_lighting(
     return light_condition
 
 
+def _uniform_lighting(
+    light_factor: float = 1.0,
+    device: str = "cuda",
+    sharpness: float = 0.5,
+    num_lights: int = 1024,
+):
+    indices = torch.arange(num_lights, dtype=torch.float32, device=device)
+    golden_angle = math.pi * (3.0 - math.sqrt(5.0))
+    z = 1.0 - 2.0 * (indices + 0.5) / num_lights
+    radius = torch.sqrt(torch.clamp(1.0 - z * z, min=0.0))
+    theta = golden_angle * indices
+    directions = torch.stack(
+        [
+            radius * torch.cos(theta),
+            radius * torch.sin(theta),
+            z,
+        ],
+        dim=1,
+    )
+    directions = F.normalize(directions, dim=1)
+
+    amplitude = torch.ones_like(directions) * (light_factor / len(directions))
+    light_condition = kal.render.lighting.SgLightingParameters(
+        amplitude=amplitude,
+        direction=directions,
+        sharpness=sharpness,
+    ).to(device)
+
+    return light_condition
+
+
 def render_pbr(
     mesh,
     camera,
     device="cuda",
     cxt=None,
-    custom_materials=None,
     light_factor=1.0,
+    metallic: bool = False,
 ):
     if cxt is None:
         cxt = dr.RasterizeCudaContext()
 
-    light_condition = _current_lighting(
-        azimuths=[0, 90, 180, 270],
-        elevations=[90, 60, 30, 20],
+    light_condition = _uniform_lighting(
         light_factor=light_factor,
         device=device,
     )
+    render_materials = _build_render_materials(mesh, metallic)
     render_res = kal.render.easy_render.render_mesh(
         camera,
         mesh,
         lighting=light_condition,
         nvdiffrast_context=cxt,
-        custom_materials=custom_materials,
+        custom_materials=render_materials,
     )
 
     image = render_res[kal.render.easy_render.RenderPass.render]
@@ -676,9 +738,9 @@ def import_kaolin_mesh(mesh_path: str, with_mtl: bool = False):
         mesh = kal.io.obj.import_mesh(mesh_path, with_materials=with_material)
         if with_mtl and mesh.materials and len(mesh.materials) > 0:
             material = kal.render.materials.PBRMaterial()
-            assert (
-                "map_Kd" in mesh.materials[0]
-            ), "'map_Kd' not found in materials."
+            assert "map_Kd" in mesh.materials[0], (
+                "'map_Kd' not found in materials."
+            )
             material.diffuse_texture = mesh.materials[0]["map_Kd"] / 255.0
             mesh.materials = [material]
     elif mesh_path.endswith(".ply"):
@@ -727,6 +789,7 @@ def save_mesh_with_mtl(
     output_path: str,
     material_base=(250, 250, 250, 255),
     mesh_process: bool = True,
+    glossiness: float = 250.0,
 ) -> trimesh.Trimesh:
     if isinstance(texture, np.ndarray):
         texture = Image.fromarray(texture)
@@ -742,6 +805,8 @@ def save_mesh_with_mtl(
         diffuse=material_base,
         ambient=material_base,
         specular=material_base,
+        # 250 gives a tight visible highlight similar to glossy plastic.
+        glossiness=glossiness,
     )
 
     dir_name = os.path.dirname(output_path)
@@ -963,6 +1028,6 @@ def model_device_ctx(
 
         if verbose:
             model_names = [m.__class__.__name__ for m in models]
-            logger.debug(
+            logger.info(
                 f"[model_device_ctx] {model_names} to cuda: {to_cuda_time:.1f}s, to cpu: {to_cpu_time:.1f}s"
             )

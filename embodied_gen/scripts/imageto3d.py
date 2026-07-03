@@ -29,6 +29,11 @@ from embodied_gen.data.utils import delete_dir
 # from embodied_gen.models.sr_model import ImageRealESRGAN
 # from embodied_gen.models.delight_model import DelightingModel
 from embodied_gen.models.gs_model import GaussianOperator
+from embodied_gen.models.hunyuan3d import (
+    HunyuanConfig,
+    load_credentials,
+    process_image,
+)
 from embodied_gen.models.segment_model import RembgRemover
 from embodied_gen.scripts.render_gs import entrypoint as render_gs_api
 from embodied_gen.utils.gpt_clients import GPT_CLIENT
@@ -49,19 +54,47 @@ from embodied_gen.validators.quality_checkers import (
 from embodied_gen.validators.urdf_convertor import URDFGenerator
 
 # random.seed(0)
-IMAGE3D_MODEL = "SAM3D"  # TRELLIS or SAM3D
-logger.info(f"Loading {IMAGE3D_MODEL} as Image3D Models...")
-if IMAGE3D_MODEL == "TRELLIS":
-    from thirdparty.TRELLIS.trellis.pipelines import TrellisImageTo3DPipeline
+IMAGE3D_MODEL = "SAM3D"  # default backend; SAM3D, TRELLIS, or HUNYUAN3D
+SUPPORTED_IMAGE3D_MODELS = ("SAM3D", "TRELLIS", "HUNYUAN3D")
 
-    PIPELINE = TrellisImageTo3DPipeline.from_pretrained(
-        "microsoft/TRELLIS-image-large"
-    )
-    # PIPELINE.cuda()
-elif IMAGE3D_MODEL == "SAM3D":
-    from embodied_gen.models.sam3d import Sam3dInference
 
-    PIPELINE = Sam3dInference()
+_PIPELINE_CACHE: dict = {}
+
+
+def _build_image3d_pipeline(name: str):
+    """Lazily instantiate (and cache) the local image-to-3D pipeline.
+
+    The cache preserves the pre-refactor invariant that the local backend
+    is loaded once per process: ``textto3d.py`` calls ``entrypoint`` in a
+    per-node loop, and re-loading weights each call would regress runtime.
+    Returns ``None`` for backends that have no local model (HUNYUAN3D).
+    """
+    if name == "HUNYUAN3D":
+        return None
+    if name in _PIPELINE_CACHE:
+        return _PIPELINE_CACHE[name]
+    if name == "TRELLIS":
+        logger.info("Loading TRELLIS as Image3D Models...")
+        from thirdparty.TRELLIS.trellis.pipelines import (
+            TrellisImageTo3DPipeline,
+        )
+
+        pipeline = TrellisImageTo3DPipeline.from_pretrained(
+            "microsoft/TRELLIS-image-large"
+        )
+    elif name == "SAM3D":
+        logger.info("Loading SAM3D as Image3D Models...")
+        from embodied_gen.models.sam3d import Sam3dInference
+
+        pipeline = Sam3dInference()
+    else:
+        raise ValueError(
+            f"Unsupported image3d backend {name!r}; "
+            f"expected one of {SUPPORTED_IMAGE3D_MODELS}."
+        )
+    _PIPELINE_CACHE[name] = pipeline
+    return pipeline
+
 
 # DELIGHT = DelightingModel()
 # IMAGESR_MODEL = ImageRealESRGAN(outscale=4)
@@ -109,6 +142,17 @@ def parse_args():
     )
     parser.add_argument("--disable_decompose_convex", action="store_true")
     parser.add_argument("--texture_size", type=int, default=2048)
+    parser.add_argument(
+        "--image3d_model",
+        type=str,
+        default=IMAGE3D_MODEL,
+        help=(
+            "Image-to-3D backend. One of "
+            f"{', '.join(SUPPORTED_IMAGE3D_MODELS)} (case-insensitive). "
+            "HUNYUAN3D calls Tencent Hunyuan3D Pro API and requires "
+            "TENCENT_SECRET_ID/TENCENT_SECRET_KEY in the environment."
+        ),
+    )
     args, unknown = parser.parse_known_args()
 
     return args
@@ -120,9 +164,31 @@ def entrypoint(**kwargs):
         if hasattr(args, k) and v is not None:
             setattr(args, k, v)
 
-    assert (
-        args.image_path or args.image_root
-    ), "Please provide either --image_path or --image_root."
+    args.image3d_model = str(args.image3d_model).strip().upper()
+    if args.image3d_model not in SUPPORTED_IMAGE3D_MODELS:
+        raise ValueError(
+            f"Unsupported --image3d_model {args.image3d_model!r}; "
+            f"expected one of {SUPPORTED_IMAGE3D_MODELS}."
+        )
+
+    hunyuan_config = None
+    hunyuan_credentials = None
+    if args.image3d_model == "HUNYUAN3D":
+        # Fail fast on missing creds before any local model load or network I/O.
+        hunyuan_credentials = load_credentials()
+        hunyuan_config = HunyuanConfig()
+        logger.info(
+            "HUNYUAN3D backend: action=%s host=%s result_format=%s",
+            hunyuan_config.image_action,
+            hunyuan_config.host,
+            hunyuan_config.result_format,
+        )
+
+    pipeline = _build_image3d_pipeline(args.image3d_model)
+
+    assert args.image_path or args.image_root, (
+        "Please provide either --image_path or --image_root."
+    )
     if not args.image_path:
         args.image_path = glob(os.path.join(args.image_root, "*.png"))
         args.image_path += glob(os.path.join(args.image_root, "*.jpg"))
@@ -151,6 +217,19 @@ def entrypoint(**kwargs):
             seg_image = RBG_REMOVER(image) if image.mode != "RGBA" else image
             seg_image.save(seg_path)
 
+            if args.image3d_model == "HUNYUAN3D":
+                process_image(
+                    args=args,
+                    idx=idx,
+                    image_path=image_path,
+                    output_root=output_root,
+                    filename=filename,
+                    hunyuan_config=hunyuan_config,
+                    hunyuan_credentials=hunyuan_credentials,
+                    checkers=CHECKERS,
+                )
+                continue
+
             seed = args.seed
             asset_node = "unknown"
             gs_model = None
@@ -161,10 +240,10 @@ def entrypoint(**kwargs):
                     f"Try: {try_idx + 1}/{args.n_retry}, Seed: {seed}, Prompt: {seg_path}"
                 )
                 try:
-                    outputs = image3d_model_infer(PIPELINE, seg_image, seed)
+                    outputs = image3d_model_infer(pipeline, seg_image, seed)
                 except Exception as e:
                     logger.error(
-                        f"[Image3D Failed] process {image_path}: {e}, retry: {try_idx+1}/{args.n_retry}"
+                        f"[Image3D Failed] process {image_path}: {e}, retry: {try_idx + 1}/{args.n_retry}"
                     )
                     seed = (
                         random.randint(0, 100000) if seed is not None else None
@@ -290,10 +369,14 @@ def entrypoint(**kwargs):
             )
 
             # Quality check and update .urdf file.
-            mesh_out = f"{urdf_root}/{urdf_convertor.output_mesh_dir}/{filename}.obj"  # noqa
+            mesh_out = (
+                f"{urdf_root}/{urdf_convertor.output_mesh_dir}/{filename}.obj"  # noqa
+            )
             trimesh.load(mesh_out).export(mesh_out.replace(".obj", ".glb"))
 
-            image_dir = f"{urdf_root}/{urdf_convertor.output_render_dir}/image_color"  # noqa
+            image_dir = (
+                f"{urdf_root}/{urdf_convertor.output_render_dir}/image_color"  # noqa
+            )
             image_paths = glob(f"{image_dir}/*.png")
             images_list = []
             for checker in CHECKERS:
