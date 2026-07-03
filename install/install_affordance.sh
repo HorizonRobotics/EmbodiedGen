@@ -27,8 +27,8 @@ try_install "Installing torch-scatter==2.1.2 from source..." \
     "FORCE_CUDA=1 pip install --no-cache-dir --no-build-isolation --no-binary torch-scatter --force-reinstall --no-deps torch-scatter==2.1.2" \
     "torch-scatter source installation failed."
 
-try_install "Installing flash-attn==2.8.3 from source..." \
-    "FLASH_ATTENTION_FORCE_BUILD=TRUE pip install --no-cache-dir --no-build-isolation --no-binary flash-attn --force-reinstall --no-deps flash-attn==2.8.3" \
+try_install "Installing flash-attn==2.8.2 from source..." \
+    "FLASH_ATTENTION_FORCE_BUILD=TRUE pip install --no-cache-dir --no-build-isolation --no-binary flash-attn --force-reinstall --no-deps flash-attn==2.8.2" \
     "flash-attn source installation failed."
 
 for pkg in "${PIP_INSTALL_PACKAGES[@]}"; do
@@ -49,3 +49,5 @@ try_install "Installing GraspGen pointnet2_ops..." \
     "GraspGen pointnet2_ops installation failed."
 
 rm -r "$POINTNET2_OPS_DIR/build" 2>/dev/null || true
+
+pip install opencv-python==4.13.0.92
