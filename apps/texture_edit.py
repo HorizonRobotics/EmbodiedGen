@@ -64,7 +64,11 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
             <a href="https://github.com/HorizonRobotics/EmbodiedGen">
                 <img alt="💻 GitHub" src="https://img.shields.io/badge/GitHub-000000?logo=github">
             </a>
+<<<<<<< HEAD
             <a href="https://youtu.be/MIkJJSVM8L4">
+=======
+            <a href="https://youtu.be/DVRhSR8ukmE">
+>>>>>>> 40ae62d0c419e92391e065ef5226cbcc219ba956
                 <img alt="🎥 Video" src="https://img.shields.io/badge/🎥-Video-red">
             </a>
         </p>
