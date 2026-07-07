@@ -64,15 +64,13 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
             <a href="https://github.com/HorizonRobotics/EmbodiedGen">
                 <img alt="💻 GitHub" src="https://img.shields.io/badge/GitHub-000000?logo=github">
             </a>
-            <a href="https://www.youtube.com/watch?v=rG4odybuJRk">
+            <a href="https://youtu.be/swjDFEvjn14">
                 <img alt="🎥 Video" src="https://img.shields.io/badge/🎥-Video-red">
             </a>
         </p>
 
         🎨 Generate visually rich textures for 3D mesh.
-        """.format(
-            VERSION=VERSION
-        ),
+        """.format(VERSION=VERSION),
         elem_classes=["header"],
     )
 

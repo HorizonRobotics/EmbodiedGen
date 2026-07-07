@@ -38,5 +38,5 @@ Update the API key in file: `embodied_gen/utils/gpt_config.yaml`.
 
 You can choose between two backends for the GPT agent:
 
-- **`gpt-4o`** (Recommended) – Use this if you have access to **Azure OpenAI**.
-- **`qwen2.5-vl`** – An alternative with free usage via OpenRouter, apply a free key [here](https://openrouter.ai/settings/keys) and update `api_key` in `embodied_gen/utils/gpt_config.yaml` (50 free requests per day)
+- **`gpt-5.4`** (or Higher, Recommended) – Use this if you have access to **Azure OpenAI**.
+- **`gemma-4-31b`** – A free multimodal alternative (`google/gemma-4-31b-it:free`) via OpenRouter, apply a free key [here](https://openrouter.ai/settings/keys) and update `api_key` in `embodied_gen/utils/gpt_config.yaml`. Free-tier availability on OpenRouter can change over time — check the [model page](https://openrouter.ai/google/gemma-4-31b-it:free) before relying on it.

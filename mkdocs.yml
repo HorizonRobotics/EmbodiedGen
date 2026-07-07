@@ -55,7 +55,7 @@ extra:
     - icon: fontawesome/solid/globe
       link: https://horizonrobotics.github.io/robot_lab/embodied_gen/index.html
     - icon: fontawesome/brands/youtube
-      link: https://www.youtube.com/watch?v=rG4odybuJRk
+      link: https://youtu.be/swjDFEvjn14
 
 theme:
   name: material
