@@ -824,7 +824,7 @@ with gr.Blocks(
             <a href="https://github.com/HorizonRobotics/EmbodiedGen">
                 <img alt="💻 GitHub" src="https://img.shields.io/badge/GitHub-000000?logo=github">
             </a>
-            <a href="https://youtu.be/swjDFEvjn14">
+            <a href="https://youtu.be/DVRhSR8ukmE">
                 <img alt="🎥 Video" src="https://img.shields.io/badge/🎥-Video-red">
             </a>
         </p>

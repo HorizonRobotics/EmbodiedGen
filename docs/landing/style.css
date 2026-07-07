@@ -85,18 +85,22 @@ a.nav__link:hover{color:#fff; background:rgba(255,255,255,.14);}
     linear-gradient(180deg, rgba(8,9,12,.62) 0%, rgba(8,9,12,.42) 30%, rgba(8,9,12,.46) 62%, rgba(8,9,12,.82) 100%);}
 /* logo floats left of the centered title; offset is clamped so it never flies off-screen */
 .hero__logo{--lx:clamp(-448px,-33.5vw,-328px); position:absolute; z-index:3; left:53%; top:50%;
-  transform:translate(var(--lx),-120px); width:clamp(108px,9.5vw,136px); height:auto;
+  transform:translate(var(--lx),-120px); width:clamp(84px,7.5vw,108px); height:auto;
   filter:drop-shadow(0 6px 22px rgba(0,0,0,.4));
   transition:transform .35s var(--ease-out), filter .35s ease;
   transform-origin:center; cursor:pointer;
   animation:hero-fade 1s ease .1s both;}
 .hero__logo:hover{transform:translate(var(--lx),-120px) scale(1.1);
   filter:drop-shadow(0 10px 30px rgba(0,0,0,.5));}
-/* organization brand mark, stacked below the project logo */
-.hero__orglogo{--lx:clamp(-345px,-26vw,-235px); position:absolute; z-index:3; left:53%; top:50%;
-  transform:translate(var(--lx),96px); width:clamp(108px,9.5vw,136px); height:auto;
+/* organization brand mark, pinned to the immediate left of the wordmark */
+.hero__orglogo{position:absolute; right:100%; top:50%; transform:translateY(-50%);
+  margin-right:clamp(44px,4.4vw,80px); width:clamp(108px,9.5vw,136px); height:auto;
   filter:drop-shadow(0 4px 16px rgba(0,0,0,.45));
-  animation:hero-fade 1s ease .25s both;}
+  transition:transform .35s var(--ease-out), filter .35s ease;
+  transform-origin:center; cursor:pointer;
+  animation:hero-fade 1s ease .3s both;}
+.hero__orglogo:hover{transform:translateY(-50%) scale(1.1);
+  filter:drop-shadow(0 8px 26px rgba(0,0,0,.55));}
 .hero__content{position:relative; z-index:1; text-align:center; color:#fff; padding:0 var(--pad);
   max-width:1000px;}
 .hero__title{font-size:clamp(38px,6.2vw,65px); font-weight:800; letter-spacing:-.05em; line-height:.92;
