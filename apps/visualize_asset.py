@@ -56,6 +56,13 @@ CSV_FILE = "dataset_index.csv"
 HF_REPO_ID = "HorizonRobotics/EmbodiedGenData"
 HF_LOCAL_DIR = "EmbodiedGenData"
 CAMERA_ZOOM = 3.2
+# Gradio's default per-event concurrency limit is 1, which would make every
+# user's HF snapshot_download (potentially several seconds) serialize behind
+# whichever user clicked first. Give the HF-fetching events their own shared
+# pool so several users can download/preview assets in parallel, bounded to
+# avoid hammering the HF API with too many simultaneous requests.
+HF_IO_CONCURRENCY_ID = "hf_asset_io"
+HF_IO_CONCURRENCY_LIMIT = 6
 
 # Compatible with huggingface space zero GPU
 import spaces
@@ -124,6 +131,7 @@ os.makedirs(TMP_DIR, exist_ok=True)
 css = """
 .gradio-container .gradio-group { box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; }
 #asset-gallery { border: 1px solid #E5E7EB; border-radius: 8px; padding: 8px; background-color: #F9FAFB; }
+#download-row button { white-space: nowrap; }
 """
 
 lighting_css = """
@@ -724,13 +732,33 @@ def download_mjcf(asset_dir: str, req: gr.Request) -> str | None:
     return zip_path
 
 
+def download_affordance(asset_dir: str, req: gr.Request) -> str | None:
+    """Package the ``affordance/`` folder."""
+    if not asset_dir or not os.path.isdir(asset_dir):
+        gr.Warning("Please select an asset first.")
+        return None
+
+    gr.Info("⏳ Preparing affordance asset for download, please wait...")
+    ensure_hf_files([f"{_rel_dir(asset_dir)}/affordance/**"])
+    affordance_dir = os.path.join(asset_dir, "affordance")
+    if not os.path.isdir(affordance_dir):
+        gr.Warning("No affordance folder available for this asset.")
+        return None
+
+    zip_path, uid, zip_name = _fmt_zip_path(asset_dir, "affordance", req)
+    _zip_items(zip_path, [(affordance_dir, "affordance")])
+    gr.Info(f"✅ {zip_name} is ready.")
+    return zip_path
+
+
 # Download buttons keyed by format; order matches the outputs list used when
 # locking/unlocking them together.
-_DL_KEYS = ("urdf", "usd", "mjcf")
+_DL_KEYS = ("urdf", "usd", "mjcf", "affordance")
 _DL_LABELS = {
     "urdf": "⬇️ Download URDF",
     "usd": "⬇️ Download USD",
     "mjcf": "⬇️ Download MJCF",
+    "affordance": "⬇️ Affordance",
 }
 
 
@@ -796,7 +824,7 @@ with gr.Blocks(
             <a href="https://github.com/HorizonRobotics/EmbodiedGen">
                 <img alt="💻 GitHub" src="https://img.shields.io/badge/GitHub-000000?logo=github">
             </a>
-            <a href="https://www.youtube.com/watch?v=rG4odybuJRk">
+            <a href="https://youtu.be/swjDFEvjn14">
                 <img alt="🎥 Video" src="https://img.shields.io/badge/🎥-Video-red">
             </a>
         </p>
@@ -931,7 +959,7 @@ with gr.Blocks(
                     urdf_file = gr.Textbox(
                         label="URDF File Path", interactive=False, lines=2
                     )
-                with gr.Row():
+                with gr.Row(elem_id="download-row"):
                     # DownloadButtons that build their zip into their own value
                     # on click; a chained JS handler then triggers the browser
                     # download from that value (one-click). If the JS ever
@@ -949,6 +977,11 @@ with gr.Blocks(
                     )
                     mjcf_dl_btn = gr.DownloadButton(
                         label="⬇️ Download MJCF",
+                        variant="primary",
+                        interactive=False,
+                    )
+                    affordance_dl_btn = gr.DownloadButton(
+                        label="⬇️ Affordance",
                         variant="primary",
                         interactive=False,
                     )
@@ -1008,6 +1041,8 @@ with gr.Blocks(
     gallery.select(
         fn=show_asset_from_gallery,
         inputs=[primary, secondary, category, search_box, gallery_df_state],
+        concurrency_id=HF_IO_CONCURRENCY_ID,
+        concurrency_limit=HF_IO_CONCURRENCY_LIMIT,
         outputs=[
             (visual_path_state := gr.State()),
             (collision_path_state := gr.State()),
@@ -1030,7 +1065,7 @@ with gr.Blocks(
         ],
     ).success(
         fn=_reset_downloads,
-        outputs=[urdf_dl_btn, usd_dl_btn, mjcf_dl_btn],
+        outputs=[urdf_dl_btn, usd_dl_btn, mjcf_dl_btn, affordance_dl_btn],
     )
 
     # After the zip is built into the button's own value, pass that file value
@@ -1050,32 +1085,60 @@ with gr.Blocks(
     }
     """
 
-    dl_btns = [urdf_dl_btn, usd_dl_btn, mjcf_dl_btn]
+    dl_btns = [urdf_dl_btn, usd_dl_btn, mjcf_dl_btn, affordance_dl_btn]
 
     # Each flow: lock all buttons (prevent spam clicks) -> build the zip ->
     # JS-trigger the browser download -> unlock. Selecting another asset
     # resets the buttons independently (see `.success` above).
     urdf_dl_btn.click(
-        fn=lambda: _lock_downloads("urdf"), outputs=dl_btns
+        fn=lambda: _lock_downloads("urdf"), outputs=dl_btns, queue=False
     ).then(
-        fn=download_urdf, inputs=[asset_folder], outputs=[urdf_dl_btn]
+        fn=download_urdf,
+        inputs=[asset_folder],
+        outputs=[urdf_dl_btn],
+        concurrency_id=HF_IO_CONCURRENCY_ID,
+        concurrency_limit=HF_IO_CONCURRENCY_LIMIT,
     ).then(fn=lambda *a: None, inputs=[urdf_dl_btn], js=download_js).then(
         fn=_unlock_downloads, outputs=dl_btns
     )
 
-    usd_dl_btn.click(fn=lambda: _lock_downloads("usd"), outputs=dl_btns).then(
-        fn=download_usd, inputs=[asset_folder], outputs=[usd_dl_btn]
+    usd_dl_btn.click(
+        fn=lambda: _lock_downloads("usd"), outputs=dl_btns, queue=False
+    ).then(
+        fn=download_usd,
+        inputs=[asset_folder],
+        outputs=[usd_dl_btn],
+        concurrency_id=HF_IO_CONCURRENCY_ID,
+        concurrency_limit=HF_IO_CONCURRENCY_LIMIT,
     ).then(fn=lambda *a: None, inputs=[usd_dl_btn], js=download_js).then(
         fn=_unlock_downloads, outputs=dl_btns
     )
 
     mjcf_dl_btn.click(
-        fn=lambda: _lock_downloads("mjcf"), outputs=dl_btns
+        fn=lambda: _lock_downloads("mjcf"), outputs=dl_btns, queue=False
     ).then(
-        fn=download_mjcf, inputs=[asset_folder], outputs=[mjcf_dl_btn]
+        fn=download_mjcf,
+        inputs=[asset_folder],
+        outputs=[mjcf_dl_btn],
+        concurrency_id=HF_IO_CONCURRENCY_ID,
+        concurrency_limit=HF_IO_CONCURRENCY_LIMIT,
     ).then(fn=lambda *a: None, inputs=[mjcf_dl_btn], js=download_js).then(
         fn=_unlock_downloads, outputs=dl_btns
     )
+
+    affordance_dl_btn.click(
+        fn=lambda: _lock_downloads("affordance"),
+        outputs=dl_btns,
+        queue=False,
+    ).then(
+        fn=download_affordance,
+        inputs=[asset_folder],
+        outputs=[affordance_dl_btn],
+        concurrency_id=HF_IO_CONCURRENCY_ID,
+        concurrency_limit=HF_IO_CONCURRENCY_LIMIT,
+    ).then(
+        fn=lambda *a: None, inputs=[affordance_dl_btn], js=download_js
+    ).then(fn=_unlock_downloads, outputs=dl_btns)
 
     demo.load(start_session)
     demo.unload(end_session)
