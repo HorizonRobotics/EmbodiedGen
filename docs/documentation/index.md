@@ -9,7 +9,7 @@ hide:
 [![GitHub](https://img.shields.io/badge/GitHub-EmbodiedGen-black?logo=github)](https://github.com/HorizonRobotics/EmbodiedGen)
 [![📄 arXiv](https://img.shields.io/badge/📄-arXiv-b31b1b)](https://arxiv.org/abs/2506.10600)
 [![🤗 Dataset](https://img.shields.io/badge/🤗-Dataset-blue)](https://huggingface.co/datasets/HorizonRobotics/EmbodiedGenData)
-[![🎥 Video](https://img.shields.io/badge/🎥-Video-red)](https://youtu.be/swjDFEvjn14)
+[![🎥 Video](https://img.shields.io/badge/🎥-Video-red)](https://youtu.be/MIkJJSVM8L4)
 
 *EmbodiedGen V2*: An Agentic, Simulation-Ready 3D World Engine for Embodied AI.
 
