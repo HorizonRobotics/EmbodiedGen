@@ -6,9 +6,24 @@ STAGE=${STAGE:-basic}
 
 REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$REPO_ROOT/install/_utils.sh"
-git config --global http.postBuffer 524288000
+cd "$REPO_ROOT"
+
+case "$STAGE" in
+    basic|scene3d|room|affordance|cu126|all) ;;
+    *)
+        log_error "Unknown installation stage: $STAGE"
+        log_error "Usage: bash install.sh [basic|scene3d|room|affordance|cu126|all]"
+        exit 1
+        ;;
+esac
+
+git config http.postBuffer 524288000
 
 log_info "===== Starting installation stage: $STAGE ====="
+
+if [[ "$STAGE" != "cu126" ]]; then
+    bash "$REPO_ROOT/install/init_submodules.sh" "$STAGE"
+fi
 
 if [[ "$STAGE" == "basic" || "$STAGE" == "all" ]]; then
     bash "$REPO_ROOT/install/install_basic.sh"
@@ -36,5 +51,12 @@ if [[ "$STAGE" == "cu126" ]]; then
 fi
 
 # Global constraints for all stages
-pip install numpy==1.26.4
+python -m pip install numpy==1.26.4
+
+if [[ "$STAGE" != "cu126" ]]; then
+    try_install "Refreshing EmbodiedGen editable install..." \
+        "python -m pip install -e ." \
+        "EmbodiedGen editable installation refresh failed."
+fi
+
 log_info "===== Installation completed successfully. ====="

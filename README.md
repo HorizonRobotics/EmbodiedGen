@@ -49,7 +49,6 @@
 git clone https://github.com/HorizonRobotics/EmbodiedGen.git
 cd EmbodiedGen
 git checkout v2.0.0
-bash install/init_submodules.sh
 conda create -n embodiedgen python=3.10.13 -y
 conda activate embodiedgen
 # bash install.sh cu126 && conda deactivate && conda activate embodiedgen # Optional: if you don't have local cuda126.
@@ -80,7 +79,7 @@ Turn a **single image** or a **text prompt** into a simulation-ready asset: metr
 # Image → 3D (backends: SAM3D | TRELLIS | HUNYUAN3D, via --image3d_model)
 img3d-cli --image_path apps/assets/example_image/sample_01.jpg --output_root outputs/imageto3d
 
-# Text → 3D
+# Text → 3D (backends: SAM3D | TRELLIS | HUNYUAN3D, via --image3d_model)
 text3d-cli --prompts "small bronze figurine of a lion" --output_root outputs/textto3d
 
 # Re-texture an existing mesh (Chinese & English prompts)

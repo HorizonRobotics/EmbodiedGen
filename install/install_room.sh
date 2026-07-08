@@ -2,7 +2,8 @@
 
 set -e
 
-PROJECT_ROOT="$(pwd)"
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+PROJECT_ROOT=$(cd "$SCRIPT_DIR/.." && pwd)
 INFINIGEN_DIR="${PROJECT_ROOT}/thirdparty/infinigen"
 
 BLENDER_WGET_LINK='https://download.blender.org/release/Blender4.2/blender-4.2.0-linux-x64.tar.xz'
