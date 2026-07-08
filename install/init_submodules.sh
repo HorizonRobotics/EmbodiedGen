@@ -55,29 +55,6 @@ fi
 echo "Initializing submodules..."
 HUNYUAN_PART_PATH="thirdparty/Hunyuan3D-Part"
 
-fallback_submodule_commit() {
-  case "$1" in
-    thirdparty/TRELLIS)
-      echo "55a8e8164b195bbf927e0978f00e76c835e6011f"
-      ;;
-    thirdparty/pano2room)
-      echo "bbf93ae57086ed700edc6ee445852d4457a9d704"
-      ;;
-    thirdparty/sam3d)
-      echo "01417d16fb5cc762a60f370c1bf7f59d603ddfaf"
-      ;;
-    thirdparty/GraspGen)
-      echo "a56d518f3b76ea2a432b5b838b3c68027d29be49"
-      ;;
-    thirdparty/Hunyuan3D-Part)
-      echo "e96be065375438962375b55326416291342958a7"
-      ;;
-    thirdparty/infinigen)
-      echo "892947be71c4ff102c6a558d088ffe149561c11f"
-      ;;
-  esac
-}
-
 submodule_known_to_git() {
   git -C "$REPO_ROOT" ls-files --error-unmatch "$1" >/dev/null 2>&1
 }
@@ -85,56 +62,22 @@ submodule_known_to_git() {
 submodule_target_commit() {
   local path="$1"
   git -C "$REPO_ROOT" rev-parse --verify "HEAD:$path" 2>/dev/null \
-    || git -C "$REPO_ROOT" rev-parse --verify ":$path" 2>/dev/null \
-    || fallback_submodule_commit "$path"
-}
-
-clone_from_gitmodules() {
-  local path="$1"
-  local full_path="$REPO_ROOT/$path"
-  local url
-  local branch
-  local commit
-
-  url="$(git -C "$REPO_ROOT" config -f .gitmodules --get "submodule.$path.url")"
-  branch="$(git -C "$REPO_ROOT" config -f .gitmodules --get "submodule.$path.branch" || true)"
-  commit="$(submodule_target_commit "$path")"
-
-  echo "Submodule gitlink for $path is not present; cloning from .gitmodules."
-  if [[ ! -d "$full_path/.git" && ! -f "$full_path/.git" ]]; then
-    rm -rf "$full_path"
-    if [[ -n "$branch" ]]; then
-      git clone --filter=blob:none --depth 1 --branch "$branch" "$url" "$full_path"
-    else
-      git clone --filter=blob:none --depth 1 "$url" "$full_path"
-    fi
-  fi
-
-  if [[ -n "$commit" ]]; then
-    if ! git -C "$full_path" checkout --progress "$commit"; then
-      git -C "$full_path" fetch --depth 1 origin "$commit"
-      git -C "$full_path" checkout --progress "$commit"
-    fi
-  else
-    echo "No pinned commit found for $path; using cloned branch HEAD."
-  fi
+    || { echo "Missing submodule gitlink: $path" >&2; exit 1; }
 }
 
 init_submodule_checkout() {
   local path="$1"
   local recursive="${2:-0}"
 
-  if submodule_known_to_git "$path"; then
-    if [[ "$recursive" == "1" ]]; then
-      git -C "$REPO_ROOT" submodule update --init --recursive --progress "$path"
-    else
-      git -C "$REPO_ROOT" submodule update --init --progress "$path"
-    fi
+  if ! submodule_known_to_git "$path"; then
+    echo "Missing submodule gitlink: $path" >&2
+    exit 1
+  fi
+
+  if [[ "$recursive" == "1" ]]; then
+    git -C "$REPO_ROOT" submodule update --init --recursive --progress "$path"
   else
-    clone_from_gitmodules "$path"
-    if [[ "$recursive" == "1" ]]; then
-      git -C "$REPO_ROOT/$path" submodule update --init --recursive --progress
-    fi
+    git -C "$REPO_ROOT" submodule update --init --progress "$path"
   fi
 }
 
