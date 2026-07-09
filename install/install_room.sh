@@ -62,7 +62,7 @@ fi
 BUILD_PYTHONPATH="$TARGET_ENV/lib/python3.11/site-packages${PYTHONPATH:+:$PYTHONPATH}"
 CFLAGS="-I$TARGET_ENV/include/python3.11 $CFLAGS" PYTHONPATH="$BUILD_PYTHONPATH" "${BLENDER_PYTHON}" -m pip install --no-build-isolation -e "${INFINIGEN_DIR}[sim]"
 
-"${BLENDER_PYTHON}" -m pip install pyyaml tyro colorlog openai tenacity json-repair
+"${BLENDER_PYTHON}" -m pip install pyyaml tyro colorlog openai tenacity json-repair packaging
 "${BLENDER_PYTHON}" -m pip install -e "${PROJECT_ROOT}"
 
 echo "Setup room env complete."
