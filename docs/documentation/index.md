@@ -7,7 +7,7 @@ hide:
 
 [![🌐 Project Page](https://img.shields.io/badge/🌐-Project_Page-blue)](https://horizonrobotics.github.io/EmbodiedGen/)
 [![GitHub](https://img.shields.io/badge/GitHub-EmbodiedGen-black?logo=github)](https://github.com/HorizonRobotics/EmbodiedGen)
-[![📄 arXiv](https://img.shields.io/badge/📄-arXiv-b31b1b)](https://arxiv.org/abs/2506.10600)
+[![📄 arXiv](https://img.shields.io/badge/📄-arXiv-b31b1b)](https://arxiv.org/abs/2607.07459)
 [![🤗 Dataset](https://img.shields.io/badge/🤗-Dataset-blue)](https://huggingface.co/datasets/HorizonRobotics/EmbodiedGenData)
 [![🎥 Video](https://img.shields.io/badge/🎥-Video-red)](https://youtu.be/MIkJJSVM8L4)
 

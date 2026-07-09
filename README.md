@@ -3,7 +3,8 @@
 [![🌐 Project Page](https://img.shields.io/badge/🌐-Project_Page-blue)](https://horizonrobotics.github.io/EmbodiedGen/)
 [![📖 Documentation](https://img.shields.io/badge/📖-Documentation-blue)](https://horizonrobotics.github.io/EmbodiedGen/docs/)
 [![GitHub](https://img.shields.io/badge/GitHub-EmbodiedGen-black?logo=github)](https://github.com/HorizonRobotics/EmbodiedGen)
-[![📄 arXiv](https://img.shields.io/badge/📄-arXiv-b31b1b)](https://arxiv.org/abs/2506.10600)
+[![📄 arXiv](https://img.shields.io/badge/📄-arXiv_v1-b31b1b)](https://arxiv.org/abs/2506.10600)
+[![📄 arXiv](https://img.shields.io/badge/📄-arXiv_v2-b31b1b)](https://arxiv.org/abs/2607.07459)
 [![🎥 Video](https://img.shields.io/badge/🎥-Video-red)](https://youtu.be/MIkJJSVM8L4)
 [![🤗 Dataset](https://img.shields.io/badge/🤗-Dataset-blue)](https://huggingface.co/datasets/HorizonRobotics/EmbodiedGenData)
 <!-- [![中文介绍](https://img.shields.io/badge/中文介绍-07C160?logo=wechat&logoColor=white)](https://mp.weixin.qq.com/s/HH1cPBhK2xcDbyCK4BBTbw) -->
@@ -27,7 +28,7 @@
 - 🧩 **Pluggable 3D backends** — switch between **SAM3D**, **TRELLIS**, and the **Hunyuan3D Pro** cloud API with a single flag.
 - 🧥 **Beyond rigid bodies** — text-conditioned garments deploy as deformable meshes in Genesis.
 - 🦾 **Part-level affordance** — functional part segmentation, per-part semantics, and simulation-validated 6-DoF grasp poses for any generated asset.
-- 🤖 **Closed-loop robot learning** — policies trained purely in EmbodiedGen-generated worlds transfer to real robots (task success **9.7 → 79.8%** in sim, **21.7 → 75.0%** on real robots, from a companion [sim-to-real RL study](https://arxiv.org/abs/2603.18532)).
+- 🤖 **Closed-loop robot learning** — policies trained purely in EmbodiedGen-generated worlds transfer to real robots (task success **9.7 → 79.8%** in sim, **21.7 → 75.0%** on real robots, from [sim2real RL paper](https://arxiv.org/abs/2603.18532)).
 
 ## 📋 Table of Contents
 
@@ -243,15 +244,15 @@ python -m pytest # Pass all unit-test are required.
 
 If you use EmbodiedGen in your research or projects, please cite:
 
-<!-- TODO: the V2 entry below is a placeholder — replace with the real arXiv BibTeX once the V2 paper is announced. -->
 ```bibtex
-@article{wang2026embodiedgenv2,
-  title   = {EmbodiedGen V2: An Agentic, Simulation-Ready 3D World Engine for Embodied AI},
-  author  = {Xinjie Wang and Liu Liu and Taojun Ding and Andrew Choi and Chaodong Huang and
-             Mengao Zhao and Ziang Li and Jackson Jiang and Chunlei Yu and Shengxiang Liu and
-             Wei Xu and Zhizhong Su},
-  journal = {arXiv preprint arXiv:2506.10600},
-  year    = {2026}
+@misc{wang2026embodiedgenv2agenticsimulationready,
+      title={EmbodiedGen V2: An Agentic, Simulation-Ready 3D World Engine for Embodied AI},
+      author={Xinjie Wang and Liu Liu and Taojun Ding and Andrew Choi and Chaodong Huang and Mengao Zhao and Ziang Li and Jackson Jiang and Chunlei Yu and Shengxiang Liu and Wei Xu and Zhizhong Su},
+      year={2026},
+      eprint={2607.07459},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2607.07459},
 }
 ```
 ```bibtex

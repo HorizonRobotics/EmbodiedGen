@@ -818,7 +818,7 @@ with gr.Blocks(
             <a href="https://horizonrobotics.github.io/EmbodiedGen">
                 <img alt="📖 Documentation" src="https://img.shields.io/badge/📖-Documentation-blue">
             </a>
-            <a href="https://arxiv.org/abs/2506.10600">
+            <a href="https://arxiv.org/abs/2607.07459">
                 <img alt="📄 arXiv" src="https://img.shields.io/badge/📄-arXiv-b31b1b">
             </a>
             <a href="https://github.com/HorizonRobotics/EmbodiedGen">
