@@ -104,12 +104,29 @@ def monkey_patch_pano2room():
     # disable get_has_ddp_rank print in `BaseInpaintingTrainingModule`
     os.environ["NODE_RANK"] = "0"
 
-    from thirdparty.pano2room.modules.inpainters.lama.saicinpainting.training.trainers import (
-        load_checkpoint,
+    from thirdparty.pano2room.modules.inpainters.lama.saicinpainting.training import (
+        trainers as lama_trainers,
     )
     from thirdparty.pano2room.modules.inpainters.lama_inpainter import (
         LamaInpainter,
     )
+
+    def patched_lama_load_checkpoint(
+        train_config, path, map_location='cuda', strict=True
+    ):
+        """Load LaMa checkpoints with PyTorch 2.6+ compatible pickle behavior."""
+        model = lama_trainers.make_training_model(train_config)
+        try:
+            state = torch.load(
+                path, map_location=map_location, weights_only=False
+            )
+        except TypeError:
+            state = torch.load(path, map_location=map_location)
+        model.load_state_dict(state['state_dict'], strict=strict)
+        model.on_load_checkpoint(state)
+        return model
+
+    lama_trainers.load_checkpoint = patched_lama_load_checkpoint
 
     def patched_lama_inpaint_init(self):
         """Initialize LamaInpainter by downloading and setting up Big-Lama model."""
@@ -133,7 +150,7 @@ def monkey_patch_pano2room():
         train_config.training_model.predict_only = True
         train_config.visualizer.kind = 'noop'
 
-        self.model = load_checkpoint(
+        self.model = lama_trainers.load_checkpoint(
             train_config, checkpoint_path, strict=False, map_location='cpu'
         )
         self.model.freeze()

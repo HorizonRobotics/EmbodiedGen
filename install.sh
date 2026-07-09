@@ -32,7 +32,7 @@ fi
 if [[ "$STAGE" == "scene3d" || "$STAGE" == "all" ]]; then
     PANO2ROOM_PATH="$REPO_ROOT/thirdparty/pano2room"
     if [ -d "$PANO2ROOM_PATH" ]; then
-        echo "__pycache__/" > "$PANO2ROOM_PATH/.gitignore"
+        printf "__pycache__/\n.gitignore\n" > "$PANO2ROOM_PATH/.gitignore"
         log_info "Added .gitignore to ignore __pycache__ in $PANO2ROOM_PATH"
     fi
     bash "$REPO_ROOT/install/install_scene3d.sh"
