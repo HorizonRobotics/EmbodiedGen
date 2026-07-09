@@ -1892,7 +1892,7 @@
 <li><code>HUNYUAN3D</code> — Tencent Hunyuan3D Pro <strong>text-to-3D</strong> API; skips the text-to-image stage entirely and generates 3D directly from the prompt</li>
 </ul>
 <h3 id="using-the-hunyuan3d-cloud-backend">Using the Hunyuan3D Cloud Backend</h3>
-<p>Hunyuan3D Pro takes the prompt directly to a 3D mesh (no GPU model loaded locally; one job ≈ 3 minutes; Tencent Cloud is billed per submit). Set up credentials once:</p>
+<p>Hunyuan3D Pro takes the prompt directly to a 3D mesh (One job ≈ 3 minutes; Tencent Cloud is billed per submit). Set up credentials once (manage/create keys via the <a href="https://cloud.tencent.com/document/product/598/40488">Tencent Cloud API Key console</a>):</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">TENCENT_SECRET_ID</span><span class="o">=</span><span class="s1">&#39;your-secret-id&#39;</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">TENCENT_SECRET_KEY</span><span class="o">=</span><span class="s1">&#39;your-secret-key&#39;</span>
 text3d-cli<span class="w"> </span>--image3d_model<span class="w"> </span>HUNYUAN3D<span class="w"> </span><span class="se">\</span>
@@ -1955,7 +1955,7 @@ text3d-cli<span class="w"> </span>--image3d_model<span class="w"> </span>HUNYUAN
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="December 24, 2025 12:27:53 UTC">December 24, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 9, 2026 12:08:52 UTC">July 9, 2026</span>
   </span>
 
     
@@ -2043,7 +2043,7 @@ text3d-cli<span class="w"> </span>--image3d_model<span class="w"> </span>HUNYUAN
       
       
     
-    <a href="https://arxiv.org/abs/2506.10600" target="_blank" rel="noopener" title="arxiv.org" class="md-social__link">
+    <a href="https://arxiv.org/abs/2607.07459" target="_blank" rel="noopener" title="arxiv.org" class="md-social__link">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.842 0a1 1 0 0 0-.922.608c-.153.369-.044.627.294 1.111l6.919 8.36-1.023 1.106a1.04 1.04 0 0 0 .003 1.423l1.23 1.313-5.44 6.444c-.28.3-.453.823-.297 1.199a1.025 1.025 0 0 0 .959.635.91.91 0 0 0 .689-.34l5.783-6.126 7.49 8.005a.85.85 0 0 0 .684.26.96.96 0 0 0 .877-.615c.158-.377-.017-.75-.306-1.14L13.73 13.9l1.064-1.13a.963.963 0 0 0 .009-1.316L4.633.464S4.26.01 3.867 0zm0 .272h.017c.218.005.487.272.564.364l.005.006.005.005 10.17 10.99a.69.69 0 0 1-.008.946l-1.066 1.133-1.498-1.772-8.6-10.39c-.328-.472-.352-.619-.26-.841a.73.73 0 0 1 .671-.44Zm14.341 1.57a.88.88 0 0 0-.655.242l-5.696 6.158 1.694 1.832 5.309-6.514c.325-.433.479-.66.325-1.029a1.12 1.12 0 0 0-.977-.689zm-7.655 12.282 1.318 1.414-5.786 6.13a.65.65 0 0 1-.496.26.75.75 0 0 1-.706-.467c-.112-.269.036-.687.244-.909l.005-.005.005-.006z"/></svg>
     </a>
   
