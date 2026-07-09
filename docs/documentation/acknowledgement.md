@@ -9,13 +9,15 @@ EmbodiedGen builds upon the following amazing projects and models:
 
 If you use EmbodiedGen in your research or projects, please cite:
 
-<!-- TODO: the V2 entry below is a placeholder — replace with the real arXiv BibTeX once the V2 paper is announced. -->
 ```bibtex
-@article{wang2026embodiedgenv2,
+@misc{wang2026embodiedgenv2agenticsimulationready,
       title={EmbodiedGen V2: An Agentic, Simulation-Ready 3D World Engine for Embodied AI},
       author={Xinjie Wang and Liu Liu and Taojun Ding and Andrew Choi and Chaodong Huang and Mengao Zhao and Ziang Li and Jackson Jiang and Chunlei Yu and Shengxiang Liu and Wei Xu and Zhizhong Su},
-      journal={arXiv preprint arXiv:2506.10600},
       year={2026},
+      eprint={2607.07459},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2607.07459},
 }
 ```
 

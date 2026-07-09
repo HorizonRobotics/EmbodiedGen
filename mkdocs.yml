@@ -51,7 +51,7 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/HorizonRobotics/EmbodiedGen
     - icon: simple/arxiv
-      link: https://arxiv.org/abs/2506.10600
+      link: https://arxiv.org/abs/2607.07459
     - icon: fontawesome/solid/globe
       link: https://horizonrobotics.github.io/robot_lab/embodied_gen/index.html
     - icon: fontawesome/brands/youtube

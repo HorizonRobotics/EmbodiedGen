@@ -28,6 +28,7 @@ import numpy as np
 import trimesh
 import trimesh.transformations as tra
 import tyro
+import yaml
 
 sys.path.append(".")
 from embodied_gen.utils.geometry import (
@@ -169,50 +170,127 @@ class GraspGenerator:
                 "model_cfg": load_model_cfg,
             }
 
+    @staticmethod
+    def _extract_checkpoint_filenames(yml_path: str) -> list[str]:
+        """Recursively collect all `checkpoint: <name>.pth` entries.
+
+        Walks a GraspGen config yaml so we know every weight file it
+        requires.
+        """
+        with open(yml_path) as f:
+            cfg = yaml.safe_load(f)
+
+        names: set[str] = set()
+
+        def _walk(node) -> None:
+            if isinstance(node, dict):
+                for key, value in node.items():
+                    if (
+                        key == "checkpoint"
+                        and isinstance(value, str)
+                        and value.strip()
+                    ):
+                        names.add(value.strip())
+                    else:
+                        _walk(value)
+            elif isinstance(node, list):
+                for item in node:
+                    _walk(item)
+
+        _walk(cfg)
+        return sorted(names)
+
+    @staticmethod
+    def _dir_has_pth(directory: str, filename: str | None) -> bool:
+        if filename:
+            return os.path.exists(os.path.join(directory, filename))
+        return os.path.isdir(directory) and any(
+            f.endswith(".pth") for f in os.listdir(directory)
+        )
+
+    def _ensure_checkpoints(
+        self,
+        is_ready: callable,
+        repo_id: str,
+        allow_patterns: str,
+        download_dir: str,
+        desc: str,
+    ) -> None:
+        """Download `desc` weights from `repo_id` unless already ready.
+
+        Re-checks afterwards so a stale/partial local cache (e.g. config
+        present but a referenced .pth missing) is retried instead of
+        silently failing deep inside third-party code.
+        """
+        if is_ready():
+            return
+
+        logger.info(
+            f"Downloading {desc} weights from Hugging Face. "
+            "First-time use may take several minutes; please wait patiently."
+        )
+        from huggingface_hub import snapshot_download
+
+        snapshot_download(
+            repo_id=repo_id,
+            allow_patterns=allow_patterns,
+            local_dir=os.path.expanduser(download_dir),
+        )
+
+        if not is_ready():
+            raise FileNotFoundError(
+                f"{desc} checkpoint(s) still missing after downloading from "
+                f"Hugging Face repo '{repo_id}'. The local cache may be from "
+                "a previous partial download; please remove it and retry, "
+                "or download manually."
+            )
+
     def build_sampler(self):
         if self.cfg.model_name == "graspgen":
             gripper_config = os.path.expanduser(
                 self.cfg.graspgen.gripper_config
             )
+            checkpoints_dir = os.path.dirname(gripper_config)
 
-            if not os.path.exists(gripper_config):
-                logger.info(
-                    "Downloading GraspGen weights from Hugging Face. "
-                    "First-time use may take several minutes; please wait patiently."
-                )
-                from huggingface_hub import snapshot_download
-
-                download_dir = os.path.expanduser(
-                    "~/.cache/huggingface/hub/GraspGenModels"
-                )
-                snapshot_download(
-                    repo_id="adithyamurali/GraspGenModels",
-                    allow_patterns="checkpoints/*",
-                    local_dir=download_dir,
+            def _graspgen_ready() -> bool:
+                if not os.path.exists(gripper_config):
+                    return False
+                required = self._extract_checkpoint_filenames(gripper_config)
+                return all(
+                    os.path.exists(os.path.join(checkpoints_dir, name))
+                    for name in required
                 )
 
+            self._ensure_checkpoints(
+                _graspgen_ready,
+                "adithyamurali/GraspGenModels",
+                "checkpoints/*",
+                "~/.cache/huggingface/hub/GraspGenModels",
+                "GraspGen",
+            )
             grasp_cfg = self.modules["model_cfg"](gripper_config)
             return self.modules["GraspGenSampler"](grasp_cfg)
         if self.cfg.model_name == "graspgenx":
             checkpoint_root = os.path.expanduser(
                 self.cfg.graspgen.checkpoint_root
             )
-            config_path = os.path.join(checkpoint_root, "gen", "config.yaml")
-            if not os.path.exists(config_path):
-                logger.info(
-                    "Downloading GraspGenX weights from Hugging Face. "
-                    "First-time use may take several minutes; please wait patiently."
-                )
-                from huggingface_hub import snapshot_download
+            gen_dir = os.path.join(checkpoint_root, "gen")
+            dis_dir = os.path.join(checkpoint_root, "dis")
 
-                download_dir = os.path.expanduser(
-                    "~/.cache/huggingface/hub/GraspGenXModels"
+            def _graspgenx_ready() -> bool:
+                return (
+                    os.path.exists(os.path.join(gen_dir, "config.yaml"))
+                    and self._dir_has_pth(gen_dir, self.cfg.graspgen.gen_pth)
+                    and self._dir_has_pth(dis_dir, self.cfg.graspgen.dis_pth)
                 )
-                snapshot_download(
-                    repo_id="adithyamurali/GraspGenXModel",
-                    allow_patterns="release/*",
-                    local_dir=download_dir,
-                )
+
+            self._ensure_checkpoints(
+                _graspgenx_ready,
+                "adithyamurali/GraspGenXModel",
+                "release/*",
+                "~/.cache/huggingface/hub/GraspGenXModels",
+                "GraspGenX",
+            )
             model_cfg = self.modules["model_cfg"](
                 os.path.join(checkpoint_root, "gen"),
                 os.path.join(checkpoint_root, "dis"),

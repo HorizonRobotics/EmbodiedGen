@@ -5,7 +5,7 @@ description: Generate indoor rooms (single room or house) and export URDF/USD by
 
 # Room Creator
 
-Generate room scenes with `python -m embodied_gen.scripts.room_gen.gen_room` from infinigen(https://github.com/princeton-vl/infinigen) and optionally export URDF/USD.
+Generate room scenes with `room-cli -m embodied_gen.scripts.room_gen.gen_room` from infinigen(https://github.com/princeton-vl/infinigen) and optionally export URDF/USD. `room-cli` forwards its arguments to the bundled Blender Python (has `bpy` and room deps installed by `bash install.sh room`); running `python -m embodied_gen.scripts.room_gen.gen_room` from the `embodiedgen` env works too since heavy stages dispatch to Blender Python internally either way.
 
 ## Use This Workflow
 
@@ -39,7 +39,7 @@ Generate room scenes with `python -m embodied_gen.scripts.room_gen.gen_room` fro
 
 ```bash
 # Full pipeline for one kitchen
-python -m embodied_gen.scripts.room_gen.gen_room \
+room-cli -m embodied_gen.scripts.room_gen.gen_room \
   --output-root outputs/rooms \
   --room-type Kitchen \
   --seed 42 \
@@ -48,7 +48,7 @@ python -m embodied_gen.scripts.room_gen.gen_room \
 
 ```bash
 # Generation only (no export)
-python -m embodied_gen.scripts.room_gen.gen_room \
+room-cli -m embodied_gen.scripts.room_gen.gen_room \
   --output-root outputs/rooms \
   --room-type LivingRoom \
   --seed 100 \
@@ -58,7 +58,7 @@ python -m embodied_gen.scripts.room_gen.gen_room \
 
 ```bash
 # Export only from existing blender result
-python -m embodied_gen.scripts.room_gen.gen_room \
+room-cli -m embodied_gen.scripts.room_gen.gen_room \
   --output-root outputs/rooms \
   --room-type Kitchen \
   --seed 42 \
@@ -67,7 +67,7 @@ python -m embodied_gen.scripts.room_gen.gen_room \
 
 ```bash
 # House generation (use --large-scene for more rooms)
-python -m embodied_gen.scripts.room_gen.gen_room \
+room-cli -m embodied_gen.scripts.room_gen.gen_room \
   --output-root outputs/rooms \
   --room-type House \
   --seed 7 \
@@ -78,7 +78,7 @@ python -m embodied_gen.scripts.room_gen.gen_room \
 ## Runtime Requirements
 
 - Run from repo root so relative paths resolve.
-- Ensure Blender Python exists at `$BLENDER_PYTHON`. If not set, the command will try:
+- `room-cli` resolves Blender Python from `$BLENDER_PYTHON_BIN` if set, else falls back to
   `thirdparty/infinigen/blender/4.2/python/bin/python3.11` (must exist on disk).
 - `--no-gen` requires existing blender output at:
   `<output_root>/<RoomType>_seed<seed>/blender`.

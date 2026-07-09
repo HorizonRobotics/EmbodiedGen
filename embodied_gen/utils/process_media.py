@@ -281,6 +281,8 @@ def combine_images_to_grid(
         ```
     """
     n_images = len(images)
+    if n_images == 0:
+        return []
     if n_images == 1:
         return images
 

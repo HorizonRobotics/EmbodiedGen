@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+PROJECT_ROOT=$(cd "$SCRIPT_DIR/.." && pwd)
 source "$SCRIPT_DIR/_utils.sh"
+cd "$PROJECT_ROOT"
 
 PIP_INSTALL_PACKAGES=(
     "pip==22.3.1"

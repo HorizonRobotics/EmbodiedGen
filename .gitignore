@@ -57,6 +57,7 @@ node_modules
 /public/
 
 # local files
+.DS_Store
 build.sh
 __pycache__/
 output*
@@ -64,12 +65,11 @@ output*
 scripts/tools/
 weights
 apps/sessions/
-apps/assets/
+apps/gradio_cache/
 .gradio/*
 CLAUDE.md
 AGENTS.md
 .github/copilot-instructions.md
-apps/gradio_cache/
 
 # Larger than 1MB
 docs/documentation/assets/real2sim_mujoco.gif

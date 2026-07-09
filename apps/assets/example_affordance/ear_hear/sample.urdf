@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="sample">
+   <link name="sample">
+      <visual>
+         <origin xyz="0 0 0" rpy="1.5708 0.0 0.0" />
+         <geometry>
+            <mesh filename="mesh/sample.obj" scale="1.0 1.0 1.0" />
+         </geometry>
+      </visual>
+      <collision>
+         <origin xyz="0 0 0" rpy="1.5708 0.0 0.0" />
+         <geometry>
+            <mesh filename="mesh/sample_collision.obj" scale="1.0 1.0 1.0" />
+         </geometry>
+         <gazebo>
+            <mu1>0.50</mu1>
+            <mu2>0.40</mu2>
+         </gazebo>
+      </collision>
+      <inertial>
+         <mass value="0.3000" />
+      </inertial>
+      <extra_info>
+         <category>headphones</category>
+      </extra_info>
+   </link>
+</robot>

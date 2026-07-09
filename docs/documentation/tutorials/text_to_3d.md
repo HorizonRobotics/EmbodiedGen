@@ -90,7 +90,7 @@ Three 3D generation backends are supported via `--image3d_model` (case-insensiti
 
 ### Using the Hunyuan3D Cloud Backend
 
-Hunyuan3D Pro takes the prompt directly to a 3D mesh (no GPU model loaded locally; one job ≈ 3 minutes; Tencent Cloud is billed per submit). Set up credentials once:
+Hunyuan3D Pro takes the prompt directly to a 3D mesh (One job ≈ 3 minutes; Tencent Cloud is billed per submit). Set up credentials once (manage/create keys via the [Tencent Cloud API Key console](https://cloud.tencent.com/document/product/598/40488)):
 
 ```bash
 export TENCENT_SECRET_ID='your-secret-id'

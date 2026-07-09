@@ -3,7 +3,8 @@
 [![🌐 Project Page](https://img.shields.io/badge/🌐-Project_Page-blue)](https://horizonrobotics.github.io/EmbodiedGen/)
 [![📖 Documentation](https://img.shields.io/badge/📖-Documentation-blue)](https://horizonrobotics.github.io/EmbodiedGen/docs/)
 [![GitHub](https://img.shields.io/badge/GitHub-EmbodiedGen-black?logo=github)](https://github.com/HorizonRobotics/EmbodiedGen)
-[![📄 arXiv](https://img.shields.io/badge/📄-arXiv-b31b1b)](https://arxiv.org/abs/2506.10600)
+[![📄 arXiv](https://img.shields.io/badge/📄-arXiv_v1-b31b1b)](https://arxiv.org/abs/2506.10600)
+[![📄 arXiv](https://img.shields.io/badge/📄-arXiv_v2-b31b1b)](https://arxiv.org/abs/2607.07459)
 [![🎥 Video](https://img.shields.io/badge/🎥-Video-red)](https://youtu.be/MIkJJSVM8L4)
 [![🤗 Dataset](https://img.shields.io/badge/🤗-Dataset-blue)](https://huggingface.co/datasets/HorizonRobotics/EmbodiedGenData)
 <!-- [![中文介绍](https://img.shields.io/badge/中文介绍-07C160?logo=wechat&logoColor=white)](https://mp.weixin.qq.com/s/HH1cPBhK2xcDbyCK4BBTbw) -->
@@ -27,7 +28,7 @@
 - 🧩 **Pluggable 3D backends** — switch between **SAM3D**, **TRELLIS**, and the **Hunyuan3D Pro** cloud API with a single flag.
 - 🧥 **Beyond rigid bodies** — text-conditioned garments deploy as deformable meshes in Genesis.
 - 🦾 **Part-level affordance** — functional part segmentation, per-part semantics, and simulation-validated 6-DoF grasp poses for any generated asset.
-- 🤖 **Closed-loop robot learning** — policies trained purely in EmbodiedGen-generated worlds transfer to real robots (task success **9.7 → 79.8%** in sim, **21.7 → 75.0%** on real robots, from a companion [sim-to-real RL study](https://arxiv.org/abs/2603.18532)).
+- 🤖 **Closed-loop robot learning** — policies trained purely in EmbodiedGen-generated worlds transfer to real robots (task success **9.7 → 79.8%** in sim, **21.7 → 75.0%** on real robots, from [sim2real RL paper](https://arxiv.org/abs/2603.18532)).
 
 ## 📋 Table of Contents
 
@@ -49,7 +50,6 @@
 git clone https://github.com/HorizonRobotics/EmbodiedGen.git
 cd EmbodiedGen
 git checkout v2.0.0
-bash install/init_submodules.sh
 conda create -n embodiedgen python=3.10.13 -y
 conda activate embodiedgen
 # bash install.sh cu126 && conda deactivate && conda activate embodiedgen # Optional: if you don't have local cuda126.
@@ -80,7 +80,7 @@ Turn a **single image** or a **text prompt** into a simulation-ready asset: metr
 # Image → 3D (backends: SAM3D | TRELLIS | HUNYUAN3D, via --image3d_model)
 img3d-cli --image_path apps/assets/example_image/sample_01.jpg --output_root outputs/imageto3d
 
-# Text → 3D
+# Text → 3D (backends: SAM3D | TRELLIS | HUNYUAN3D, via --image3d_model)
 text3d-cli --prompts "small bronze figurine of a lion" --output_root outputs/textto3d
 
 # Re-texture an existing mesh (Chinese & English prompts)
@@ -133,7 +133,7 @@ From a natural-language task description, EmbodiedGen parses a **scene graph** a
 </table>
 
 ```sh
-layout-cli --task_descs "Place the pen in the mug on the desk" \
+layout-cli --task_descs "Put the cup on the wooden tray on the desk" \
     --bg_list "outputs/example_gen_scenes/scene_part_list.txt" \
     --output_root "outputs/layouts_gen" --insert_robot
 
@@ -244,15 +244,15 @@ python -m pytest # Pass all unit-test are required.
 
 If you use EmbodiedGen in your research or projects, please cite:
 
-<!-- TODO: the V2 entry below is a placeholder — replace with the real arXiv BibTeX once the V2 paper is announced. -->
 ```bibtex
-@article{wang2026embodiedgenv2,
-  title   = {EmbodiedGen V2: An Agentic, Simulation-Ready 3D World Engine for Embodied AI},
-  author  = {Xinjie Wang and Liu Liu and Taojun Ding and Andrew Choi and Chaodong Huang and
-             Mengao Zhao and Ziang Li and Jackson Jiang and Chunlei Yu and Shengxiang Liu and
-             Wei Xu and Zhizhong Su},
-  journal = {arXiv preprint arXiv:2506.10600},
-  year    = {2026}
+@misc{wang2026embodiedgenv2agenticsimulationready,
+      title={EmbodiedGen V2: An Agentic, Simulation-Ready 3D World Engine for Embodied AI},
+      author={Xinjie Wang and Liu Liu and Taojun Ding and Andrew Choi and Chaodong Huang and Mengao Zhao and Ziang Li and Jackson Jiang and Chunlei Yu and Shengxiang Liu and Wei Xu and Zhizhong Su},
+      year={2026},
+      eprint={2607.07459},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2607.07459},
 }
 ```
 ```bibtex
