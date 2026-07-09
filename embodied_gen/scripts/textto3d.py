@@ -276,6 +276,21 @@ def text_to_3d(**kwargs) -> dict:
                 no_index_file=True,
             )
             image_path = combine_images_to_grid(image_path)
+            if not image_path:
+                logger.error(
+                    f"Node {node}: 3D asset generation produced no mesh, "
+                    f"skip QA and retry round."
+                )
+                results["assets"][node] = f"asset3d/{save_node}/result"
+                results["quality"][node] = "NO: mesh generation failed."
+                n_pipe_retry -= 1
+                seed_img = (
+                    random.randint(0, 100000) if seed_img is not None else None
+                )
+                seed_3d = (
+                    random.randint(0, 100000) if seed_3d is not None else None
+                )
+                continue
             check_text = asset_type if asset_type is not None else prompt
             qa_flag, qa_result = TXTGEN_CHECKER(check_text, image_path)
             logger.warning(

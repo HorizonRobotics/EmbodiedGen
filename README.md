@@ -133,8 +133,8 @@ From a natural-language task description, EmbodiedGen parses a **scene graph** a
 </table>
 
 ```sh
-layout-cli --task_descs "Place the pen in the mug on the desk" \
-    --bg_list "outputs/example_gen_scenes/scene_part_list.txt" \
+layout-cli --task_descs "Put the cup on the wooden tray on the desk" \
+    --bg_list "/home/users/xinjie.wang-labs/xinjie/asset3d-gen/outputs/bg_gen_scenes/scene_list.txt" \
     --output_root "outputs/layouts_gen" --insert_robot
 
 # Load the generated layout into SAPIEN simulation
