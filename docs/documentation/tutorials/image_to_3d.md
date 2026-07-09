@@ -21,7 +21,7 @@ apps/assets/example_image/sample_01.jpg \
 
 ### Using the Hunyuan3D Cloud Backend
 
-Hunyuan3D Pro runs entirely on Tencent Cloud — useful when you don't have a local GPU. It requires Tencent Cloud Hunyuan3D `SecretId` / `SecretKey` and network access to `ai3d.tencentcloudapi.com` and the COS download host.
+Hunyuan3D Pro runs entirely on Tencent Cloud. It requires Tencent Cloud Hunyuan3D `SecretId` / `SecretKey` and network access to `ai3d.tencentcloudapi.com` and the COS download host. Manage/create your keys via the [Tencent Cloud API Key console](https://cloud.tencent.com/document/product/598/40488).
 
 ```bash
 export TENCENT_SECRET_ID='your-secret-id'
