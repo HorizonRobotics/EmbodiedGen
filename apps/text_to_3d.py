@@ -27,6 +27,7 @@ from common import (
     MAX_SEED,
     VERSION,
     active_btn_by_text_content,
+    dispatch_text2image_fn,
     end_session,
     extract_3d_representations_v3,
     extract_urdf,
@@ -35,7 +36,6 @@ from common import (
     get_selected_image,
     image_to_3d,
     start_session,
-    text2image_fn,
 )
 
 app_name = os.getenv("GRADIO_APP")
@@ -395,7 +395,7 @@ with gr.Blocks(delete_cache=(43200, 43200), theme=custom_theme) as demo:
             image_sample3,
         ],
     ).success(
-        text2image_fn,
+        dispatch_text2image_fn,
         inputs=[
             text_prompt,
             img_guidance_scale,

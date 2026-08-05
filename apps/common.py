@@ -92,6 +92,7 @@ os.environ["GRADIO_ANALYTICS_ENABLED"] = "false"
 os.environ.setdefault("OPENAI_API_KEY", "sk-placeholder")
 MAX_SEED = 100000
 
+
 # Global variables for lazy initialization
 _RBG_REMOVER = None
 _RBG14_REMOVER = None
@@ -125,8 +126,13 @@ elif os.getenv("GRADIO_APP").startswith("textto3d"):
         )
         # PIPELINE.cuda()
     text_model_dir = "weights/Kolors"
-    PIPELINE_IMG_IP = build_text2img_ip_pipeline(text_model_dir, ref_scale=0.3)
-    PIPELINE_IMG = build_text2img_pipeline(text_model_dir)
+    PIPELINE_IMG = build_text2img_pipeline(
+        text_model_dir,
+        device="cpu",
+        download_ip_adapter=True,
+        enable_cpu_offload=True,
+    )
+    _PIPELINE_IMG_IP = None
     SEG_CHECKER = ImageSegChecker(GPT_CLIENT)
     GEO_CHECKER = MeshGeoChecker(GPT_CLIENT)
     AESTHETIC_CHECKER = ImageAestheticChecker()
@@ -167,7 +173,7 @@ def preprocess_image_fn(
     rmbg_tag: str = "rembg",
     preprocess: bool = True,
 ) -> tuple[Image.Image, Image.Image]:
-    """Preprocess image with lazy model initialization to avoid CUDA init at import time."""
+    """Preprocess an image with lazily initialized background removal."""
     global _RBG_REMOVER, _RBG14_REMOVER
 
     if isinstance(image, str):
@@ -581,60 +587,108 @@ def extract_urdf(
     )
 
 
-@spaces.GPU
+@spaces.GPU(duration=180)
 def text2image_fn(
     prompt: str,
     guidance_scale: float,
     infer_step: int = 50,
     ip_image: Image.Image | str = None,
     ip_adapt_scale: float = 0.3,
-    image_wh: int | tuple[int, int] = [1024, 1024],
+    image_wh: int | tuple[int, int] = (1024, 1024),
     rmbg_tag: str = "rembg",
     seed: int = None,
     enable_pre_resize: bool = True,
     n_sample: int = 3,
     req: gr.Request = None,
-):
-    if isinstance(image_wh, int):
-        image_wh = (image_wh, image_wh)
-    output_root = TMP_DIR
-    if req is not None:
-        output_root = os.path.join(output_root, str(req.session_hash))
-        os.makedirs(output_root, exist_ok=True)
+) -> list[str]:
+    global _PIPELINE_IMG_IP
 
-    pipeline = PIPELINE_IMG if ip_image is None else PIPELINE_IMG_IP
-    if ip_image is not None:
-        pipeline.set_ip_adapter_scale([ip_adapt_scale])
+    try:
+        if isinstance(image_wh, int):
+            image_wh = (image_wh, image_wh)
+        output_root = TMP_DIR
+        if req is not None:
+            output_root = os.path.join(output_root, str(req.session_hash))
+            os.makedirs(output_root, exist_ok=True)
 
-    images = text2img_gen(
+        if ip_image is None:
+            pipeline = PIPELINE_IMG
+        else:
+            if _PIPELINE_IMG_IP is None:
+                _PIPELINE_IMG_IP = build_text2img_ip_pipeline(
+                    "weights/Kolors",
+                    ref_scale=ip_adapt_scale,
+                    device="cpu",
+                    enable_cpu_offload=True,
+                )
+            pipeline = _PIPELINE_IMG_IP
+            pipeline.set_ip_adapter_scale([ip_adapt_scale])
+
+        try:
+            images = text2img_gen(
+                prompt=prompt,
+                n_sample=n_sample,
+                guidance_scale=guidance_scale,
+                pipeline=pipeline,
+                ip_image=ip_image,
+                image_wh=image_wh,
+                infer_step=infer_step,
+                seed=seed,
+            )
+        finally:
+            if hasattr(pipeline, "maybe_free_model_hooks"):
+                pipeline.maybe_free_model_hooks()
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
+        for idx, image in enumerate(images):
+            images[idx], _ = preprocess_image_fn(
+                image, rmbg_tag, enable_pre_resize
+            )
+
+        save_paths = []
+        for idx, image in enumerate(images):
+            save_path = f"{output_root}/sample_{idx}.png"
+            image.save(save_path)
+            save_paths.append(save_path)
+
+        return save_paths + save_paths
+    finally:
+        try:
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+        except Exception:
+            logger.exception("Failed to clean up text-to-image GPU memory")
+
+
+def dispatch_text2image_fn(
+    prompt: str,
+    guidance_scale: float,
+    infer_step: int = 50,
+    ip_image: Image.Image | str = None,
+    ip_adapt_scale: float = 0.3,
+    image_wh: int | tuple[int, int] = (1024, 1024),
+    rmbg_tag: str = "rembg",
+    seed: int = None,
+    enable_pre_resize: bool = True,
+    n_sample: int = 3,
+    req: gr.Request = None,
+) -> list[str]:
+    return text2image_fn(
         prompt=prompt,
-        n_sample=n_sample,
         guidance_scale=guidance_scale,
-        pipeline=pipeline,
-        ip_image=ip_image,
-        image_wh=image_wh,
         infer_step=infer_step,
+        ip_image=ip_image,
+        ip_adapt_scale=ip_adapt_scale,
+        image_wh=image_wh,
+        rmbg_tag=rmbg_tag,
         seed=seed,
+        enable_pre_resize=enable_pre_resize,
+        n_sample=n_sample,
+        req=req,
     )
-
-    for idx in range(len(images)):
-        image = images[idx]
-        images[idx], _ = preprocess_image_fn(
-            image, rmbg_tag, enable_pre_resize
-        )
-
-    save_paths = []
-    for idx, image in enumerate(images):
-        save_path = f"{output_root}/sample_{idx}.png"
-        image.save(save_path)
-        save_paths.append(save_path)
-
-    logger.info(f"Images saved to {output_root}")
-
-    gc.collect()
-    torch.cuda.empty_cache()
-
-    return save_paths + save_paths
 
 
 @spaces.GPU

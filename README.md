@@ -33,6 +33,7 @@
 ## 📋 Table of Contents
 
 - [🚀 Quick Start](#quick-start)
+- [🖥️ Services — Local Gradio Apps](#services)
 - [🧱 Generate — Sim-Ready 3D Assets](#generate-assets)
 - [🏠 Scale — Large-Scale Scenes](#scale-scenes)
 - [🌍 Compose — Task-Driven Worlds](#compose-worlds)
@@ -49,7 +50,7 @@
 ```sh
 git clone https://github.com/HorizonRobotics/EmbodiedGen.git
 cd EmbodiedGen
-git checkout v2.0.0
+git checkout v2.0.1
 conda create -n embodiedgen python=3.10.13 -y
 conda activate embodiedgen
 # bash install.sh cu126 && conda deactivate && conda activate embodiedgen # Optional: if you don't have local cuda126.
@@ -67,6 +68,21 @@ img3d-cli --image_path apps/assets/example_image/sample_00.jpg \
 A pre-built Docker image is also available on [Docker Hub](https://hub.docker.com/repository/docker/wangxinjie/embodiedgen).
 
 ➡️ Full guide: [Installation & Setup](https://horizonrobotics.github.io/EmbodiedGen/docs/install.html) · [Docker](docker/README.md)
+
+---
+
+<h2 id="services">🖥️ Services — Local Gradio Apps</h2>
+
+After installation, launch an interactive service and open its local URL:
+
+```sh
+python apps/image_to_3d.py    # http://localhost:8081
+python apps/text_to_3d.py     # http://localhost:8082
+python apps/texture_edit.py   # http://localhost:8083
+python apps/visualize_asset.py  # http://localhost:8088
+```
+
+Models are downloaded automatically on first use. ➡️ [Service documentation](https://horizonrobotics.github.io/EmbodiedGen/docs/services/)
 
 ---
 
