@@ -7,7 +7,7 @@ hide:
 ```sh
 git clone https://github.com/HorizonRobotics/EmbodiedGen.git
 cd EmbodiedGen
-git checkout v2.0.0
+git checkout v2.0.1
 conda create -n embodiedgen python=3.10.13 -y # recommended to use a new env.
 conda activate embodiedgen
 # bash install.sh cu126 && conda deactivate && conda activate embodiedgen # Optional: if you don't have local cuda126.

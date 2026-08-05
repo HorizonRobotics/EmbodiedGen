@@ -16,9 +16,8 @@
 
 
 import logging
-import os
 import random
-import subprocess
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -27,6 +26,7 @@ from diffusers import (
     EulerDiscreteScheduler,
     UNet2DConditionModel,
 )
+from huggingface_hub import snapshot_download
 from kolors.models.modeling_chatglm import ChatGLMModel
 from kolors.models.tokenization_chatglm import ChatGLMTokenizer
 from kolors.models.unet_2d_condition import (
@@ -58,38 +58,51 @@ PROMPT_APPEND = (
 )
 PROMPT_KAPPEND = "Single {object}, in the center of the image, white background, 3D style, best quality"
 
+KOLORS_ALLOW_PATTERNS = (
+    "scheduler/scheduler_config.json",
+    "text_encoder/config.json",
+    "text_encoder/pytorch_model-*.bin",
+    "text_encoder/pytorch_model.bin.index.json",
+    "text_encoder/tokenizer.model",
+    "text_encoder/tokenizer_config.json",
+    "unet/config.json",
+    "unet/diffusion_pytorch_model.fp16.safetensors",
+    "vae/config.json",
+    "vae/diffusion_pytorch_model.fp16.safetensors",
+)
+IP_ADAPTER_ALLOW_PATTERNS = (
+    "image_encoder/config.json",
+    "image_encoder/pytorch_model.bin",
+    "ip_adapter_plus_general.bin",
+)
 
-def download_kolors_weights(local_dir: str = "weights/Kolors") -> None:
+
+def download_kolors_weights(
+    local_dir: str = "weights/Kolors",
+    include_ip_adapter: bool = False,
+) -> None:
     """Downloads Kolors model weights from HuggingFace.
 
     Args:
-        local_dir (str, optional): Local directory to store weights.
+        local_dir: Local directory to store weights.
+        include_ip_adapter: Whether to also download IP-Adapter weights.
     """
-    logger.info(f"Download kolors weights from huggingface...")
-    os.makedirs(local_dir, exist_ok=True)
-    subprocess.run(
-        [
-            "huggingface-cli",
-            "download",
-            "--resume-download",
-            "Kwai-Kolors/Kolors",
-            "--local-dir",
-            local_dir,
-        ],
-        check=True,
+    logger.info("Downloading Kolors weights from Hugging Face...")
+    snapshot_download(
+        repo_id="Kwai-Kolors/Kolors",
+        local_dir=local_dir,
+        allow_patterns=KOLORS_ALLOW_PATTERNS,
     )
 
-    ip_adapter_path = f"{local_dir}/../Kolors-IP-Adapter-Plus"
-    subprocess.run(
-        [
-            "huggingface-cli",
-            "download",
-            "--resume-download",
-            "Kwai-Kolors/Kolors-IP-Adapter-Plus",
-            "--local-dir",
-            ip_adapter_path,
-        ],
-        check=True,
+    if not include_ip_adapter:
+        return
+
+    ip_adapter_path = Path(local_dir).parent / "Kolors-IP-Adapter-Plus"
+    logger.info("Downloading Kolors IP-Adapter weights from Hugging Face...")
+    snapshot_download(
+        repo_id="Kwai-Kolors/Kolors-IP-Adapter-Plus",
+        local_dir=ip_adapter_path,
+        allow_patterns=IP_ADAPTER_ALLOW_PATTERNS,
     )
 
 
@@ -97,6 +110,7 @@ def build_text2img_ip_pipeline(
     ckpt_dir: str,
     ref_scale: float,
     device: str = "cuda",
+    enable_cpu_offload: bool = True,
 ) -> StableDiffusionXLPipelineIP:
     """Builds a Stable Diffusion XL pipeline with IP-Adapter for text-to-image generation.
 
@@ -104,6 +118,7 @@ def build_text2img_ip_pipeline(
         ckpt_dir (str): Directory containing model checkpoints.
         ref_scale (float): Reference scale for IP-Adapter.
         device (str, optional): Device for inference.
+        enable_cpu_offload: Whether to offload inactive modules to CPU.
 
     Returns:
         StableDiffusionXLPipelineIP: Configured pipeline.
@@ -114,19 +129,25 @@ def build_text2img_ip_pipeline(
         pipe = build_text2img_ip_pipeline("weights/Kolors", ref_scale=0.3)
         ```
     """
-    download_kolors_weights(ckpt_dir)
+    download_kolors_weights(ckpt_dir, include_ip_adapter=True)
 
     text_encoder = ChatGLMModel.from_pretrained(
         f"{ckpt_dir}/text_encoder", torch_dtype=torch.float16
     ).half()
     tokenizer = ChatGLMTokenizer.from_pretrained(f"{ckpt_dir}/text_encoder")
     vae = AutoencoderKL.from_pretrained(
-        f"{ckpt_dir}/vae", revision=None
-    ).half()
+        f"{ckpt_dir}/vae",
+        torch_dtype=torch.float16,
+        variant="fp16",
+        use_safetensors=True,
+    )
     scheduler = EulerDiscreteScheduler.from_pretrained(f"{ckpt_dir}/scheduler")
     unet = UNet2DConditionModelIP.from_pretrained(
-        f"{ckpt_dir}/unet", revision=None
-    ).half()
+        f"{ckpt_dir}/unet",
+        torch_dtype=torch.float16,
+        variant="fp16",
+        use_safetensors=True,
+    )
     image_encoder = CLIPVisionModelWithProjection.from_pretrained(
         f"{ckpt_dir}/../Kolors-IP-Adapter-Plus/image_encoder",
         ignore_mismatched_sizes=True,
@@ -154,11 +175,12 @@ def build_text2img_ip_pipeline(
     )
     pipe.set_ip_adapter_scale([ref_scale])
 
-    pipe = pipe.to(device)
-    pipe.image_encoder = pipe.image_encoder.to(device)
-    pipe.enable_model_cpu_offload()
-    # pipe.enable_xformers_memory_efficient_attention()
-    # pipe.enable_vae_slicing()
+    if enable_cpu_offload:
+        pipe.enable_model_cpu_offload()
+    else:
+        pipe = pipe.to(device)
+        pipe.image_encoder = pipe.image_encoder.to(device)
+    pipe.enable_vae_slicing()
 
     return pipe
 
@@ -166,12 +188,16 @@ def build_text2img_ip_pipeline(
 def build_text2img_pipeline(
     ckpt_dir: str,
     device: str = "cuda",
+    download_ip_adapter: bool = False,
+    enable_cpu_offload: bool = True,
 ) -> StableDiffusionXLPipeline:
     """Builds a Stable Diffusion XL pipeline for text-to-image generation.
 
     Args:
         ckpt_dir (str): Directory containing model checkpoints.
         device (str, optional): Device for inference.
+        download_ip_adapter: Whether to predownload IP-Adapter weights.
+        enable_cpu_offload: Whether to offload inactive modules to CPU.
 
     Returns:
         StableDiffusionXLPipeline: Configured pipeline.
@@ -182,19 +208,28 @@ def build_text2img_pipeline(
         pipe = build_text2img_pipeline("weights/Kolors")
         ```
     """
-    download_kolors_weights(ckpt_dir)
+    download_kolors_weights(
+        ckpt_dir,
+        include_ip_adapter=download_ip_adapter,
+    )
 
     text_encoder = ChatGLMModel.from_pretrained(
         f"{ckpt_dir}/text_encoder", torch_dtype=torch.float16
     ).half()
     tokenizer = ChatGLMTokenizer.from_pretrained(f"{ckpt_dir}/text_encoder")
     vae = AutoencoderKL.from_pretrained(
-        f"{ckpt_dir}/vae", revision=None
-    ).half()
+        f"{ckpt_dir}/vae",
+        torch_dtype=torch.float16,
+        variant="fp16",
+        use_safetensors=True,
+    )
     scheduler = EulerDiscreteScheduler.from_pretrained(f"{ckpt_dir}/scheduler")
     unet = UNet2DConditionModel.from_pretrained(
-        f"{ckpt_dir}/unet", revision=None
-    ).half()
+        f"{ckpt_dir}/unet",
+        torch_dtype=torch.float16,
+        variant="fp16",
+        use_safetensors=True,
+    )
     pipe = StableDiffusionXLPipeline(
         vae=vae,
         text_encoder=text_encoder,
@@ -203,9 +238,12 @@ def build_text2img_pipeline(
         scheduler=scheduler,
         force_zeros_for_empty_prompt=False,
     )
-    pipe = pipe.to(device)
-    pipe.enable_model_cpu_offload()
+    if enable_cpu_offload:
+        pipe.enable_model_cpu_offload()
+    else:
+        pipe = pipe.to(device)
     pipe.enable_xformers_memory_efficient_attention()
+    pipe.enable_vae_slicing()
 
     return pipe
 
