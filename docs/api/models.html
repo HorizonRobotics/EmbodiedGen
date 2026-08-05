@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/favicon.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -5518,7 +5518,7 @@ including object hierarchy, spatial relations, and style descriptions.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">build_text2img_ip_pipeline</span><span class="p">(</span><span class="n">ckpt_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ref_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StableDiffusionXLPipelineIP</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">build_text2img_ip_pipeline</span><span class="p">(</span><span class="n">ckpt_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ref_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">,</span> <span class="n">enable_cpu_offload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StableDiffusionXLPipelineIP</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5585,6 +5585,22 @@ including object hierarchy, spatial relations, and style descriptions.</p>
                   <code>&#39;cuda&#39;</code>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>enable_cpu_offload</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to offload inactive modules to CPU.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -5621,20 +5637,7 @@ including object hierarchy, spatial relations, and style descriptions.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>embodied_gen/models/text_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
@@ -5688,10 +5691,33 @@ including object hierarchy, spatial relations, and style descriptions.</p>
 <span class="normal">160</span>
 <span class="normal">161</span>
 <span class="normal">162</span>
-<span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_text2img_ip_pipeline</span><span class="p">(</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_text2img_ip_pipeline</span><span class="p">(</span>
     <span class="n">ckpt_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">ref_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span><span class="p">,</span>
+    <span class="n">enable_cpu_offload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StableDiffusionXLPipelineIP</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Builds a Stable Diffusion XL pipeline with IP-Adapter for text-to-image generation.</span>
 
@@ -5699,6 +5725,7 @@ including object hierarchy, spatial relations, and style descriptions.</p>
 <span class="sd">        ckpt_dir (str): Directory containing model checkpoints.</span>
 <span class="sd">        ref_scale (float): Reference scale for IP-Adapter.</span>
 <span class="sd">        device (str, optional): Device for inference.</span>
+<span class="sd">        enable_cpu_offload: Whether to offload inactive modules to CPU.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        StableDiffusionXLPipelineIP: Configured pipeline.</span>
@@ -5709,19 +5736,25 @@ including object hierarchy, spatial relations, and style descriptions.</p>
 <span class="sd">        pipe = build_text2img_ip_pipeline(&quot;weights/Kolors&quot;, ref_scale=0.3)</span>
 <span class="sd">        ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">download_kolors_weights</span><span class="p">(</span><span class="n">ckpt_dir</span><span class="p">)</span>
+    <span class="n">download_kolors_weights</span><span class="p">(</span><span class="n">ckpt_dir</span><span class="p">,</span> <span class="n">include_ip_adapter</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">text_encoder</span> <span class="o">=</span> <span class="n">ChatGLMModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/text_encoder&quot;</span><span class="p">,</span> <span class="n">torch_dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span>
     <span class="p">)</span><span class="o">.</span><span class="n">half</span><span class="p">()</span>
     <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">ChatGLMTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/text_encoder&quot;</span><span class="p">)</span>
     <span class="n">vae</span> <span class="o">=</span> <span class="n">AutoencoderKL</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/vae&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">half</span><span class="p">()</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/vae&quot;</span><span class="p">,</span>
+        <span class="n">torch_dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span>
+        <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;fp16&quot;</span><span class="p">,</span>
+        <span class="n">use_safetensors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">scheduler</span> <span class="o">=</span> <span class="n">EulerDiscreteScheduler</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/scheduler&quot;</span><span class="p">)</span>
     <span class="n">unet</span> <span class="o">=</span> <span class="n">UNet2DConditionModelIP</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/unet&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">half</span><span class="p">()</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/unet&quot;</span><span class="p">,</span>
+        <span class="n">torch_dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span>
+        <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;fp16&quot;</span><span class="p">,</span>
+        <span class="n">use_safetensors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">image_encoder</span> <span class="o">=</span> <span class="n">CLIPVisionModelWithProjection</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/../Kolors-IP-Adapter-Plus/image_encoder&quot;</span><span class="p">,</span>
         <span class="n">ignore_mismatched_sizes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -5749,11 +5782,12 @@ including object hierarchy, spatial relations, and style descriptions.</p>
     <span class="p">)</span>
     <span class="n">pipe</span><span class="o">.</span><span class="n">set_ip_adapter_scale</span><span class="p">([</span><span class="n">ref_scale</span><span class="p">])</span>
 
-    <span class="n">pipe</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-    <span class="n">pipe</span><span class="o">.</span><span class="n">image_encoder</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">image_encoder</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-    <span class="n">pipe</span><span class="o">.</span><span class="n">enable_model_cpu_offload</span><span class="p">()</span>
-    <span class="c1"># pipe.enable_xformers_memory_efficient_attention()</span>
-    <span class="c1"># pipe.enable_vae_slicing()</span>
+    <span class="k">if</span> <span class="n">enable_cpu_offload</span><span class="p">:</span>
+        <span class="n">pipe</span><span class="o">.</span><span class="n">enable_model_cpu_offload</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pipe</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">pipe</span><span class="o">.</span><span class="n">image_encoder</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">image_encoder</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">pipe</span><span class="o">.</span><span class="n">enable_vae_slicing</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">pipe</span>
 </code></pre></div></td></tr></table></div>
@@ -5770,7 +5804,7 @@ including object hierarchy, spatial relations, and style descriptions.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">build_text2img_pipeline</span><span class="p">(</span><span class="n">ckpt_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StableDiffusionXLPipeline</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">build_text2img_pipeline</span><span class="p">(</span><span class="n">ckpt_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">,</span> <span class="n">download_ip_adapter</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">enable_cpu_offload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StableDiffusionXLPipeline</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5821,6 +5855,38 @@ including object hierarchy, spatial relations, and style descriptions.</p>
                   <code>&#39;cuda&#39;</code>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>download_ip_adapter</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to predownload IP-Adapter weights.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>enable_cpu_offload</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to offload inactive modules to CPU.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -5857,29 +5923,7 @@ including object hierarchy, spatial relations, and style descriptions.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>embodied_gen/models/text_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">188</span>
 <span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
@@ -5901,15 +5945,57 @@ including object hierarchy, spatial relations, and style descriptions.</p>
 <span class="normal">207</span>
 <span class="normal">208</span>
 <span class="normal">209</span>
-<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_text2img_pipeline</span><span class="p">(</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_text2img_pipeline</span><span class="p">(</span>
     <span class="n">ckpt_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span><span class="p">,</span>
+    <span class="n">download_ip_adapter</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">enable_cpu_offload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StableDiffusionXLPipeline</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Builds a Stable Diffusion XL pipeline for text-to-image generation.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        ckpt_dir (str): Directory containing model checkpoints.</span>
 <span class="sd">        device (str, optional): Device for inference.</span>
+<span class="sd">        download_ip_adapter: Whether to predownload IP-Adapter weights.</span>
+<span class="sd">        enable_cpu_offload: Whether to offload inactive modules to CPU.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        StableDiffusionXLPipeline: Configured pipeline.</span>
@@ -5920,19 +6006,28 @@ including object hierarchy, spatial relations, and style descriptions.</p>
 <span class="sd">        pipe = build_text2img_pipeline(&quot;weights/Kolors&quot;)</span>
 <span class="sd">        ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">download_kolors_weights</span><span class="p">(</span><span class="n">ckpt_dir</span><span class="p">)</span>
+    <span class="n">download_kolors_weights</span><span class="p">(</span>
+        <span class="n">ckpt_dir</span><span class="p">,</span>
+        <span class="n">include_ip_adapter</span><span class="o">=</span><span class="n">download_ip_adapter</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="n">text_encoder</span> <span class="o">=</span> <span class="n">ChatGLMModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/text_encoder&quot;</span><span class="p">,</span> <span class="n">torch_dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span>
     <span class="p">)</span><span class="o">.</span><span class="n">half</span><span class="p">()</span>
     <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">ChatGLMTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/text_encoder&quot;</span><span class="p">)</span>
     <span class="n">vae</span> <span class="o">=</span> <span class="n">AutoencoderKL</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/vae&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">half</span><span class="p">()</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/vae&quot;</span><span class="p">,</span>
+        <span class="n">torch_dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span>
+        <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;fp16&quot;</span><span class="p">,</span>
+        <span class="n">use_safetensors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">scheduler</span> <span class="o">=</span> <span class="n">EulerDiscreteScheduler</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/scheduler&quot;</span><span class="p">)</span>
     <span class="n">unet</span> <span class="o">=</span> <span class="n">UNet2DConditionModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/unet&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="kc">None</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">half</span><span class="p">()</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ckpt_dir</span><span class="si">}</span><span class="s2">/unet&quot;</span><span class="p">,</span>
+        <span class="n">torch_dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span>
+        <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;fp16&quot;</span><span class="p">,</span>
+        <span class="n">use_safetensors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">pipe</span> <span class="o">=</span> <span class="n">StableDiffusionXLPipeline</span><span class="p">(</span>
         <span class="n">vae</span><span class="o">=</span><span class="n">vae</span><span class="p">,</span>
         <span class="n">text_encoder</span><span class="o">=</span><span class="n">text_encoder</span><span class="p">,</span>
@@ -5941,9 +6036,12 @@ including object hierarchy, spatial relations, and style descriptions.</p>
         <span class="n">scheduler</span><span class="o">=</span><span class="n">scheduler</span><span class="p">,</span>
         <span class="n">force_zeros_for_empty_prompt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">pipe</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-    <span class="n">pipe</span><span class="o">.</span><span class="n">enable_model_cpu_offload</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">enable_cpu_offload</span><span class="p">:</span>
+        <span class="n">pipe</span><span class="o">.</span><span class="n">enable_model_cpu_offload</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pipe</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
     <span class="n">pipe</span><span class="o">.</span><span class="n">enable_xformers_memory_efficient_attention</span><span class="p">()</span>
+    <span class="n">pipe</span><span class="o">.</span><span class="n">enable_vae_slicing</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">pipe</span>
 </code></pre></div></td></tr></table></div>
@@ -5960,7 +6058,7 @@ including object hierarchy, spatial relations, and style descriptions.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">download_kolors_weights</span><span class="p">(</span><span class="n">local_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;weights/Kolors&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">download_kolors_weights</span><span class="p">(</span><span class="n">local_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;weights/Kolors&#39;</span><span class="p">,</span> <span class="n">include_ip_adapter</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5995,74 +6093,80 @@ including object hierarchy, spatial relations, and style descriptions.</p>
                   <code>&#39;weights/Kolors&#39;</code>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>include_ip_adapter</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to also download IP-Adapter weights.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
       </tbody>
     </table>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>embodied_gen/models/text_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">download_kolors_weights</span><span class="p">(</span><span class="n">local_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;weights/Kolors&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">download_kolors_weights</span><span class="p">(</span>
+    <span class="n">local_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;weights/Kolors&quot;</span><span class="p">,</span>
+    <span class="n">include_ip_adapter</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Downloads Kolors model weights from HuggingFace.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        local_dir (str, optional): Local directory to store weights.</span>
+<span class="sd">        local_dir: Local directory to store weights.</span>
+<span class="sd">        include_ip_adapter: Whether to also download IP-Adapter weights.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Download kolors weights from huggingface...&quot;</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">local_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-        <span class="p">[</span>
-            <span class="s2">&quot;huggingface-cli&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;download&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;--resume-download&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Kwai-Kolors/Kolors&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;--local-dir&quot;</span><span class="p">,</span>
-            <span class="n">local_dir</span><span class="p">,</span>
-        <span class="p">],</span>
-        <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Downloading Kolors weights from Hugging Face...&quot;</span><span class="p">)</span>
+    <span class="n">snapshot_download</span><span class="p">(</span>
+        <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;Kwai-Kolors/Kolors&quot;</span><span class="p">,</span>
+        <span class="n">local_dir</span><span class="o">=</span><span class="n">local_dir</span><span class="p">,</span>
+        <span class="n">allow_patterns</span><span class="o">=</span><span class="n">KOLORS_ALLOW_PATTERNS</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">ip_adapter_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">local_dir</span><span class="si">}</span><span class="s2">/../Kolors-IP-Adapter-Plus&quot;</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-        <span class="p">[</span>
-            <span class="s2">&quot;huggingface-cli&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;download&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;--resume-download&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Kwai-Kolors/Kolors-IP-Adapter-Plus&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;--local-dir&quot;</span><span class="p">,</span>
-            <span class="n">ip_adapter_path</span><span class="p">,</span>
-        <span class="p">],</span>
-        <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">include_ip_adapter</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">ip_adapter_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">local_dir</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;Kolors-IP-Adapter-Plus&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Downloading Kolors IP-Adapter weights from Hugging Face...&quot;</span><span class="p">)</span>
+    <span class="n">snapshot_download</span><span class="p">(</span>
+        <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;Kwai-Kolors/Kolors-IP-Adapter-Plus&quot;</span><span class="p">,</span>
+        <span class="n">local_dir</span><span class="o">=</span><span class="n">ip_adapter_path</span><span class="p">,</span>
+        <span class="n">allow_patterns</span><span class="o">=</span><span class="n">IP_ADAPTER_ALLOW_PATTERNS</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6278,45 +6382,7 @@ including object hierarchy, spatial relations, and style descriptions.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>embodied_gen/models/text_model.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">251</span>
 <span class="normal">252</span>
 <span class="normal">253</span>
 <span class="normal">254</span>
@@ -6337,7 +6403,45 @@ including object hierarchy, spatial relations, and style descriptions.</p>
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span>
-<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">text2img_gen</span><span class="p">(</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">text2img_gen</span><span class="p">(</span>
     <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">n_sample</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">guidance_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -13013,7 +13117,7 @@ modes; only the body discriminator differs.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.tabs", "navigation.top", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
       
