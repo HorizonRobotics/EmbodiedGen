@@ -14,11 +14,7 @@ PIP_INSTALL_PACKAGES=(
     "meshcat==0.3.2"
 )
 
-if [[ -n "${CONDA_PREFIX:-}" ]]; then
-    if [[ -f "$CONDA_PREFIX/etc/conda/activate.d/cuda126.sh" ]]; then
-        source "$CONDA_PREFIX/etc/conda/activate.d/cuda126.sh"
-    fi
-fi
+source_cuda_activation
 
 export MAX_JOBS="${MAX_JOBS:-8}"
 log_info "Using TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST:-unset} for affordance CUDA extensions."
@@ -50,4 +46,4 @@ try_install "Installing GraspGen pointnet2_ops..." \
 
 rm -r "$POINTNET2_OPS_DIR/build" 2>/dev/null || true
 
-pip install opencv-python==4.13.0.92
+pip install opencv-python==4.9.0.80 opencv-python-headless==4.9.0.80

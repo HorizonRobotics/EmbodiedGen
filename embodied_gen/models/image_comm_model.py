@@ -31,6 +31,9 @@ from diffusers.quantizers import PipelineQuantizationConfig
 from huggingface_hub import snapshot_download
 from PIL import Image
 from transformers import AutoModelForCausalLM, SiglipProcessor
+from embodied_gen.utils.monkey_patch.xformers import (
+    disable_xformers_flash3_on_blackwell,
+)
 
 __all__ = [
     "build_hf_image_pipeline",
@@ -99,6 +102,7 @@ class SD35Loader(BasePipelineLoader):
         )
         pipe = pipe.to(self.device)
         pipe.enable_model_cpu_offload()
+        disable_xformers_flash3_on_blackwell()
         pipe.enable_xformers_memory_efficient_attention()
         pipe.enable_attention_slicing()
         return pipe
@@ -230,6 +234,7 @@ class KolorsLoader(BasePipelineLoader):
             variant="fp16",
         ).to(self.device)
         pipe.enable_model_cpu_offload()
+        disable_xformers_flash3_on_blackwell()
         pipe.enable_xformers_memory_efficient_attention()
         pipe.scheduler = DPMSolverMultistepScheduler.from_config(
             pipe.scheduler.config, use_karras_sigmas=True
@@ -268,6 +273,7 @@ class FluxLoader(BasePipelineLoader):
             "black-forest-labs/FLUX.1-schnell", torch_dtype=torch.bfloat16
         )
         pipe.enable_model_cpu_offload()
+        disable_xformers_flash3_on_blackwell()
         pipe.enable_xformers_memory_efficient_attention()
         pipe.enable_attention_slicing()
         return pipe.to(self.device)

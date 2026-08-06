@@ -5,11 +5,11 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 STAGE="${1:-all}"
 
 usage() {
-  echo "Usage: bash install/init_submodules.sh [basic|scene3d|room|affordance|cu126|all]"
+  echo "Usage: bash install/init_submodules.sh [basic|scene3d|room|affordance|cu126|cu128|all]"
 }
 
 case "$STAGE" in
-  basic|scene3d|room|affordance|cu126|all) ;;
+  basic|scene3d|room|affordance|cu126|cu128|all) ;;
   *)
     usage >&2
     exit 1
@@ -37,7 +37,7 @@ submodules_for_stage() {
     all)
       git -C "$REPO_ROOT" config -f .gitmodules --get-regexp '^submodule\..*\.path$' | awk '{ print $2 }'
       ;;
-    cu126)
+    cu126|cu128)
       ;;
   esac
 }

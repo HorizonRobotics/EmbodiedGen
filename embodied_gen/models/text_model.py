@@ -40,6 +40,9 @@ from kolors.pipelines.pipeline_stable_diffusion_xl_chatglm_256_ipadapter import 
 )
 from PIL import Image
 from transformers import CLIPImageProcessor, CLIPVisionModelWithProjection
+from embodied_gen.utils.monkey_patch.xformers import (
+    disable_xformers_flash3_on_blackwell,
+)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -242,6 +245,7 @@ def build_text2img_pipeline(
         pipe.enable_model_cpu_offload()
     else:
         pipe = pipe.to(device)
+    disable_xformers_flash3_on_blackwell()
     pipe.enable_xformers_memory_efficient_attention()
     pipe.enable_vae_slicing()
 

@@ -14,7 +14,7 @@ if [[ -z "$CONDA_CMD" ]]; then
 fi
 
 if [[ -z "$CONDA_CMD" ]]; then
-    log_error "conda is required to install CUDA 12.6 into the active environment."
+    log_error "conda is required to install CUDA 12.8 into the active environment."
     exit 1
 fi
 
@@ -23,22 +23,29 @@ if [[ -z "${CONDA_PREFIX:-}" ]]; then
     exit 1
 fi
 
-log_info "Installing CUDA 12.6 toolkit into conda environment: $CONDA_PREFIX"
+log_info "Installing CUDA 12.8 toolkit into conda environment: $CONDA_PREFIX"
 log_info "Using conda executable: $CONDA_CMD"
+CONDA_CHANNEL_ARGS=()
+if [[ -n "${EMBODIEDGEN_CUDA_CHANNEL:-}" ]]; then
+    CONDA_CHANNEL_ARGS=(
+        --override-channels
+        -c "$EMBODIEDGEN_CUDA_CHANNEL"
+    )
+    log_info "Using CUDA conda channel: $EMBODIEDGEN_CUDA_CHANNEL"
+fi
+
 "$CONDA_CMD" install \
     -p "$CONDA_PREFIX" \
-    --override-channels \
-    -c nvidia \
-    -c conda-forge \
-    cuda-toolkit=12.6 \
-    cuda-nvcc=12.6 \
+    "${CONDA_CHANNEL_ARGS[@]}" \
+    cuda-toolkit=12.8 \
+    cuda-nvcc=12.8 \
     -y
 
-log_info "Writing CUDA 12.6 activation hook into the conda environment..."
+log_info "Writing CUDA 12.8 activation hook into the conda environment..."
 mkdir -p "$CONDA_PREFIX/etc/conda/activate.d"
-rm -f "$CONDA_PREFIX/etc/conda/activate.d/cuda128.sh"
-cat > "$CONDA_PREFIX/etc/conda/activate.d/cuda126.sh" <<'HOOK'
-export EMBODIEDGEN_CUDA_VARIANT="cu126"
+rm -f "$CONDA_PREFIX/etc/conda/activate.d/cuda126.sh"
+cat > "$CONDA_PREFIX/etc/conda/activate.d/cuda128.sh" <<'HOOK'
+export EMBODIEDGEN_CUDA_VARIANT="cu128"
 export CUDA_HOME="$CONDA_PREFIX"
 export CUDA_PATH="$CONDA_PREFIX"
 export CUDA_TARGET_LIB="$CONDA_PREFIX/targets/x86_64-linux/lib"
@@ -70,16 +77,17 @@ _cuda_cpath="${_cuda_cpath%:}"
 export CPATH="$_cuda_target_include${_cuda_cpath:+:$_cuda_cpath}"
 unset _cuda_conda_bin _cuda_conda_lib _cuda_conda_lib64 _cuda_target_include
 unset _cuda_path _cuda_ld_path _cuda_library_path _cuda_cpath
-export TORCH_CUDA_ARCH_LIST="${EMBODIEDGEN_TORCH_CUDA_ARCH_LIST:-8.9}"
+export TORCH_CUDA_ARCH_LIST="${EMBODIEDGEN_TORCH_CUDA_ARCH_LIST:-12.0}"
+export TCNN_CUDA_ARCHITECTURES="${EMBODIEDGEN_TCNN_CUDA_ARCHITECTURES:-120}"
 HOOK
 
-log_info "Verifying CUDA 12.6 compiler from the active conda environment..."
-source "$CONDA_PREFIX/etc/conda/activate.d/cuda126.sh"
+log_info "Verifying CUDA 12.8 compiler from the active conda environment..."
+source "$CONDA_PREFIX/etc/conda/activate.d/cuda128.sh"
 
 which nvcc
 nvcc --version
 
-log_info "CUDA 12.6 toolkit installation finished."
-log_info "Future install.sh stages will load CUDA 12.6 variables automatically."
+log_info "CUDA 12.8 toolkit installation finished."
+log_info "Future install.sh stages will load CUDA 12.8 variables automatically."
 ENV_NAME="${CONDA_PREFIX##*/}"
-log_info "To load CUDA 12.6 in the current shell, run: conda deactivate && conda activate $ENV_NAME"
+log_info "To load CUDA 12.8 in the current shell, run: conda deactivate && conda activate $ENV_NAME"

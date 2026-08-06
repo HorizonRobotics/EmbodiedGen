@@ -22,12 +22,21 @@ from typing import Optional, Union
 import numpy as np
 import torch
 from PIL import Image
+from embodied_gen.utils.monkey_patch.xformers import (
+    disable_xformers_flash3_on_blackwell,
+)
 
 
-def monkey_patch_sam3d():
+def monkey_patch_sam3d() -> None:
     """Monkey patches SAM3D inference pipelines with custom initialization and execution logic."""
     from embodied_gen.data.utils import model_device_ctx
     from embodied_gen.utils.log import logger
+
+    if disable_xformers_flash3_on_blackwell():
+        logger.info(
+            "[ATTENTION] Disabled xFormers FlashAttention 3 on Blackwell; "
+            "using the FlashAttention 2 fallback."
+        )
 
     os.environ["LIDRA_SKIP_INIT"] = "true"
     os.environ['ATTN_BACKEND'] = "xformers"
@@ -173,9 +182,9 @@ def monkey_patch_sam3d():
                         with_layout_postprocess
                         and self.layout_post_optimization_method is not None
                     ):
-                        assert (
-                            glb is not None
-                        ), "require mesh to run postprocessing"
+                        assert glb is not None, (
+                            "require mesh to run postprocessing"
+                        )
                         logger.info(
                             "Running layout post optimization method..."
                         )

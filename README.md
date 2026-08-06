@@ -53,8 +53,11 @@ cd EmbodiedGen
 git checkout v2.0.1
 conda create -n embodiedgen python=3.10.13 -y
 conda activate embodiedgen
-# bash install.sh cu126 && conda deactivate && conda activate embodiedgen # Optional: if you don't have local cuda126.
+# Manually install one CUDA toolkit when needed. cu126 remains the default.
+# bash install.sh cu126 # RTX 40-series.
+# bash install.sh cu128 # RTX 50-series / Blackwell.
 bash install.sh basic # around 10 mins
+conda deactivate && conda activate embodiedgen
 ```
 
 Set up the GPT agent (required by most pipelines): update the API key in `embodied_gen/utils/gpt_config.yaml`. Then generate your first sim-ready asset:
