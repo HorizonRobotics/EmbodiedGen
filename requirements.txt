@@ -7,7 +7,8 @@ numpy==1.26.4
 triton==3.4.0
 dataclasses_json
 easydict
-opencv-python>4.5
+opencv-python==4.9.0.80
+opencv-python-headless==4.9.0.80
 imageio
 imageio-ffmpeg
 rembg==2.0.61

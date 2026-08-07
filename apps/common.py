@@ -16,15 +16,15 @@
 
 import spaces  # noqa: E402
 from embodied_gen.utils.monkey_patch.gradio import (
-    _disable_xformers_flash3,
     _neutralize_warp_in_parent,
     _patch_open3d_cuda_device_count_bug,
 )
 from embodied_gen.utils.monkey_patch.trellis import monkey_path_trellis
+from embodied_gen.utils.monkey_patch.xformers import disable_xformers_flash3
 
 _neutralize_warp_in_parent()
 _patch_open3d_cuda_device_count_bug()
-_disable_xformers_flash3()
+disable_xformers_flash3()
 monkey_path_trellis()
 
 

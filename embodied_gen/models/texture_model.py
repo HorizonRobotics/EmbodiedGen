@@ -93,7 +93,7 @@ def build_texture_gen_pipe(
     """
 
     download_kolors_weights(f"{base_ckpt_dir}/Kolors")
-    logger.info(f"Load Kolors weights...")
+    logger.info("Load Kolors weights...")
     tokenizer = ChatGLMTokenizer.from_pretrained(
         f"{base_ckpt_dir}/Kolors/text_encoder"
     )
@@ -101,11 +101,17 @@ def build_texture_gen_pipe(
         f"{base_ckpt_dir}/Kolors/text_encoder", torch_dtype=torch.float16
     ).half()
     vae = AutoencoderKL.from_pretrained(
-        f"{base_ckpt_dir}/Kolors/vae", revision=None
-    ).half()
+        f"{base_ckpt_dir}/Kolors/vae",
+        torch_dtype=torch.float16,
+        variant="fp16",
+        use_safetensors=True,
+    )
     unet = UNet2DConditionModel.from_pretrained(
-        f"{base_ckpt_dir}/Kolors/unet", revision=None
-    ).half()
+        f"{base_ckpt_dir}/Kolors/unet",
+        torch_dtype=torch.float16,
+        variant="fp16",
+        use_safetensors=True,
+    )
     scheduler = EulerDiscreteScheduler.from_pretrained(
         f"{base_ckpt_dir}/Kolors/scheduler"
     )

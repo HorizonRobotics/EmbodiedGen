@@ -111,30 +111,3 @@ def _neutralize_warp_in_parent() -> None:
             _wctx.runtime_init = _make_pid_safe(_wctx.runtime_init)
     except Exception:
         pass
-
-
-def _disable_xformers_flash3() -> None:
-    """Force xformers dispatcher to skip Flash-Attention v3 (Hopper-only).
-
-    sm_120 (Blackwell) has no FA3 kernel binary; the dispatcher still picks
-    flash3 and the launch aborts with:
-      `CUDA error ... hopper/flash_fwd_launch_template.h:188: invalid argument`
-    Env vars `XFORMERS_FLASH3_ATTENTION_DISABLED=1` are silently ignored in
-    xformers 0.0.32.post2, so we patch `not_supported_reasons` directly.
-    Cutlass and FA2 both work on sm_120, so removing flash3 from candidates
-    is enough.
-    """
-    try:
-        from xformers.ops.fmha import flash3 as _f3
-    except Exception:
-        return
-
-    _disabled = ["disabled by EmbodiedGen: no FA3 kernel for sm_120"]
-
-    def _ns(cls, d):  # noqa: ARG001
-        return list(_disabled)
-
-    if hasattr(_f3, "FwOp"):
-        _f3.FwOp.not_supported_reasons = classmethod(_ns)
-    if hasattr(_f3, "BwOp"):
-        _f3.BwOp.not_supported_reasons = classmethod(_ns)
