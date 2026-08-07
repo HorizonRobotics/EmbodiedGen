@@ -62,7 +62,7 @@ python -m pip install numpy==1.26.4
 
 if [[ "$STAGE" != "cu126" && "$STAGE" != "cu128" ]]; then
     try_install "Refreshing EmbodiedGen editable install..." \
-        "python -m pip install -e ." \
+        "python -m pip install -e '.[dev]'" \
         "EmbodiedGen editable installation refresh failed."
 fi
 
