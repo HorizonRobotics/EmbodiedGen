@@ -1747,8 +1747,12 @@
 git<span class="w"> </span>checkout<span class="w"> </span>v2.0.1
 conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>embodiedgen<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10.13<span class="w"> </span>-y<span class="w"> </span><span class="c1"># recommended to use a new env.</span>
 conda<span class="w"> </span>activate<span class="w"> </span>embodiedgen
-<span class="c1"># bash install.sh cu126 &amp;&amp; conda deactivate &amp;&amp; conda activate embodiedgen # Optional: if you don&#39;t have local cuda126.</span>
+<span class="c1"># Manually install one CUDA toolkit when needed. cu126 remains the default.</span>
+<span class="c1"># bash install.sh cu126 # RTX 40-series.</span>
+<span class="c1"># bash install.sh cu128 # RTX 50-series / Blackwell.</span>
 bash<span class="w"> </span>install.sh<span class="w"> </span>basic<span class="w"> </span><span class="c1"># around 10 mins</span>
+<span class="c1"># Reactivate once so the CUDA and OpenEXR hooks load in the current shell.</span>
+conda<span class="w"> </span>deactivate<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>conda<span class="w"> </span>activate<span class="w"> </span>embodiedgen
 <span class="c1"># Optional: `bash install.sh scene3d` for scene3d-cli; `bash install.sh room` for room-cli; `bash install.sh affordance` for affordance-cli.</span>
 </code></pre></div>
 <p>Please <code>huggingface-cli login</code> to ensure that the ckpts can be downloaded automatically afterwards.</p>
@@ -1792,7 +1796,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 07:12:48 UTC">August 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 7, 2026 12:41:00 UTC">August 7, 2026</span>
   </span>
 
     
