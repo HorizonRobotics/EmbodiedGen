@@ -277,8 +277,7 @@ If you use EmbodiedGen in your research or projects, please cite:
 ```bibtex
 @misc{wang2025embodiedgengenerative3dworld,
   title         = {EmbodiedGen: Towards a Generative 3D World Engine for Embodied Intelligence},
-  author        = {Xinjie Wang and Liu Liu and Yu Cao and Ruiqi Wu and Wenkang Qin and
-                   Dehui Wang and Wei Sui and Zhizhong Su},
+  author        = {Xinjie Wang and Liu Liu and Yu Cao and Ruiqi Wu and Wenkang Qin and Dehui Wang and Wei Sui and Zhizhong Su},
   year          = {2025},
   eprint        = {2506.10600},
   archivePrefix = {arXiv},

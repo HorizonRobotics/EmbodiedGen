@@ -24,19 +24,4 @@
          <category>headphones</category>
       </extra_info>
    </link>
-   <custom_data>
-      <affordance>
-         <part_count>6</part_count>
-         <visual_seg>
-            <origin xyz="0 0 0" rpy="1.5708 0.0 0.0" />
-            <geometry>
-               <mesh filename="../../../../outputs/affordance_annotation/ear_hear/mesh_part_seg.glb" scale="1.0 1.0 1.0" />
-            </geometry>
-         </visual_seg>
-         <affordance_annot>../../../../outputs/affordance_annotation/ear_hear/affordance_annot.json</affordance_annot>
-      </affordance>
-      <quality>
-         <PartSegChecker>YES</PartSegChecker>
-      </quality>
-   </custom_data>
 </robot>
