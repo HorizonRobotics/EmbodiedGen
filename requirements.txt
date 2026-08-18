@@ -22,6 +22,7 @@ openai==1.58.1
 transformers==4.42.4
 gradio==5.48.0
 spaces
+tqdm<4.70
 sentencepiece==0.2.0
 diffusers==0.34.0
 xatlas

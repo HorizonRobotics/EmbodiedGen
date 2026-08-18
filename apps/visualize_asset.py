@@ -89,7 +89,6 @@ elif RUNNING_MODE == "hf_remote":
             "dataset/**/*.mp4",
         ],
         local_dir=HF_LOCAL_DIR,
-        local_dir_use_symlinks=False,
     )
     DATA_ROOT = os.path.join(HF_LOCAL_DIR, "dataset")
 else:
@@ -115,7 +114,6 @@ def ensure_hf_files(rel_patterns: list[str]) -> None:
         repo_type="dataset",
         allow_patterns=[f"dataset/{p}" for p in rel_patterns],
         local_dir=HF_LOCAL_DIR,
-        local_dir_use_symlinks=False,
     )
 
 
