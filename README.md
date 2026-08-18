@@ -58,8 +58,8 @@ conda activate embodiedgen
 # Manually install one CUDA toolkit when needed. cu126 remains the default.
 # bash install.sh cu126 # RTX 40-series.
 # bash install.sh cu128 # RTX 50-series / Blackwell.
-bash install.sh basic # around 10 mins
 conda deactivate && conda activate embodiedgen
+bash install.sh basic # around 10 mins
 ```
 
 Set up one GPT agent backend (required by most pipelines):
