@@ -5,6 +5,7 @@ PROJECT_ROOT=$(cd "$SCRIPT_DIR/.." && pwd)
 source "$SCRIPT_DIR/_utils.sh"
 
 PIP_INSTALL_PACKAGES=(
+    "einops==0.8.1"
     "fpsample==1.0.2"
     "viser==1.0.30"
     "pickle5==0.0.11"

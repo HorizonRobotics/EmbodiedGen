@@ -6,16 +6,27 @@ hide:
 # 👋 Welcome to EmbodiedGen V2
 
 [![🌐 Project Page](https://img.shields.io/badge/🌐-Project_Page-blue)](https://horizonrobotics.github.io/EmbodiedGen/)
+[![📖 Documentation](https://img.shields.io/badge/📖-Documentation-blue)](https://horizonrobotics.github.io/EmbodiedGen/docs/)
 [![GitHub](https://img.shields.io/badge/GitHub-EmbodiedGen-black?logo=github)](https://github.com/HorizonRobotics/EmbodiedGen)
-[![📄 arXiv](https://img.shields.io/badge/📄-arXiv-b31b1b)](https://arxiv.org/abs/2607.07459)
-[![🤗 Dataset](https://img.shields.io/badge/🤗-Dataset-blue)](https://huggingface.co/datasets/HorizonRobotics/EmbodiedGenData)
+[![📄 arXiv](https://img.shields.io/badge/📄-arXiv_v1-b31b1b)](https://arxiv.org/abs/2506.10600)
+[![📄 arXiv](https://img.shields.io/badge/📄-arXiv_v2-b31b1b)](https://arxiv.org/abs/2607.07459)
 [![🎥 Video](https://img.shields.io/badge/🎥-Video-red)](https://youtu.be/MIkJJSVM8L4)
+[![中文介绍](https://img.shields.io/badge/中文介绍-07C160?logo=wechat&logoColor=white)](https://mp.weixin.qq.com/s/RbMPX3vTTSwrW0MjwjeXuA)
+
+[![🤗 Dataset](https://img.shields.io/badge/🤗-Dataset-blue)](https://huggingface.co/datasets/HorizonRobotics/EmbodiedGenData)
+[![🤗 Hugging Face](https://img.shields.io/badge/🤗-EmbodiedGen_Asset_Gallery-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Gallery-Explorer)
+[![🤗 Hugging Face](https://img.shields.io/badge/🤗-Image_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Image-to-3D)
+[![🤗 Hugging Face](https://img.shields.io/badge/🤗-Text_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D)
+[![🤗 Hugging Face](https://img.shields.io/badge/🤗-Texture_Gen_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Texture-Gen)
+
 
 *EmbodiedGen V2*: An Agentic, Simulation-Ready 3D World Engine for Embodied AI.
 
-> **From intent to executable 3D worlds.** ***EmbodiedGen*** compiles language, images, and edit commands into **simulation-ready 3D worlds** — physically plausible assets, large-scale scenes, and task-driven interactive environments, deployable across every major robotics simulator.
+> **From intent to executable 3D worlds.**
+> ***EmbodiedGen*** compiles language, images, and edit commands into **policy-ready 3D worlds** — physically plausible assets, large-scale scenes, and task-driven interactive environments, deployable across major simulators.
 
-<img src="assets/overview_v2.jpg" alt="EmbodiedGen V2 Overview" width="800"/>
+
+<img src="assets/overview.jpg" alt="EmbodiedGen V2 Overview" width="800"/>
 
 ## What can it do?
 

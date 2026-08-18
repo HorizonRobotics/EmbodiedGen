@@ -21,7 +21,6 @@ from dataclasses import dataclass
 
 import tyro
 from embodied_gen.scripts.simulate_sapien import entrypoint as sim_cli
-from embodied_gen.utils.enum import LayoutInfo
 from embodied_gen.utils.geometry import bfs_placement, compose_mesh_scene
 from embodied_gen.utils.log import logger
 

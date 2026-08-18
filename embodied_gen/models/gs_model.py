@@ -488,7 +488,7 @@ class GaussianOperator(GaussianBase):
         renders = renders[0]
         alphas = alphas[0].squeeze(-1)
 
-        assert renders.shape[-1] == 4, f"Must render rgb, depth and alpha"
+        assert renders.shape[-1] == 4, "Must render rgb, depth and alpha"
         rendered_rgb, rendered_depth = torch.split(renders, [3, 1], dim=-1)
 
         return RenderResult(

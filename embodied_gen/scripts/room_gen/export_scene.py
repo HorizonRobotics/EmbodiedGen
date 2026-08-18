@@ -20,7 +20,6 @@ import logging
 import math
 import os
 import shutil
-import subprocess
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -547,12 +546,12 @@ def apply_baked_tex(obj, paramDict={}):
             principled_bsdf_node.inputs["Metallic"].default_value = paramDict[
                 mat.name
             ]["Metallic"]
-            principled_bsdf_node.inputs["Sheen Weight"].default_value = (
-                paramDict[mat.name]["Sheen Weight"]
-            )
-            principled_bsdf_node.inputs["Coat Weight"].default_value = (
-                paramDict[mat.name]["Coat Weight"]
-            )
+            principled_bsdf_node.inputs[
+                "Sheen Weight"
+            ].default_value = paramDict[mat.name]["Sheen Weight"]
+            principled_bsdf_node.inputs[
+                "Coat Weight"
+            ].default_value = paramDict[mat.name]["Coat Weight"]
 
 
 def create_glass_shader(node_tree, export_usd):
@@ -783,9 +782,9 @@ def bake_special_emit(
         logger.debug(
             f"Removing added link:\t{n.name}: {from_soc.name} => {to_soc.name}"
         )
-        for l in n.node_tree.links:
-            if l.from_socket == from_soc and l.to_socket == to_soc:
-                n.node_tree.links.remove(l)
+        for link in n.node_tree.links:
+            if link.from_socket == from_soc and link.to_socket == to_soc:
+                n.node_tree.links.remove(link)
                 logger.debug(
                     f"Removed link:\t{n.name}: {from_soc.name} => {to_soc.name}"
                 )
@@ -1182,9 +1181,9 @@ def export_sim_ready(
 ) -> Dict[str, List[Path]]:
     """Exports both the visual and collision assets for a geometry."""
     if not visual_only:
-        assert (
-            coacd is not None
-        ), "coacd is required to export simulation assets."
+        assert coacd is not None, (
+            "coacd is required to export simulation assets."
+        )
 
     asset_exports = defaultdict(list)
     export_name = name if name is not None else obj.name
@@ -1626,7 +1625,7 @@ def main(args):
 
         bpy.ops.wm.open_mainfile(filepath=str(blendfile))
 
-        folder = export_scene(
+        export_scene(
             blendfile,
             args.output_folder,
             format=args.format,

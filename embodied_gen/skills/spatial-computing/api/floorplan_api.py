@@ -395,7 +395,7 @@ class FloorplanManager:
 
                 logger.info(f"✅ Placed at {center}")
             else:
-                logger.warning(f"❌ Failed to place object")
+                logger.warning("❌ Failed to place object")
 
             centers.append(center)
 
@@ -567,7 +567,9 @@ class FloorplanManager:
             return on_instance
         if gpt_client is not None:
             return resolve_instance_with_llm(
-                gpt_client, names, on_instance  # type: ignore[arg-type]
+                gpt_client,
+                names,
+                on_instance,  # type: ignore[arg-type]
             )
         return None
 
@@ -594,7 +596,9 @@ class FloorplanManager:
             return in_room
         if gpt_client is not None:
             return resolve_instance_with_llm(
-                gpt_client, names, in_room  # type: ignore[arg-type]
+                gpt_client,
+                names,
+                in_room,  # type: ignore[arg-type]
             )
         return None
 
@@ -648,7 +652,9 @@ class FloorplanManager:
 
         if gpt_client is not None:
             return resolve_instance_with_llm(
-                gpt_client, names, beside_instance  # type: ignore[arg-type]
+                gpt_client,
+                names,
+                beside_instance,  # type: ignore[arg-type]
             )
         return None
 
@@ -704,7 +710,9 @@ class FloorplanManager:
 
         if gpt_client is not None:
             return resolve_instance_with_llm(
-                gpt_client, names, delete_instance  # type: ignore[arg-type]
+                gpt_client,
+                names,
+                delete_instance,  # type: ignore[arg-type]
             )
         return None
 
@@ -771,7 +779,9 @@ class FloorplanManager:
 
         if gpt_client is not None:
             resolved = resolve_instance_with_llm(
-                gpt_client, names, query_instance  # type: ignore[arg-type]
+                gpt_client,
+                names,
+                query_instance,  # type: ignore[arg-type]
             )
             if resolved:
                 center = self.query_instance_center(resolved)

@@ -1,6 +1,6 @@
-FROM pytorch/pytorch:2.4.0-cuda11.8-cudnn9-devel
+FROM pytorch/pytorch:2.8.0-cuda12.6-cudnn9-devel
 LABEL maintainer="Horizon Robotics <xinjie.wang@horizon.auto>" \
-    version="0.1.2" \
+    version="2.1.0" \
     description="Docker image for EmbodiedGen"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -16,9 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # TORCH_CUDA_ARCH_LIST="8.0;8.9;9.0" -> A100/4090/H100
-ENV CUDA_HOME=/usr/local/cuda-11.8 \
-    PATH=/usr/local/cuda-11.8/bin:$PATH \
-    LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH \
+ENV CUDA_HOME=/usr/local/cuda \
+    PATH=/usr/local/cuda/bin:$PATH \
+    LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH \
     DEBIAN_FRONTEND=noninteractive \
     TORCH_CUDA_ARCH_LIST="8.0;8.9;9.0" \
     TCNN_CUDA_ARCHITECTURES=80,89,90

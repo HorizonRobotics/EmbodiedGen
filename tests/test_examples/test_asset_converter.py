@@ -74,7 +74,7 @@ def test_cvt_embodiedgen_asset_to_anysim(
         "mujoco",
     ] = "mujoco",
 ):
-    dst_asset_path = cvt_embodiedgen_asset_to_anysim(
+    cvt_embodiedgen_asset_to_anysim(
         urdf_files=[
             "outputs/embodiedgen_assets/demo_assets/remote_control/result/remote_control.urdf",
         ],

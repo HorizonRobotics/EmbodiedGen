@@ -1,16 +1,20 @@
 [build-system]
-requires = ["setuptools", "wheel", "build"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-packages = ["embodied_gen"]
+[tool.setuptools.packages.find]
+include = ["embodied_gen*"]
+namespaces = true
+
+[tool.setuptools.exclude-package-data]
+"*" = ["__pycache__/*", "*.py[cod]"]
 
 [project]
 name = "embodied_gen"
-version = "v2.0.1"
+version = "v2.1.0"
 readme = "README.md"
 license = "Apache-2.0"
-license-files = ["LICENSE", "NOTICE"]
+license-files = ["LICENSE"]
 
 dependencies = []
 requires-python = ">=3.10"
@@ -62,6 +66,9 @@ ignore = [
     "E402",
     "E501",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"embodied_gen/scripts/gen_texture.py" = ["F841"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

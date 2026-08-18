@@ -134,7 +134,7 @@ Text-conditioned **garments** deploy as **deformable meshes** in Genesis — the
 
 Generate **articulated objects** from dual-state images with **DIPO** (NeurIPS 2025).
 
-### [🦾 Affordance](affordance.md)
+### [🕹️ Affordance](affordance.md)
 
 Semantic part segmentation and grasp pose annotation for sim-ready assets.
 

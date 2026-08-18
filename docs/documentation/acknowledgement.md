@@ -10,18 +10,6 @@ EmbodiedGen builds upon the following amazing projects and models:
 If you use EmbodiedGen in your research or projects, please cite:
 
 ```bibtex
-@misc{wang2026embodiedgenv2agenticsimulationready,
-      title={EmbodiedGen V2: An Agentic, Simulation-Ready 3D World Engine for Embodied AI},
-      author={Xinjie Wang and Liu Liu and Taojun Ding and Andrew Choi and Chaodong Huang and Mengao Zhao and Ziang Li and Jackson Jiang and Chunlei Yu and Shengxiang Liu and Wei Xu and Zhizhong Su},
-      year={2026},
-      eprint={2607.07459},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO},
-      url={https://arxiv.org/abs/2607.07459},
-}
-```
-
-```bibtex
 @misc{wang2025embodiedgengenerative3dworld,
       title={EmbodiedGen: Towards a Generative 3D World Engine for Embodied Intelligence},
       author={Xinjie Wang and Liu Liu and Yu Cao and Ruiqi Wu and Wenkang Qin and Dehui Wang and Wei Sui and Zhizhong Su},
@@ -33,8 +21,20 @@ If you use EmbodiedGen in your research or projects, please cite:
 }
 ```
 
+```bibtex
+@misc{wang2026embodiedgenv2agenticsimulationready,
+      title={EmbodiedGen V2: An Agentic, Simulation-Ready 3D World Engine for Embodied AI},
+      author={Xinjie Wang and Liu Liu and Taojun Ding and Andrew Choi and Chaodong Huang and Mengao Zhao and Ziang Li and Jackson Jiang and Chunlei Yu and Shengxiang Liu and Wei Xu and Zhizhong Su},
+      year={2026},
+      eprint={2607.07459},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2607.07459},
+}
+```
+
 ---
 
 ## ⚖️ License
 
-This project is licensed under the [Apache License 2.0](LICENSE). See the `LICENSE` file for details.
+This project is licensed under the [Apache License 2.0](https://github.com/HorizonRobotics/EmbodiedGen/blob/master/LICENSE). See the `LICENSE` file for details.

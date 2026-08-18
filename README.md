@@ -6,17 +6,18 @@
 [![📄 arXiv](https://img.shields.io/badge/📄-arXiv_v1-b31b1b)](https://arxiv.org/abs/2506.10600)
 [![📄 arXiv](https://img.shields.io/badge/📄-arXiv_v2-b31b1b)](https://arxiv.org/abs/2607.07459)
 [![🎥 Video](https://img.shields.io/badge/🎥-Video-red)](https://youtu.be/MIkJJSVM8L4)
+[![中文介绍](https://img.shields.io/badge/中文介绍-07C160?logo=wechat&logoColor=white)](https://mp.weixin.qq.com/s/RbMPX3vTTSwrW0MjwjeXuA)
+
 [![🤗 Dataset](https://img.shields.io/badge/🤗-Dataset-blue)](https://huggingface.co/datasets/HorizonRobotics/EmbodiedGenData)
-<!-- [![中文介绍](https://img.shields.io/badge/中文介绍-07C160?logo=wechat&logoColor=white)](https://mp.weixin.qq.com/s/HH1cPBhK2xcDbyCK4BBTbw) -->
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-EmbodiedGen_Asset_Gallery-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Gallery-Explorer)
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Image_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Image-to-3D)
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Text_to_3D_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D)
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-Texture_Gen_Demo-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Texture-Gen)
 
 > **From intent to executable 3D worlds.**
-> ***EmbodiedGen*** compiles language, images, and edit commands into **simulation-ready 3D worlds** — physically plausible assets, large-scale scenes, and task-driven interactive environments, deployable across every major robotics simulator.
+> ***EmbodiedGen*** compiles language, images, and edit commands into **policy-ready 3D worlds** — physically plausible assets, large-scale scenes, and task-driven interactive environments, deployable across major simulators.
 
-<img src="docs/landing/assets/img/overview.jpg" alt="EmbodiedGen V2 Overview" width="700"/>
+<img src="docs/landing/assets/img/overview.jpg" alt="EmbodiedGen V2 Overview" width="800"/>
 
 ---
 
@@ -27,7 +28,7 @@
 - 📦 **One world, every simulator** — a standardized layout loads with consistent geometry, collision, and physics across **SAPIEN, Isaac Sim, Isaac Gym, MuJoCo, Genesis, and PyBullet**.
 - 🧩 **Pluggable 3D backends** — switch between **SAM3D**, **TRELLIS**, and the **Hunyuan3D Pro** cloud API with a single flag.
 - 🧥 **Beyond rigid bodies** — text-conditioned garments deploy as deformable meshes in Genesis.
-- 🦾 **Part-level affordance** — functional part segmentation, per-part semantics, and simulation-validated 6-DoF grasp poses for any generated asset.
+- 🕹️ **Part-level affordance** — functional part segmentation, per-part semantics, and simulation-validated 6-DoF grasp poses for any generated asset.
 - 🤖 **Closed-loop robot learning** — policies trained purely in EmbodiedGen-generated worlds transfer to real robots (task success **9.7 → 79.8%** in sim, **21.7 → 75.0%** on real robots, from [sim2real RL paper](https://arxiv.org/abs/2603.18532)).
 
 ## 📋 Table of Contents
@@ -42,6 +43,7 @@
 - [🤖 Train — Robot Learning](#robot-learning)
 - [⚙️ Articulated Object Generation](#articulated-object-generation)
 - [🧩 3D Scene Completion](#3d-scene-completion)
+- [🔄 Sim-to-Real Reinforcement Learning](#sim-to-real-reinforcement-learning)
 
 ---
 
@@ -50,7 +52,7 @@
 ```sh
 git clone https://github.com/HorizonRobotics/EmbodiedGen.git
 cd EmbodiedGen
-git checkout v2.0.1
+git checkout v2.1.0
 conda create -n embodiedgen python=3.10.13 -y
 conda activate embodiedgen
 # Manually install one CUDA toolkit when needed. cu126 remains the default.
@@ -60,15 +62,23 @@ bash install.sh basic # around 10 mins
 conda deactivate && conda activate embodiedgen
 ```
 
-Set up the GPT agent (required by most pipelines): update the API key in `embodied_gen/utils/gpt_config.yaml`. Then generate your first sim-ready asset:
+Set up one GPT agent backend (required by most pipelines):
+
+- **Azure OpenAI / OpenRouter:** select the backend and update its API key in
+  `embodied_gen/utils/gpt_config.yaml`.
+- **Codex CLI:** run `codex login`, then set `agent_type: codex` in
+  `embodied_gen/utils/gpt_config.yaml`; no project API key is required.
+
+See the [GPT Agent Setup guide](docs/documentation/gpt_agent.md) for complete
+configuration, environment variables, and deployment recommendations.
+
+Then generate your first sim-ready asset:
 
 ```sh
 img3d-cli --image_path apps/assets/example_image/sample_00.jpg \
     --n_retry 2 --output_root outputs/imageto3d
 # → outputs/imageto3d/sample_00/result: URDF + mesh(.obj/.glb) + 3DGS(.ply) + video
 ```
-
-A pre-built Docker image is also available on [Docker Hub](https://hub.docker.com/repository/docker/wangxinjie/embodiedgen).
 
 ➡️ Full guide: [Installation & Setup](https://horizonrobotics.github.io/EmbodiedGen/docs/install.html) · [Docker](docker/README.md)
 
@@ -252,6 +262,14 @@ See our paper **3D-Fixer** published in CVPR 2026:
 
 ---
 
+<h2 id="sim-to-real-reinforcement-learning">🔄 Sim-to-Real Reinforcement Learning</h2>
+
+See our paper **Scaling Sim-to-Real Reinforcement Learning for Robot VLAs with Generative 3D Worlds** [[link]](https://arxiv.org/abs/2603.18532).
+
+<img src="docs/documentation/assets/sim2real_work.jpg" alt="Sim-to-real reinforcement learning with EmbodiedGen-generated worlds" width="600">
+
+---
+
 ## For Developer
 
 ```sh
@@ -264,17 +282,6 @@ python -m pytest # Pass all unit-test are required.
 If you use EmbodiedGen in your research or projects, please cite:
 
 ```bibtex
-@misc{wang2026embodiedgenv2agenticsimulationready,
-      title={EmbodiedGen V2: An Agentic, Simulation-Ready 3D World Engine for Embodied AI},
-      author={Xinjie Wang and Liu Liu and Taojun Ding and Andrew Choi and Chaodong Huang and Mengao Zhao and Ziang Li and Jackson Jiang and Chunlei Yu and Shengxiang Liu and Wei Xu and Zhizhong Su},
-      year={2026},
-      eprint={2607.07459},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO},
-      url={https://arxiv.org/abs/2607.07459},
-}
-```
-```bibtex
 @misc{wang2025embodiedgengenerative3dworld,
   title         = {EmbodiedGen: Towards a Generative 3D World Engine for Embodied Intelligence},
   author        = {Xinjie Wang and Liu Liu and Yu Cao and Ruiqi Wu and Wenkang Qin and Dehui Wang and Wei Sui and Zhizhong Su},
@@ -283,6 +290,18 @@ If you use EmbodiedGen in your research or projects, please cite:
   archivePrefix = {arXiv},
   primaryClass  = {cs.RO},
   url           = {https://arxiv.org/abs/2506.10600}
+}
+```
+
+```bibtex
+@misc{wang2026embodiedgenv2agenticsimulationready,
+      title={EmbodiedGen V2: An Agentic, Simulation-Ready 3D World Engine for Embodied AI},
+      author={Xinjie Wang and Liu Liu and Taojun Ding and Andrew Choi and Chaodong Huang and Mengao Zhao and Ziang Li and Jackson Jiang and Chunlei Yu and Shengxiang Liu and Wei Xu and Zhizhong Su},
+      year={2026},
+      eprint={2607.07459},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2607.07459},
 }
 ```
 
@@ -297,4 +316,4 @@ EmbodiedGen builds upon the following amazing projects and models:
 
 ## ⚖️ License
 
-This project is licensed under the [Apache License 2.0](docs/LICENSE). See the `LICENSE` file for details.
+This project is licensed under the [Apache License 2.0](LICENSE). See the `LICENSE` file for details.

@@ -77,7 +77,7 @@ def test_seg_checker():
     assert isinstance(result, str)
 
 
-def test_semantic_checker():
+def test_semantic_checker_default_client():
     semantic_checker = SemanticConsistChecker(GPT_CLIENT)
     flag, result = semantic_checker(
         text="pen",
@@ -87,7 +87,7 @@ def test_semantic_checker():
     assert isinstance(result, str)
 
 
-def test_semantic_checker(gptclient_query_case2):
+def test_semantic_checker_query_case2(gptclient_query_case2):
     semantic_checker = SemanticConsistChecker(GPT_CLIENT)
     flag, result = semantic_checker(
         text="pen",

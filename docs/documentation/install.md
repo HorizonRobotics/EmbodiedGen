@@ -7,15 +7,16 @@ hide:
 ```sh
 git clone https://github.com/HorizonRobotics/EmbodiedGen.git
 cd EmbodiedGen
-git checkout v2.0.1
+git checkout v2.1.0
 conda create -n embodiedgen python=3.10.13 -y # recommended to use a new env.
 conda activate embodiedgen
 # Manually install one CUDA toolkit when needed. cu126 remains the default.
 # bash install.sh cu126 # RTX 40-series.
 # bash install.sh cu128 # RTX 50-series / Blackwell.
 bash install.sh basic # around 10 mins
-# Reactivate once so the CUDA and OpenEXR hooks load in the current shell.
+
 conda deactivate && conda activate embodiedgen
+
 # Optional: `bash install.sh scene3d` for scene3d-cli; `bash install.sh room` for room-cli; `bash install.sh affordance` for affordance-cli.
 ```
 
@@ -37,9 +38,14 @@ docker exec -it ${CONTAINER} bash
 
 ## ✅ Setup GPT Agent
 
-Update the API key in file: `embodied_gen/utils/gpt_config.yaml`.
+EmbodiedGen supports three GPT agent backends:
 
-You can choose between two backends for the GPT agent:
+- **Azure OpenAI** for managed Azure deployments.
+- **OpenRouter** for OpenAI-compatible hosted models.
+- **Codex CLI** for local developers who already use `codex login`.
 
-- **`gpt-5.4`** (or Higher, Recommended) – Use this if you have access to **Azure OpenAI**.
-- **`gemma-4-31b`** – A free multimodal alternative (`google/gemma-4-31b-it:free`) via OpenRouter, apply a free key [here](https://openrouter.ai/settings/keys) and update `api_key` in `embodied_gen/utils/gpt_config.yaml`. Free-tier availability on OpenRouter can change over time — check the [model page](https://openrouter.ai/google/gemma-4-31b-it:free) before relying on it.
+Azure OpenAI and OpenRouter require an API key in
+`embodied_gen/utils/gpt_config.yaml`. Codex uses the local Codex CLI login and
+does not require storing a key in the project configuration. See
+[GPT Agent Setup](gpt_agent.md) for complete configuration and deployment
+notes.

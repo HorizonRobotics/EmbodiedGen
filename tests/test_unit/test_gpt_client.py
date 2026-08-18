@@ -15,13 +15,17 @@
 # permissions and limitations under the License.
 
 import os
+import subprocess
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
 import yaml
 from PIL import Image
-from embodied_gen.utils.gpt_clients import CONFIG_FILE, GPTclient
+from embodied_gen.utils.gpt_clients import (
+    CONFIG_FILE,
+    GPTclient,
+)
 
 
 @pytest.fixture(scope="module")
@@ -232,3 +236,88 @@ def test_image_path_loaded_from_disk(tmp_path):
     assert image_blocks[0]["image_url"]["url"].startswith(
         "data:image/png;base64,"
     )
+
+
+def test_codex_provider_reuses_cli_login():
+    def fake_run(command, **kwargs):
+        output_path = command[command.index("--output-last-message") + 1]
+        image_path = command[command.index("--image") + 1]
+        assert os.path.isfile(image_path)
+        with open(output_path, "w", encoding="utf-8") as output_file:
+            output_file.write("codex response")
+        assert kwargs["input"].endswith("User request:\nHello Codex")
+        assert "API_KEY" not in kwargs["env"]
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    with (
+        patch.dict(os.environ, {"API_KEY": "must-not-leak"}),
+        patch(
+            "embodied_gen.utils.gpt_clients.shutil.which", return_value="codex"
+        ),
+        patch(
+            "embodied_gen.utils.gpt_clients.subprocess.run",
+            side_effect=fake_run,
+        ) as mock_run,
+    ):
+        client = GPTclient(
+            endpoint=None,
+            api_key=None,
+            model_name=None,
+            check_connection=False,
+            provider="codex",
+        )
+        response = client.query(
+            "Hello Codex", image_base64=Image.new("RGB", (8, 8), "red")
+        )
+
+    assert response == "codex response"
+    command = mock_run.call_args.args[0]
+    assert command[:2] == ["codex", "exec"]
+    assert "--ephemeral" in command
+    assert "--ignore-user-config" in command
+    assert "--ignore-rules" in command
+    assert ["--sandbox", "read-only"] == command[
+        command.index("--sandbox") : command.index("--sandbox") + 2
+    ]
+    config_index = command.index("--config")
+    assert command[config_index : config_index + 2] == [
+        "--config",
+        'model_reasoning_effort="medium"',
+    ]
+
+
+def test_codex_provider_passes_reasoning_effort():
+    def fake_run(command, **kwargs):
+        output_path = command[command.index("--output-last-message") + 1]
+        with open(output_path, "w", encoding="utf-8") as output_file:
+            output_file.write("codex response")
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    with (
+        patch(
+            "embodied_gen.utils.gpt_clients.shutil.which", return_value="codex"
+        ),
+        patch(
+            "embodied_gen.utils.gpt_clients.subprocess.run",
+            side_effect=fake_run,
+        ) as mock_run,
+    ):
+        client = GPTclient(
+            endpoint=None,
+            api_key=None,
+            model_name=None,
+            check_connection=False,
+            provider="codex",
+        )
+        response = client.query(
+            "Hello Codex",
+            params={"model_reasoning_effort": "high"},
+        )
+
+    assert response == "codex response"
+    command = mock_run.call_args.args[0]
+    config_index = command.index("--config")
+    assert command[config_index : config_index + 2] == [
+        "--config",
+        'model_reasoning_effort="high"',
+    ]

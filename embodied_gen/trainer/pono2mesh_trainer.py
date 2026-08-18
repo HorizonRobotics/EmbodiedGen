@@ -615,7 +615,7 @@ class Pano2MeshSRPipeline:
         if self.cfg.gs_data_file is None:
             return
 
-        logger.info(f"Dump data for 3DGS training...")
+        logger.info("Dump data for 3DGS training...")
         points_rgb = (self.colors.clip(0, 1) * 255).to(torch.uint8)
         data = {
             "points": self.vertices.permute(1, 0).cpu().numpy(),  # (N, 3)

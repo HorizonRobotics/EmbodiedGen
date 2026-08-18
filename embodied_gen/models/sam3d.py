@@ -53,13 +53,6 @@ class Sam3dInference:
         compile (bool): Whether to compile the model for faster inference.
         device (str): Device to run the model on (e.g., "cuda" or "cpu").
 
-    Methods:
-        merge_mask_to_rgba(image, mask):
-            Merges a binary mask into the alpha channel of an RGB image.
-
-        run(image, mask=None, seed=None, pointmap=None, use_stage1_distillation=False,
-            use_stage2_distillation=False, stage1_inference_steps=25, stage2_inference_steps=25):
-            Runs the inference pipeline and returns the output dictionary.
     """
 
     def __init__(
@@ -145,7 +138,7 @@ if __name__ == "__main__":
 
     start = time()
     output = pipeline.run(clean_image, seed=42)
-    print(f"Running cost: {round(time()-start, 1)}")
+    print(f"Running cost: {round(time() - start, 1)}")
 
     if torch.cuda.is_available():
         max_memory = torch.cuda.max_memory_allocated() / (1024**3)

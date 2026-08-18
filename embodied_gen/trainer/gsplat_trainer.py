@@ -169,7 +169,7 @@ class Runner:
         quats = self.splats["quats"]  # [N, 4]
         scales = torch.exp(self.splats["scales"])  # [N, 3]
         opacities = torch.sigmoid(self.splats["opacities"])  # [N,]
-        image_ids = kwargs.pop("image_ids", None)
+        kwargs.pop("image_ids", None)
 
         colors = torch.cat(
             [self.splats["sh0"], self.splats["shN"]], 1
@@ -340,9 +340,7 @@ class Runner:
 
             loss.backward()
 
-            desc = (
-                f"loss={loss.item():.3f}| " f"sh degree={sh_degree_to_use}| "
-            )
+            desc = f"loss={loss.item():.3f}| sh degree={sh_degree_to_use}| "
             if cfg.depth_loss:
                 desc += f"depth loss={depthloss.item():.6f}| "
             pbar.set_description(desc)
@@ -428,9 +426,9 @@ class Runner:
 
             # Turn Gradients into Sparse Tensor before running optimizer
             if cfg.sparse_grad:
-                assert (
-                    cfg.packed
-                ), "Sparse gradients only work with packed mode."
+                assert cfg.packed, (
+                    "Sparse gradients only work with packed mode."
+                )
                 gaussian_ids = info["gaussian_ids"]
                 for k in self.splats.keys():
                     grad = self.splats[k].grad
@@ -444,7 +442,6 @@ class Runner:
                     )
 
             if cfg.visible_adam:
-                gaussian_cnt = self.splats.means.shape[0]
                 if cfg.packed:
                     visibility_mask = torch.zeros_like(
                         self.splats["opacities"], dtype=bool

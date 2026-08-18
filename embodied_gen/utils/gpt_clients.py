@@ -16,10 +16,15 @@
 
 
 import base64
+import json
 import logging
 import math
 import os
+import shutil
+import subprocess
+import tempfile
 from io import BytesIO
+from pathlib import Path
 from typing import Optional
 
 import openai
@@ -43,12 +48,55 @@ __all__ = [
     "GPTclient",
 ]
 
-_CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-CONFIG_FILE = os.path.join(_CURRENT_DIR, "gpt_config.yaml")
-DEFAULT_GPT_TIMEOUT = float(os.environ.get("GPT_TIMEOUT", 120))
+CONFIG_FILE = str(Path(__file__).with_name("gpt_config.yaml"))
+DEFAULT_GPT_TIMEOUT = float(os.environ.get("GPT_TIMEOUT", 90))
 # GPT-5.x counts reasoning tokens against this cap, so it must be high
 # enough to leave room for both reasoning and the visible reply.
 GPT5_DEFAULT_MAX_COMPLETION_TOKENS = 8192
+_CODEX_DEFAULT_REASONING_EFFORT = "medium"
+_CODEX_ENV_KEYS = {
+    "ALL_PROXY",
+    "CODEX_HOME",
+    "HOME",
+    "HTTPS_PROXY",
+    "HTTP_PROXY",
+    "NO_PROXY",
+    "PATH",
+}
+
+
+def _resolve_agent_settings(
+    config: dict, environ: Optional[dict[str, str]] = None
+) -> dict:
+    """Resolve one provider configuration with environment overrides."""
+    environ = os.environ if environ is None else environ
+    agent_type = config["agent_type"]
+    agent_config = config.get(agent_type, {})
+    provider_override = environ.get("GPT_PROVIDER")
+
+    if provider_override is not None:
+        agent_config = {}
+
+    return {
+        "endpoint": environ.get("ENDPOINT", agent_config.get("endpoint")),
+        "api_key": environ.get("API_KEY", agent_config.get("api_key")),
+        "api_version": environ.get(
+            "API_VERSION", agent_config.get("api_version")
+        ),
+        "model_name": environ.get(
+            "MODEL_NAME", agent_config.get("model_name")
+        ),
+        "provider": provider_override or agent_config.get("provider"),
+    }
+
+
+def _codex_subprocess_environment() -> dict[str, str]:
+    """Return the minimal host environment required by Codex CLI."""
+    return {
+        key: value
+        for key, value in os.environ.items()
+        if key.upper() in _CODEX_ENV_KEYS
+    }
 
 
 def combine_images_to_grid(
@@ -84,7 +132,7 @@ def combine_images_to_grid(
 
 
 class GPTclient:
-    """A client to interact with GPT models via OpenAI or Azure API.
+    """A client to interact with GPT models via API or Codex CLI.
 
     Supports text and image prompts, connection checking, and configurable parameters.
 
@@ -96,6 +144,9 @@ class GPTclient:
         check_connection (bool, optional): Whether to check API connection.
         verbose (bool, optional): Enable verbose logging.
         timeout (float, optional): Max seconds for a single GPT request.
+        provider (str, optional): Backend provider. Use ``codex`` to reuse a
+            local Codex CLI login; otherwise the existing Azure/OpenAI-
+            compatible API selection is preserved.
 
     Example:
         ```sh
@@ -117,15 +168,28 @@ class GPTclient:
 
     def __init__(
         self,
-        endpoint: str,
-        api_key: str,
-        model_name: str = "yfb-gpt-4o",
-        api_version: str = None,
+        endpoint: Optional[str],
+        api_key: Optional[str],
+        model_name: Optional[str] = "yfb-gpt-4o",
+        api_version: Optional[str] = None,
         check_connection: bool = True,
         verbose: bool = False,
         timeout: float = DEFAULT_GPT_TIMEOUT,
+        provider: Optional[str] = None,
     ):
-        if api_version is not None:
+        self.provider = (
+            provider or ("azure" if api_version else "openai")
+        ).lower()
+        self.codex_executable = None
+        if self.provider == "codex":
+            self.codex_executable = shutil.which("codex")
+            if self.codex_executable is None:
+                raise RuntimeError(
+                    "Codex CLI was not found. Install Codex and run "
+                    "`codex login` before using the Codex provider."
+                )
+            self.client = None
+        elif self.provider == "azure" or api_version is not None:
             self.client = AzureOpenAI(
                 azure_endpoint=endpoint,
                 api_key=api_key,
@@ -151,6 +215,131 @@ class GPTclient:
 
         logger.info(f"Using GPT model: {self.model_name}.")
 
+    def _materialize_codex_image(
+        self,
+        image: str | Image.Image,
+        target_stem: Path,
+    ) -> Path:
+        """Normalize one Codex image input to a temporary PNG file."""
+        target = target_stem.with_suffix(".png")
+        if isinstance(image, Image.Image):
+            image.convert("RGB").save(target, format="PNG")
+            return target
+
+        if not isinstance(image, str):
+            raise TypeError(
+                "Codex image input must be a path, base64 string, or PIL Image"
+            )
+
+        if not image.startswith("data:"):
+            source = Path(image).expanduser()
+            try:
+                source_is_file = source.is_file()
+            except OSError:
+                source_is_file = False
+            if source_is_file:
+                try:
+                    with Image.open(source) as source_image:
+                        source_image.convert("RGB").save(target, format="PNG")
+                except OSError as exc:
+                    raise ValueError(f"Invalid image file: {image}") from exc
+                return target
+            if source.suffix.lower() in self.image_formats:
+                raise FileNotFoundError(f"Image file not found: {image}")
+            encoded = image
+        else:
+            header, separator, encoded = image.partition(",")
+            if not separator or ";base64" not in header.lower():
+                raise ValueError("Image data URI must contain base64 data")
+
+        try:
+            image_data = base64.b64decode(encoded, validate=True)
+            with Image.open(BytesIO(image_data)) as decoded_image:
+                decoded_image.convert("RGB").save(target, format="PNG")
+        except (OSError, ValueError) as exc:
+            raise ValueError(
+                "Codex image input is neither an existing image nor valid base64"
+            ) from exc
+        return target
+
+    def _query_codex(
+        self,
+        text_prompt: str,
+        image_base64: Optional[str | Image.Image | list[str | Image.Image]],
+        system_role: str,
+        params: Optional[dict],
+    ) -> str:
+        """Run one non-interactive Codex CLI request."""
+        params = params or {}
+        with tempfile.TemporaryDirectory(prefix="embodiedgen-codex-") as tmp:
+            tmp_path = Path(tmp)
+            output_path = tmp_path / "response.txt"
+            image_paths = []
+
+            images = image_base64 or []
+            if not isinstance(images, list):
+                images = [images]
+            for index, image in enumerate(images):
+                image_paths.append(
+                    self._materialize_codex_image(
+                        image,
+                        tmp_path / f"image_{index}",
+                    )
+                )
+
+            prompt = f"{system_role}\n\nUser request:\n{text_prompt}"
+            command = [
+                self.codex_executable,
+                "exec",
+                "--ephemeral",
+                "--sandbox",
+                "read-only",
+                "--skip-git-repo-check",
+                "--ignore-user-config",
+                "--ignore-rules",
+                "--color",
+                "never",
+                "--output-last-message",
+                str(output_path),
+                "--cd",
+                str(tmp_path),
+            ]
+            model_name = params.get("model", self.model_name)
+            if model_name:
+                command.extend(["--model", model_name])
+            reasoning_effort = params.get(
+                "model_reasoning_effort", _CODEX_DEFAULT_REASONING_EFFORT
+            )
+            if not isinstance(reasoning_effort, str) or not reasoning_effort:
+                raise ValueError(
+                    "model_reasoning_effort must be a non-empty string"
+                )
+            command.extend(
+                [
+                    "--config",
+                    f"model_reasoning_effort={json.dumps(reasoning_effort)}",
+                ]
+            )
+            for image_path in image_paths:
+                command.extend(["--image", str(image_path)])
+            command.append("-")
+
+            result = subprocess.run(
+                command,
+                input=prompt,
+                encoding="utf-8",
+                capture_output=True,
+                timeout=self.timeout,
+                check=False,
+                env=_codex_subprocess_environment(),
+            )
+            if result.returncode != 0:
+                raise RuntimeError(result.stderr.strip() or "Codex CLI failed")
+            response = output_path.read_text(encoding="utf-8").strip()
+            if not response:
+                raise RuntimeError("Codex CLI returned an empty response")
+            return response
+
     @staticmethod
     def _is_gpt5_model(model_name: str) -> bool:
         name = (model_name or "").lower()
@@ -168,7 +357,9 @@ class GPTclient:
     def query(
         self,
         text_prompt: str,
-        image_base64: Optional[list[str | Image.Image]] = None,
+        image_base64: Optional[
+            str | Image.Image | list[str | Image.Image]
+        ] = None,
         system_role: Optional[str] = None,
         params: Optional[dict] = None,
     ) -> Optional[str]:
@@ -185,6 +376,23 @@ class GPTclient:
         """
         if system_role is None:
             system_role = "You are a highly knowledgeable assistant specializing in physics, engineering, and object properties."  # noqa
+
+        if self.provider == "codex":
+            try:
+                response = self._query_codex(
+                    text_prompt=text_prompt,
+                    image_base64=image_base64,
+                    system_role=system_role,
+                    params=params,
+                )
+            except Exception as e:
+                logger.error(f"Error Codex CLI call: {e}")
+                response = None
+
+            if self.verbose:
+                logger.info(f"Prompt: {text_prompt}")
+                logger.info(f"Response: {response}")
+            return response
 
         content_user = [
             {
@@ -292,6 +500,20 @@ class GPTclient:
             ConnectionError: If connection fails.
         """
         try:
+            if self.provider == "codex":
+                response = self._query_codex(
+                    text_prompt="Reply with OK.",
+                    image_base64=None,
+                    system_role="You are a test system.",
+                    params=None,
+                )
+                if not response:
+                    raise ConnectionError(
+                        "Codex CLI returned an empty response"
+                    )
+                logger.info("Connection check success.")
+                return
+
             probe_kwargs = dict(
                 messages=[
                     {"role": "system", "content": "You are a test system."},
@@ -314,26 +536,19 @@ class GPTclient:
             )
 
 
-with open(CONFIG_FILE, "r") as f:
+with open(CONFIG_FILE, "r", encoding="utf-8") as f:
     config = yaml.safe_load(f)
 
-agent_type = config["agent_type"]
-agent_config = config.get(agent_type, {})
-
-# Prefer environment variables, fallback to YAML config
-endpoint = os.environ.get("ENDPOINT", agent_config.get("endpoint"))
-api_key = os.environ.get("API_KEY", agent_config.get("api_key"))
-api_version = os.environ.get("API_VERSION", agent_config.get("api_version"))
-model_name = os.environ.get("MODEL_NAME", agent_config.get("model_name"))
-timeout = DEFAULT_GPT_TIMEOUT
+settings = _resolve_agent_settings(config)
 
 GPT_CLIENT = GPTclient(
-    endpoint=endpoint,
-    api_key=api_key,
-    api_version=api_version,
-    model_name=model_name,
+    endpoint=settings["endpoint"],
+    api_key=settings["api_key"],
+    api_version=settings["api_version"],
+    model_name=settings["model_name"],
     check_connection=False,
-    timeout=timeout,
+    timeout=DEFAULT_GPT_TIMEOUT,
+    provider=settings["provider"],
 )
 
 

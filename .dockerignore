@@ -13,11 +13,20 @@ build/
 *.egg-info/
 
 .env
+.cache/
+.pytest_cache/
+.ruff_cache/
 .idea/
 .vscode/
 *.log
 tmp/
 .DS_Store
+
+weights/
+wheels_*/
+apps/gradio_cache/
+apps/sessions/
+thirdparty/infinigen/
 
 Dockerfile
 .dockerignore

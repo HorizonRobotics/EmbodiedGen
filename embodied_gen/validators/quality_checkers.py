@@ -814,7 +814,6 @@ def test_semantic_matcher(
             scene_id, desc = line.split(":", 1)
             scene_dict[scene_id.strip()] = desc.strip()
 
-    office_scene = scene_dict.get("t_scene_office_001")
     text = "bright kitchen"
     SCENE_MATCHER = SemanticMatcher(GPT_CLIENT)
     # gpt_params = {
