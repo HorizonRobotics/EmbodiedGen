@@ -22,10 +22,10 @@ import random
 
 import torch
 from PIL import Image
+from thirdparty.TRELLIS.trellis.pipelines import TrellisImageTo3DPipeline
 from embodied_gen.data.utils import trellis_preprocess
 from embodied_gen.models.sam3d import Sam3dInference
 from embodied_gen.utils.trender import pack_state, unpack_state
-from thirdparty.TRELLIS.trellis.pipelines import TrellisImageTo3DPipeline
 
 __all__ = [
     "image3d_model_infer",

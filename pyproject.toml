@@ -75,6 +75,7 @@ convention = "google"
 
 [tool.ruff.lint.isort]
 known-first-party = ["embodied_gen"]
+known-third-party = ["thirdparty"]
 no-lines-before = ["first-party"]
 
 [tool.ruff.format]
