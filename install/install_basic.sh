@@ -47,4 +47,8 @@ try_install "Installing EmbodiedGen..." \
     "pip install -e '.[dev]'" \
     "EmbodiedGen installation failed."
 
-pre-commit install
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    pre-commit install
+else
+    log_info "Skipping pre-commit hook installation outside a Git worktree."
+fi

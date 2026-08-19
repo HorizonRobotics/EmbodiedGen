@@ -159,9 +159,10 @@ class MeshFixer(object):
             yaws.append(y)
             pitchs.append(p)
 
-        yaws, pitchs = torch.tensor(yaws).to(vertices), torch.tensor(
-            pitchs
-        ).to(vertices)
+        yaws, pitchs = (
+            torch.tensor(yaws).to(vertices),
+            torch.tensor(pitchs).to(vertices),
+        )
         radius, fov = 2.0, torch.deg2rad(torch.tensor(40)).to(vertices)
         projection = utils3d.torch.perspective_from_fov_xy(fov, fov, 1, 3)
 
@@ -361,7 +362,7 @@ class MeshFixer(object):
 
             tqdm.write(f"Removed {(~mask).sum()} faces by mincut")
         else:
-            tqdm.write(f"Removed 0 faces by mincut")
+            tqdm.write("Removed 0 faces by mincut")
 
         # Fill small boundaries (holes)
         mesh = _meshfix.PyTMesh()

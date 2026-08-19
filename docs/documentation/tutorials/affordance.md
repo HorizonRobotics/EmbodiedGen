@@ -1,4 +1,4 @@
-# 🦾 Affordance — Semantic Parts & Grasps
+# 🕹️ Affordance — Semantic Parts & Grasps
 
 Generate **part-level affordance annotations** for a simulator-ready URDF asset.
 
@@ -127,4 +127,3 @@ An `affordance_annot.json` entry has this structure:
 !!! tip "Getting Started"
     - Use `apps/assets/example_affordance/ear_hear/sample.urdf` as the first smoke test.
     - Use generated URDFs from [Image-to-3D](image_to_3d.md) or [Text-to-3D](text_to_3d.md) as inputs for new assets.
-

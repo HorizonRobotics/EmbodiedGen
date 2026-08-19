@@ -289,7 +289,7 @@ class PickEmbodiedGen(BaseEnv):
             options: A dictionary of options for loading the scene.
         """
         all_objects = []
-        logger.info(f"Loading EmbodiedGen assets...")
+        logger.info("Loading EmbodiedGen assets...")
         for env_idx in range(self.num_envs):
             env_actors = load_assets_from_layout_file(
                 self.scene,

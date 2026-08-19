@@ -58,6 +58,9 @@ from embodied_gen.utils.config import Pano2MeshSRConfig
 from embodied_gen.utils.gaussian import restore_scene_scale_and_position
 from embodied_gen.utils.gpt_clients import GPT_CLIENT
 from embodied_gen.utils.log import logger
+from embodied_gen.utils.monkey_patch.xformers import (
+    disable_xformers_flash3_on_blackwell,
+)
 from embodied_gen.utils.process_media import is_image_file, parse_text_prompts
 from embodied_gen.validators.quality_checkers import (
     PanoHeightEstimator,
@@ -104,7 +107,7 @@ def generate_pano_image(
 ) -> None:
     for i in range(n_retry):
         logger.info(
-            f"GEN Panorama: Retry {i+1}/{n_retry} for prompt: {prompt}, seed: {seed}"
+            f"GEN Panorama: Retry {i + 1}/{n_retry} for prompt: {prompt}, seed: {seed}"
         )
         if is_image_file(prompt):
             raise NotImplementedError("Image mode not implemented yet.")
@@ -136,6 +139,7 @@ def entrypoint(*args, **kwargs):
     cfg = tyro.cli(Scene3DGenConfig)
 
     # Init global models.
+    disable_xformers_flash3_on_blackwell()
     model_path = snapshot_download("archerfmy0831/sd-t2i-360panoimage")
     IMG2PANO_PIPE = Text2360PanoramaImagePipeline(
         model_path, torch_dtype=torch.float16, device="cuda"
@@ -177,11 +181,9 @@ def entrypoint(*args, **kwargs):
         cli(gsplat_entrypoint, cfg.gs3d, verbose=True)
 
         # Clean up the middle results.
-        gs_path = (
-            f"{cfg.gs3d.result_dir}/ply/point_cloud_{cfg.gs3d.max_steps-1}.ply"
-        )
+        gs_path = f"{cfg.gs3d.result_dir}/ply/point_cloud_{cfg.gs3d.max_steps - 1}.ply"
         copy(gs_path, f"{output_dir}/gs_model.ply")
-        video_path = f"{cfg.gs3d.result_dir}/renders/video_step{cfg.gs3d.max_steps-1}.mp4"
+        video_path = f"{cfg.gs3d.result_dir}/renders/video_step{cfg.gs3d.max_steps - 1}.mp4"
         copy(video_path, f"{output_dir}/video.mp4")
         gs_cfg_path = f"{cfg.gs3d.result_dir}/cfg.yml"
         copy(gs_cfg_path, f"{output_dir}/gsplat_cfg.yml")

@@ -29,7 +29,7 @@ import torch
 import tyro
 from mani_skill.utils.wrappers import RecordEpisode
 from tqdm import tqdm
-import embodied_gen.envs.pick_embodiedgen
+import embodied_gen.envs.pick_embodiedgen  # noqa: F401
 from embodied_gen.utils.enum import LayoutInfo, Scene3DItemEnum
 from embodied_gen.utils.log import logger
 from embodied_gen.utils.simulation import FrankaPandaGrasper

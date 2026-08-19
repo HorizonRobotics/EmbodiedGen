@@ -79,8 +79,29 @@ def monkey_patch_pano2room():
         self.save_path = save_path
 
     from modules.geo_predictors import PanoJointPredictor
+    from modules.geo_predictors.pano_joint_predictor import SphereDistanceField
 
     PanoJointPredictor.__init__ = patched_panojoint_init
+
+    if not hasattr(SphereDistanceField, "_embodiedgen_original_init"):
+        SphereDistanceField._embodiedgen_original_init = (
+            SphereDistanceField.__init__
+        )
+
+    original_sphere_distance_field_init = (
+        SphereDistanceField._embodiedgen_original_init
+    )
+
+    def patched_sphere_distance_field_init(self, *args, **kwargs):
+        """Use tiny-cuda-nn JIT kernels for exact Blackwell double backward."""
+        original_sphere_distance_field_init(self, *args, **kwargs)
+        if (
+            torch.cuda.is_available()
+            and torch.cuda.get_device_capability() >= (12, 0)
+        ):
+            self.hash_grid.jit_fusion = True
+
+    SphereDistanceField.__init__ = patched_sphere_distance_field_init
 
     # NOTE: We use gsplat instead.
     # import depth_diff_gaussian_rasterization_min as ddgr

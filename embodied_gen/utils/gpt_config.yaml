@@ -1,5 +1,5 @@
 # config.yaml
-agent_type: "gpt-5.4" # gpt-4o, gpt-5.4 or gemma-4-31b
+agent_type: "gpt-5.4" # gpt-4o, gpt-5.4 or gemma-4-31b or codex
 
 gpt-4o:
   endpoint: https://xxx.openai.azure.com
@@ -18,3 +18,10 @@ gemma-4-31b:
   api_key: sk-or-v1-xxx
   api_version: null
   model_name: google/gemma-4-31b-it:free
+
+codex:
+  provider: codex
+  endpoint: null
+  api_key: null
+  api_version: null
+  model_name: null

@@ -43,7 +43,7 @@ source_cuda_activation() {
         return 0
     fi
 
-    cuda_hook="$CONDA_PREFIX/etc/conda/activate.d/${cuda_variant}.sh"
+    cuda_hook="$CONDA_PREFIX/etc/conda/activate.d/cuda${cuda_variant#cu}.sh"
     if [[ -f "$cuda_hook" ]]; then
         source "$cuda_hook"
     fi

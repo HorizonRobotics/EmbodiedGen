@@ -4,6 +4,7 @@ xformers==0.0.32.post2
 pytorch-lightning==2.4.0
 spconv-cu126==2.3.7
 numpy==1.26.4
+plyfile>=1.0,<1.1.5
 triton==3.4.0
 dataclasses_json
 easydict
@@ -21,6 +22,7 @@ openai==1.58.1
 transformers==4.42.4
 gradio==5.48.0
 spaces
+tqdm<4.70
 sentencepiece==0.2.0
 diffusers==0.34.0
 xatlas
@@ -29,7 +31,7 @@ tenacity
 accelerate==0.33.0
 basicsr==1.4.2
 realesrgan==0.3.0
-pydantic==2.9.2
+pydantic>=2.10,<2.12
 vtk==9.3.1
 colorlog
 json-repair

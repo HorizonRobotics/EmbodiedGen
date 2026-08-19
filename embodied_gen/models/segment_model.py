@@ -236,7 +236,7 @@ class SAMPredictor(object):
         )
 
         labels = (
-            torch.Tensor([int(l) for _, l in selected_points])
+            torch.Tensor([int(label) for _, label in selected_points])
             .to(self.predictor.device)
             .unsqueeze(1)
         )
@@ -469,13 +469,11 @@ def get_segmented_image_by_agent(
     elif _is_valid_seg(image, seg_image_inv):
         final_image = seg_image_inv
     elif _is_valid_seg(image, seg_image_rbg):
-        logger.warning(f"Failed to segment by `SAM`, retry with `rembg`.")
+        logger.warning("Failed to segment by `SAM`, retry with `rembg`.")
         final_image = seg_image_rbg
     else:
         if mode == "strict":
-            raise RuntimeError(
-                f"Failed to segment by `SAM` or `rembg`, abort."
-            )
+            raise RuntimeError("Failed to segment by `SAM` or `rembg`, abort.")
         logger.warning("Failed to segment by SAM or rembg, use raw image.")
         final_image = image.convert("RGBA")
 

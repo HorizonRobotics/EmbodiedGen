@@ -9,6 +9,7 @@ use_directory_urls: false
 nav:
   - 🏠 Home: index.md
   - 🚀 Installation: install.md
+  - 🤖 GPT Agent: gpt_agent.md
   - 📘 Tutorials:
     - Overview: tutorials/index.md
     - 🧱 Asset Generation:
@@ -98,12 +99,14 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: [embodied_gen]
+          paths: [.]
           options:
             show_signature_annotations: true
             separate_signature: true
             show_root_toc_entry: false
             docstring_style: google
+            docstring_options:
+              warn_missing_types: false
             show_source: true
             merge_init_into_class: true
             show_root_heading: true
@@ -128,4 +131,3 @@ markdown_extensions:
   - admonition
   - attr_list
   - md_in_html
-

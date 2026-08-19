@@ -27,12 +27,8 @@ import torch
 import trimesh
 from equilib import cube2equi, equi2pers
 from kornia.morphology import dilation
+from modules.geo_predictors import PanoJointPredictor
 from PIL import Image
-from embodied_gen.models.sr_model import ImageRealESRGAN
-from embodied_gen.utils.config import Pano2MeshSRConfig
-from embodied_gen.utils.geometry import compute_pinhole_intrinsics
-from embodied_gen.utils.log import logger
-from thirdparty.pano2room.modules.geo_predictors import PanoJointPredictor
 from thirdparty.pano2room.modules.geo_predictors.PanoFusionDistancePredictor import (
     PanoFusionDistancePredictor,
 )
@@ -50,6 +46,10 @@ from thirdparty.pano2room.utils.functions import (
     rot_z_world_to_cam,
     tensor_to_pil,
 )
+from embodied_gen.models.sr_model import ImageRealESRGAN
+from embodied_gen.utils.config import Pano2MeshSRConfig
+from embodied_gen.utils.geometry import compute_pinhole_intrinsics
+from embodied_gen.utils.log import logger
 
 
 class Pano2MeshSRPipeline:
@@ -615,7 +615,7 @@ class Pano2MeshSRPipeline:
         if self.cfg.gs_data_file is None:
             return
 
-        logger.info(f"Dump data for 3DGS training...")
+        logger.info("Dump data for 3DGS training...")
         points_rgb = (self.colors.clip(0, 1) * 255).to(torch.uint8)
         data = {
             "points": self.vertices.permute(1, 0).cpu().numpy(),  # (N, 3)

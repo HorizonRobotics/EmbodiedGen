@@ -100,7 +100,7 @@ def entrypoint() -> None:
             pipeline=PIPELINE,
             seed=cfg.seed,
         )
-        textured_mesh = backproject_api(
+        backproject_api(
             delight_model=DELIGHT,
             imagesr_model=IMAGESR_MODEL,
             mesh_path=mesh_path,

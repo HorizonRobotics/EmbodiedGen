@@ -15,7 +15,7 @@
 # permissions and limitations under the License.
 
 from gradio.themes import Soft
-from gradio.themes.utils.colors import gray, neutral, slate, stone, teal, zinc
+from gradio.themes.utils.colors import gray, stone
 
 lighting_css = """
 <style>

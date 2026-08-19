@@ -40,6 +40,11 @@ if [ -z "$TARGET_ENV" ]; then
     CONDA_BASE=$(conda info --base)
     TARGET_ENV="$CONDA_BASE/envs/$ENV_NAME"
 fi
+
+if [ ! -x "$TARGET_ENV/bin/x86_64-conda-linux-gnu-g++" ]; then
+    conda install -n "$ENV_NAME" -y -c conda-forge gxx_linux-64=11 mesalib glew glm menpo::glfw3
+fi
+
 export C_INCLUDE_PATH=$TARGET_ENV/include:$C_INCLUDE_PATH
 export CPLUS_INCLUDE_PATH=$TARGET_ENV/include:$CPLUS_INCLUDE_PATH
 export LIBRARY_PATH=$TARGET_ENV/lib:$LIBRARY_PATH
