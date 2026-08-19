@@ -8,31 +8,31 @@
       
       
       
-        <link rel="canonical" href="https://horizonrobotics.github.io/EmbodiedGen/docs/services/text_to_3d.html">
+        <link rel="canonical" href="https://horizonrobotics.github.io/EmbodiedGen/docs/gpt_agent.html">
       
       
-        <link rel="prev" href="image_to_3d.html">
+        <link rel="prev" href="install.html">
       
       
-        <link rel="next" href="texture_edit.html">
+        <link rel="next" href="tutorials/index.html">
       
       
         
       
       
-      <link rel="icon" href="../assets/favicon.svg">
+      <link rel="icon" href="assets/favicon.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Text-to-3D - EmbodiedGen Documentation</title>
+        <title>🤖 GPT Agent - EmbodiedGen Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,13 +51,13 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../stylesheets/extra.css">
+      <link rel="stylesheet" href="stylesheets/extra.css">
     
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#text-to-3d-service" class="md-skip">
+        <a href="#gpt-agent-setup" class="md-skip">
           Skip to content
         </a>
       
@@ -96,9 +96,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../index.html" title="EmbodiedGen Documentation" class="md-header__button md-logo" aria-label="EmbodiedGen Documentation" data-md-component="logo">
+    <a href="index.html" title="EmbodiedGen Documentation" class="md-header__button md-logo" aria-label="EmbodiedGen Documentation" data-md-component="logo">
       
-  <img src="../assets/logo.png" alt="logo">
+  <img src="assets/logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Text-to-3D
+              🤖 GPT Agent
             
           </span>
         </div>
@@ -226,7 +226,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../index.html" class="md-tabs__link">
+      <a href="index.html" class="md-tabs__link">
         
   
   
@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../install.html" class="md-tabs__link">
+      <a href="install.html" class="md-tabs__link">
         
   
   
@@ -262,9 +262,11 @@
   
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../gpt_agent.html" class="md-tabs__link">
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="gpt_agent.html" class="md-tabs__link">
         
   
   
@@ -285,7 +287,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../tutorials/index.html" class="md-tabs__link">
+        <a href="tutorials/index.html" class="md-tabs__link">
           
   
   
@@ -301,13 +303,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="index.html" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="services/index.html" class="md-tabs__link">
           
   
   
@@ -327,7 +327,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../api/index.html" class="md-tabs__link">
+        <a href="api/index.html" class="md-tabs__link">
           
   
   
@@ -345,7 +345,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../acknowledgement.html" class="md-tabs__link">
+      <a href="acknowledgement.html" class="md-tabs__link">
         
   
   
@@ -380,9 +380,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../index.html" title="EmbodiedGen Documentation" class="md-nav__button md-logo" aria-label="EmbodiedGen Documentation" data-md-component="logo">
+    <a href="index.html" title="EmbodiedGen Documentation" class="md-nav__button md-logo" aria-label="EmbodiedGen Documentation" data-md-component="logo">
       
-  <img src="../assets/logo.png" alt="logo">
+  <img src="assets/logo.png" alt="logo">
 
     </a>
     EmbodiedGen Documentation
@@ -409,7 +409,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../index.html" class="md-nav__link">
+      <a href="index.html" class="md-nav__link">
         
   
   
@@ -436,7 +436,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../install.html" class="md-nav__link">
+      <a href="install.html" class="md-nav__link">
         
   
   
@@ -460,10 +460,37 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../gpt_agent.html" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🤖 GPT Agent
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="gpt_agent.html" class="md-nav__link md-nav__link--active">
         
   
   
@@ -479,6 +506,81 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#azure-openai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure OpenAI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openrouter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenRouter
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#codex-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Codex CLI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Variables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verify-the-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify the Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -540,7 +642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/index.html" class="md-nav__link">
+      <a href="tutorials/index.html" class="md-nav__link">
         
   
   
@@ -618,7 +720,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/image_to_3d.html" class="md-nav__link">
+      <a href="tutorials/image_to_3d.html" class="md-nav__link">
         
   
   
@@ -646,7 +748,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/text_to_3d.html" class="md-nav__link">
+      <a href="tutorials/text_to_3d.html" class="md-nav__link">
         
   
   
@@ -674,7 +776,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/texture_edit.html" class="md-nav__link">
+      <a href="tutorials/texture_edit.html" class="md-nav__link">
         
   
   
@@ -702,7 +804,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/soft_body.html" class="md-nav__link">
+      <a href="tutorials/soft_body.html" class="md-nav__link">
         
   
   
@@ -730,7 +832,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/articulated_gen.html" class="md-nav__link">
+      <a href="tutorials/articulated_gen.html" class="md-nav__link">
         
   
   
@@ -758,7 +860,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/affordance.html" class="md-nav__link">
+      <a href="tutorials/affordance.html" class="md-nav__link">
         
   
   
@@ -844,7 +946,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/room_gen.html" class="md-nav__link">
+      <a href="tutorials/room_gen.html" class="md-nav__link">
         
   
   
@@ -872,7 +974,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/scene_gen.html" class="md-nav__link">
+      <a href="tutorials/scene_gen.html" class="md-nav__link">
         
   
   
@@ -958,7 +1060,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/layout_gen.html" class="md-nav__link">
+      <a href="tutorials/layout_gen.html" class="md-nav__link">
         
   
   
@@ -986,7 +1088,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/digital_twin.html" class="md-nav__link">
+      <a href="tutorials/digital_twin.html" class="md-nav__link">
         
   
   
@@ -1022,7 +1124,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/vibe_coding.html" class="md-nav__link">
+      <a href="tutorials/vibe_coding.html" class="md-nav__link">
         
   
   
@@ -1050,7 +1152,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/any_simulators.html" class="md-nav__link">
+      <a href="tutorials/any_simulators.html" class="md-nav__link">
         
   
   
@@ -1078,7 +1180,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/robot_learning.html" class="md-nav__link">
+      <a href="tutorials/robot_learning.html" class="md-nav__link">
         
   
   
@@ -1110,29 +1212,24 @@
       
   
   
-    
   
   
-  
     
     
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -1150,7 +1247,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1168,7 +1265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="index.html" class="md-nav__link">
+      <a href="services/index.html" class="md-nav__link">
         
   
   
@@ -1196,7 +1293,7 @@
   
   
     <li class="md-nav__item">
-      <a href="image_to_3d.html" class="md-nav__link">
+      <a href="services/image_to_3d.html" class="md-nav__link">
         
   
   
@@ -1221,37 +1318,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Text-to-3D
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="text_to_3d.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="services/text_to_3d.html" class="md-nav__link">
         
   
   
@@ -1267,37 +1337,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#run-the-app-service" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ☁️ Run the App Service
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1310,7 +1349,7 @@
   
   
     <li class="md-nav__item">
-      <a href="texture_edit.html" class="md-nav__link">
+      <a href="services/texture_edit.html" class="md-nav__link">
         
   
   
@@ -1338,7 +1377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="visualize_asset.html" class="md-nav__link">
+      <a href="services/visualize_asset.html" class="md-nav__link">
         
   
   
@@ -1423,7 +1462,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/index.html" class="md-nav__link">
+      <a href="api/index.html" class="md-nav__link">
         
   
   
@@ -1451,7 +1490,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/data.html" class="md-nav__link">
+      <a href="api/data.html" class="md-nav__link">
         
   
   
@@ -1479,7 +1518,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/envs.html" class="md-nav__link">
+      <a href="api/envs.html" class="md-nav__link">
         
   
   
@@ -1507,7 +1546,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/models.html" class="md-nav__link">
+      <a href="api/models.html" class="md-nav__link">
         
   
   
@@ -1535,7 +1574,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/skills.html" class="md-nav__link">
+      <a href="api/skills.html" class="md-nav__link">
         
   
   
@@ -1563,7 +1602,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/trainer.html" class="md-nav__link">
+      <a href="api/trainer.html" class="md-nav__link">
         
   
   
@@ -1591,7 +1630,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/utils.html" class="md-nav__link">
+      <a href="api/utils.html" class="md-nav__link">
         
   
   
@@ -1619,7 +1658,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/validators.html" class="md-nav__link">
+      <a href="api/validators.html" class="md-nav__link">
         
   
   
@@ -1654,7 +1693,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../acknowledgement.html" class="md-nav__link">
+      <a href="acknowledgement.html" class="md-nav__link">
         
   
   
@@ -1701,10 +1740,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#run-the-app-service" class="md-nav__link">
+  <a href="#azure-openai" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ☁️ Run the App Service
+        Azure OpenAI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openrouter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenRouter
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#codex-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Codex CLI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Variables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verify-the-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify the Configuration
       
     </span>
   </a>
@@ -1729,46 +1812,6 @@
   
 
 
-  <nav class="md-path" aria-label="Navigation" >
-    <ol class="md-path__list">
-      
-        
-  
-  
-    <li class="md-path__item">
-      <a href="../index.html" class="md-path__link">
-        
-  <span class="md-ellipsis">
-    🏠 Home
-  </span>
-
-      </a>
-    </li>
-  
-
-      
-      
-        
-  
-  
-    
-    
-      <li class="md-path__item">
-        <a href="index.html" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    🧩 Services
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-    </ol>
-  </nav>
-
               
               <article class="md-content__inner md-typeset">
                 
@@ -1776,7 +1819,7 @@
 
 
   
-    <a href="https://github.com/HorizonRobotics/EmbodiedGen/edit/master/docs/services/text_to_3d.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/HorizonRobotics/EmbodiedGen/edit/master/docs/gpt_agent.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -1784,90 +1827,127 @@
   
 
 
-<h1 id="text-to-3d-service">📝 Text-to-3D Service</h1>
-<p><a href="https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D"><img alt="🤗 Hugging Face" src="https://img.shields.io/badge/🤗-Text_to_3D_Demo-blue" /></a></p>
-<p>This service launches a web application to generate physically plausible 3D assets from text descriptions for a wide range of geometry and styles.</p>
-<div class="swiper swiper1" style="max-width: 1000px; margin: 20px auto; border-radius: 12px;">
-    <div class="swiper-wrapper">
-        <div class="swiper-slide model-card">
-        <model-viewer
-            src="https://raw.githubusercontent.com/HochCC/ShowCase/main/text/c2.glb"
-            auto-rotate
-            camera-controls
-            background-color="#ffffff"
-            style="display:block; width: 100%; height: 160px; border-radius: 12px;"
-            >
-        </model-viewer>
-        <p style="text-align: center; margin-top: 8px; font-size: 14px;">"Antique brass key, intricate filigree"</p>
-        </div>
-        <div class="swiper-slide model-card">
-        <model-viewer
-            src="https://raw.githubusercontent.com/HochCC/ShowCase/main/text/c3.glb"
-            auto-rotate
-            camera-controls
-            background-color="#ffffff"
-            style="display:block; width: 100%; height: 160px;">
-        </model-viewer>
-        <p style="text-align: center; margin-top: 8px; font-size: 14px;">"Rusty old wrench, peeling paint"</p>
-        </div>
-        <div class="swiper-slide model-card">
-        <model-viewer
-            src="https://raw.githubusercontent.com/HochCC/ShowCase/main/text/c4.glb"
-            auto-rotate
-            camera-controls
-            background-color="#ffffff"
-            style="display:block; width: 100%; height: 160px;">
-        </model-viewer>
-        <p style="text-align: center; margin-top: 8px; font-size: 14px;">"Sleek black drone, red sensors"</p>
-        </div>
-        <div class="swiper-slide model-card">
-        <model-viewer
-            src="https://raw.githubusercontent.com/HochCC/ShowCase/main/text/c7.glb"
-            auto-rotate
-            camera-controls
-            background-color="#ffffff"
-            style="display:block; width: 100%; height: 160px;">
-        </model-viewer>
-        <p style="text-align: center; margin-top: 8px; font-size: 14px;">"Miniature screwdriver with bright orange handle"</p>
-        </div>
-        <div class="swiper-slide model-card">
-        <model-viewer
-            src="https://raw.githubusercontent.com/HochCC/ShowCase/main/text/c9.glb"
-            auto-rotate
-            camera-controls
-            background-color="#ffffff"
-            style="display:block; width: 100%; height: 160px;">
-        </model-viewer>
-        <p style="text-align: center; margin-top: 8px; font-size: 14px;">"European style wooden dressing table"</p>
-        </div>
-    </div>
-    <div class="swiper-button-prev swiper1-prev"></div>
-    <div class="swiper-button-next swiper1-next"></div>
-</div>
+<h1 id="gpt-agent-setup">GPT Agent Setup</h1>
+<p>Most EmbodiedGen pipelines use <code>GPT_CLIENT</code> from
+<code>embodied_gen/utils/gpt_clients.py</code>. Select one backend in
+<code>embodied_gen/utils/gpt_config.yaml</code>, or override its values with environment
+variables.</p>
+<table>
+<thead>
+<tr>
+<th>Backend</th>
+<th>Best for</th>
+<th>Authentication</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Azure OpenAI</td>
+<td>Shared services and managed deployments</td>
+<td>Azure endpoint, API key, and API version</td>
+</tr>
+<tr>
+<td>OpenRouter</td>
+<td>OpenAI-compatible hosted models</td>
+<td>OpenRouter API key</td>
+</tr>
+<tr>
+<td>Codex CLI</td>
+<td>Local developers already using Codex</td>
+<td>Existing <code>codex login</code> session</td>
+</tr>
+</tbody>
+</table>
+<p>Do not commit real API keys or Codex credentials to the repository.</p>
+<h2 id="azure-openai">Azure OpenAI</h2>
+<p>Select the Azure configuration and provide the deployment details:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">agent_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gpt-5.4</span>
 
-<hr />
-<h2 id="run-the-app-service">☁️ Run the App Service</h2>
-<p>Create 3D assets from text descriptions for a wide range of geometry and styles.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Gradio servive is a simplified demonstration. For the full functionality, please refer to <a href="../tutorials/text_to_3d.html">text3d-cli</a>.</p>
-</div>
-<p>Text-to-image model based on the Kolors model, supporting Chinese and English prompts. Models downloaded automatically on first run, please be patient.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Run in foreground</span>
-python<span class="w"> </span>apps/text_to_3d.py
-
-<span class="c1"># Or run in the background</span>
-<span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span><span class="m">0</span><span class="w"> </span>nohup<span class="w"> </span>python<span class="w"> </span>apps/text_to_3d.py<span class="w"> </span>&gt;<span class="w"> </span>/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="nt">gpt-5.4</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://YOUR-RESOURCE.openai.azure.com/</span>
+<span class="w">  </span><span class="nt">api_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">YOUR_AZURE_OPENAI_API_KEY</span>
+<span class="w">  </span><span class="nt">api_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">YOUR_AZURE_API_VERSION</span>
+<span class="w">  </span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">YOUR_DEPLOYMENT_NAME</span>
 </code></pre></div>
-<hr />
-<div class="admonition tip">
-<p class="admonition-title">Getting Started</p>
-<ul>
-<li>You can also try Text-to-3D instantly online via our <a href="https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Text-to-3D">Hugging Face Space</a> — no installation required.</li>
-<li>Explore EmbodiedGen generated sim-ready <a href="https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Gallery-Explorer">Assets Gallery</a>.</li>
-<li>For instructions on using the generated asset in any simulator, see <a href="../tutorials/any_simulators.html">Any Simulators Tutorial</a>.</li>
-</ul>
-</div>
+<p>Azure uses <code>model_name</code> as the deployment name. The deployment must support
+the text or image inputs required by the selected EmbodiedGen pipeline.</p>
+<h2 id="openrouter">OpenRouter</h2>
+<p>Select an OpenRouter model and update its API key:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">agent_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gemma-4-31b</span>
+
+<span class="nt">gemma-4-31b</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://openrouter.ai/api/v1</span>
+<span class="w">  </span><span class="nt">api_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">YOUR_OPENROUTER_API_KEY</span>
+<span class="w">  </span><span class="nt">api_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">google/gemma-4-31b-it:free</span>
+</code></pre></div>
+<p>Model availability and free-tier limits can change. Confirm that the selected
+model supports image inputs before using an image-based pipeline.</p>
+<h2 id="codex-cli">Codex CLI</h2>
+<p>The Codex backend is intended for local development. It starts a temporary,
+non-interactive <code>codex exec</code> request for each <code>GPT_CLIENT.query()</code> call and
+reuses the developer's existing Codex authentication. It does not read an API
+key from <code>gpt_config.yaml</code>.</p>
+<p>Install Codex, sign in, and verify the login:</p>
+<div class="highlight"><pre><span></span><code>codex<span class="w"> </span>login
+codex<span class="w"> </span>login<span class="w"> </span>status
+</code></pre></div>
+<p>This integration was validated with <code>codex-cli 0.146.0</code>. Upgrade Codex if
+<code>codex exec</code> does not recognize <code>--ephemeral</code>, <code>--ignore-user-config</code>,
+<code>--ignore-rules</code>, or <code>--output-last-message</code>.</p>
+<p>Then select the Codex backend:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">agent_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">codex</span>
+
+<span class="nt">codex</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">provider</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">codex</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">api_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">api_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">  </span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+</code></pre></div>
+<p>Leaving <code>model_name</code> as <code>null</code> uses the Codex default model. To select a
+specific model for EmbodiedGen, set <code>model_name</code> or export <code>MODEL_NAME</code>.</p>
+<p>The adapter runs Codex with an ephemeral session and a read-only sandbox.
+It also ignores user-level Codex configuration, MCP servers, and project rules
+so that only the existing authentication is reused. The subprocess receives a
+minimal environment and does not inherit EmbodiedGen API keys. Text and image
+prompts are supported, but launching the CLI for every request has more
+overhead than an API backend. The Codex agent can still use built-in read-only
+tools, so use this backend only with trusted local prompts. Use Azure OpenAI or
+OpenRouter for containers, hosted services, batch workloads, untrusted input,
+and Hugging Face Spaces.</p>
+<p>Per-request API sampling options such as <code>temperature</code>, <code>top_p</code>, and
+<code>max_tokens</code> are not mapped to Codex CLI flags. The optional <code>model</code> and
+<code>model_reasoning_effort</code> entries in <code>params</code> provide per-request Codex
+overrides, for example <code>params={"model_reasoning_effort": "high"}</code>. Supported
+effort levels depend on the selected Codex model; EmbodiedGen uses <code>medium</code> when
+no per-request effort is specified.</p>
+<p>For Codex authentication details, see the
+<a href="https://developers.openai.com/codex/auth">official Codex authentication documentation</a>.</p>
+<h2 id="environment-variables">Environment Variables</h2>
+<p>Environment variables take precedence over <code>gpt_config.yaml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">GPT_PROVIDER</span><span class="o">=</span>azure<span class="w">       </span><span class="c1"># azure, openai, or codex</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">ENDPOINT</span><span class="o">=</span>...
+<span class="nb">export</span><span class="w"> </span><span class="nv">API_KEY</span><span class="o">=</span>...
+<span class="nb">export</span><span class="w"> </span><span class="nv">API_VERSION</span><span class="o">=</span>...
+<span class="nb">export</span><span class="w"> </span><span class="nv">MODEL_NAME</span><span class="o">=</span>...
+<span class="nb">export</span><span class="w"> </span><span class="nv">GPT_TIMEOUT</span><span class="o">=</span><span class="m">120</span>
+</code></pre></div>
+<p>For Codex, only <code>GPT_PROVIDER=codex</code>, <code>MODEL_NAME</code>, and <code>GPT_TIMEOUT</code> are
+relevant. Setting <code>GPT_PROVIDER</code> starts a clean provider override and does not
+inherit endpoint, key, API version, or model values from the selected YAML API
+backend. The existing Codex login supplies authentication.</p>
+<h2 id="verify-the-configuration">Verify the Configuration</h2>
+<p>Run a small text request from the repository root:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-<span class="w"> </span><span class="s">&lt;&lt;'PY'</span>
+<span class="s">from embodied_gen.utils.gpt_clients import GPT_CLIENT</span>
+
+<span class="s">print(GPT_CLIENT.query("Reply with: EmbodiedGen GPT setup works."))</span>
+<span class="s">PY</span>
+</code></pre></div>
+<p>If Codex cannot be found, confirm that <code>codex</code> is available in <code>PATH</code>. For API
+backends, verify the endpoint, API key, API version, and model or deployment
+name.</p>
 
 
 
@@ -1890,7 +1970,7 @@ python<span class="w"> </span>apps/text_to_3d.py
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 6, 2025 11:25:51 UTC">November 6, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 19, 2026 09:09:43 UTC">August 19, 2026</span>
   </span>
 
     
@@ -1900,7 +1980,7 @@ python<span class="w"> </span>apps/text_to_3d.py
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 6, 2025 06:11:35 UTC">November 6, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 19, 2026 09:09:43 UTC">August 19, 2026</span>
   </span>
 
     
@@ -2021,16 +2101,16 @@ python<span class="w"> </span>apps/text_to_3d.py
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.tabs", "navigation.top", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.path", "navigation.tabs", "navigation.top", "search.highlight", "content.code.copy", "content.action.edit"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
       
         <script src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js" type="module"></script>
       
-        <script src="../js/model_viewer.js"></script>
+        <script src="js/model_viewer.js"></script>
       
     
   </body>
