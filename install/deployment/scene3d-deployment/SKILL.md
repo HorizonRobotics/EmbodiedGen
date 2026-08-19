@@ -40,6 +40,14 @@ Keep torch 2.8 with torchvision 0.23. The installer intentionally uses
 patch before importing basicsr. Do not downgrade torchvision to fix
 `torchvision.transforms.functional_tensor`.
 
+## Blackwell double backward
+
+On RTX 5090, tiny-cuda-nn's eager HashGrid double backward can fail with
+`CUDA error: an illegal memory access was encountered` during Pano2Mesh depth
+optimization. The scene3d installer prepares tiny-cuda-nn's runtime CUDA
+headers, and EmbodiedGen enables its exact JIT gradient path only on Blackwell.
+Rerun `bash install.sh scene3d` after updating an existing checkout.
+
 ## Quick Reference
 
 | Error | Root Cause | Fix |
@@ -47,4 +55,5 @@ patch before importing basicsr. Do not downgrade torchvision to fix
 | `Could NOT find fmt` or CUTLASS | tiny-cuda-nn submodules missing | Use a recursive clone |
 | `functional_tensor` missing | txt2panoimg pulled incompatible deps | Reinstall through `install.sh scene3d` |
 | `compute_120` unsupported | nvcc older than 12.8 | Load the cu128 hook |
+| HashGrid backward illegal memory access | Eager double backward on Blackwell | Reinstall scene3d to enable exact JIT gradients |
 | Build OOM | Too many compiler jobs | Set `MAX_JOBS=4` |

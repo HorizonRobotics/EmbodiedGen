@@ -143,7 +143,7 @@ room-cli -m embodied_gen.scripts.room_gen.gen_room \
 # or specify the profile explicitly: --room-type Kitchen --seed 42 --complexity simple
 
 # 3DGS background scene from text (requires `bash install.sh scene3d`)
-scene3d-cli --prompts "Art studio with easel and canvas" --output_dir outputs/bg_scenes/ --seed 0
+CUDA_VISIBLE_DEVICES=0 scene3d-cli --prompts "Art studio with easel and canvas" --output_dir outputs/bg_scenes/ --seed 0
 ```
 
 ➡️ Full guides: [Room Generation](https://horizonrobotics.github.io/EmbodiedGen/docs/tutorials/room_gen.html) · [3D Scene Generation](https://horizonrobotics.github.io/EmbodiedGen/docs/tutorials/scene_gen.html)

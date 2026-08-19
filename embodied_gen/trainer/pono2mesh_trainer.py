@@ -27,8 +27,8 @@ import torch
 import trimesh
 from equilib import cube2equi, equi2pers
 from kornia.morphology import dilation
+from modules.geo_predictors import PanoJointPredictor
 from PIL import Image
-from thirdparty.pano2room.modules.geo_predictors import PanoJointPredictor
 from thirdparty.pano2room.modules.geo_predictors.PanoFusionDistancePredictor import (
     PanoFusionDistancePredictor,
 )

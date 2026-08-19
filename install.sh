@@ -8,6 +8,10 @@ REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$REPO_ROOT/install/_utils.sh"
 cd "$REPO_ROOT"
 
+if [[ -n "${TMPDIR:-}" ]]; then
+    mkdir -p "$TMPDIR"
+fi
+
 case "$STAGE" in
     basic|scene3d|room|affordance|cu126|cu128|all) ;;
     *)
