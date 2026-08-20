@@ -20,6 +20,59 @@ try_install() {
     }
 }
 
+prepare_cxx_runtime_libs() {
+    local runtime_dir="$CONDA_PREFIX/lib/embodiedgen-runtime"
+    local runtime_lib
+
+    mkdir -p "$runtime_dir"
+    for runtime_lib in libstdc++.so.6 libgcc_s.so.1; do
+        if [[ ! -e "$CONDA_PREFIX/lib/$runtime_lib" ]]; then
+            log_error "Missing required C++ runtime library: $CONDA_PREFIX/lib/$runtime_lib"
+            return 1
+        fi
+        ln -sfn "../$runtime_lib" "$runtime_dir/$runtime_lib"
+    done
+}
+
+write_cuda_deactivation_hook() {
+    local cuda_variant="$1"
+    local deactivate_dir="$CONDA_PREFIX/etc/conda/deactivate.d"
+    local deactivate_hook="$deactivate_dir/cuda${cuda_variant#cu}.sh"
+
+    mkdir -p "$deactivate_dir"
+    rm -f "$deactivate_dir/cuda126.sh" "$deactivate_dir/cuda128.sh"
+    cat > "$deactivate_hook" <<'HOOK'
+_embodiedgen_remove_path() {
+    local variable_name="$1"
+    local path_to_remove="$2"
+    local current_value
+
+    if [[ -v "$variable_name" ]]; then
+        current_value=":${!variable_name}:"
+    else
+        current_value=":"
+    fi
+    current_value="${current_value//:$path_to_remove:/:}"
+    current_value="${current_value#:}"
+    current_value="${current_value%:}"
+    if [[ -n "$current_value" ]]; then
+        export "$variable_name=$current_value"
+    else
+        unset "$variable_name"
+    fi
+}
+
+_embodiedgen_remove_path LD_LIBRARY_PATH "$CONDA_PREFIX/lib/embodiedgen-runtime"
+_embodiedgen_remove_path LD_LIBRARY_PATH "$CONDA_PREFIX/targets/x86_64-linux/lib"
+_embodiedgen_remove_path LIBRARY_PATH "$CONDA_PREFIX/targets/x86_64-linux/lib"
+_embodiedgen_remove_path CPATH "$CONDA_PREFIX/targets/x86_64-linux/include"
+unset -f _embodiedgen_remove_path
+unset EMBODIEDGEN_CUDA_VARIANT EMBODIEDGEN_RUNTIME_LIB
+unset CUDA_HOME CUDA_PATH CUDA_TARGET_LIB
+unset TORCH_CUDA_ARCH_LIST TCNN_CUDA_ARCHITECTURES
+HOOK
+}
+
 detect_cuda_variant() {
     local cuda_variant="cu126"
 
