@@ -42,6 +42,7 @@ fi
     -y
 
 log_info "Writing CUDA 12.8 activation hook into the conda environment..."
+prepare_cxx_runtime_libs
 mkdir -p "$CONDA_PREFIX/etc/conda/activate.d"
 rm -f "$CONDA_PREFIX/etc/conda/activate.d/cuda126.sh"
 cat > "$CONDA_PREFIX/etc/conda/activate.d/cuda128.sh" <<'HOOK'
@@ -49,22 +50,18 @@ export EMBODIEDGEN_CUDA_VARIANT="cu128"
 export CUDA_HOME="$CONDA_PREFIX"
 export CUDA_PATH="$CONDA_PREFIX"
 export CUDA_TARGET_LIB="$CONDA_PREFIX/targets/x86_64-linux/lib"
-_cuda_conda_bin="$CONDA_PREFIX/bin"
+export EMBODIEDGEN_RUNTIME_LIB="$CONDA_PREFIX/lib/embodiedgen-runtime"
 _cuda_conda_lib="$CONDA_PREFIX/lib"
 _cuda_conda_lib64="$CONDA_PREFIX/lib64"
 _cuda_target_include="$CONDA_PREFIX/targets/x86_64-linux/include"
-_cuda_path=":${PATH:-}:"
-_cuda_path="${_cuda_path//:$_cuda_conda_bin:/:}"
-_cuda_path="${_cuda_path#:}"
-_cuda_path="${_cuda_path%:}"
-export PATH="$_cuda_conda_bin${_cuda_path:+:$_cuda_path}"
 _cuda_ld_path=":${LD_LIBRARY_PATH:-}:"
+_cuda_ld_path="${_cuda_ld_path//:$EMBODIEDGEN_RUNTIME_LIB:/:}"
 _cuda_ld_path="${_cuda_ld_path//:$CUDA_TARGET_LIB:/:}"
 _cuda_ld_path="${_cuda_ld_path//:$_cuda_conda_lib:/:}"
 _cuda_ld_path="${_cuda_ld_path//:$_cuda_conda_lib64:/:}"
 _cuda_ld_path="${_cuda_ld_path#:}"
 _cuda_ld_path="${_cuda_ld_path%:}"
-export LD_LIBRARY_PATH="$CUDA_TARGET_LIB${_cuda_ld_path:+:$_cuda_ld_path}"
+export LD_LIBRARY_PATH="$EMBODIEDGEN_RUNTIME_LIB:$CUDA_TARGET_LIB${_cuda_ld_path:+:$_cuda_ld_path}"
 _cuda_library_path=":${LIBRARY_PATH:-}:"
 _cuda_library_path="${_cuda_library_path//:$CUDA_TARGET_LIB:/:}"
 _cuda_library_path="${_cuda_library_path#:}"
@@ -75,11 +72,12 @@ _cuda_cpath="${_cuda_cpath//:$_cuda_target_include:/:}"
 _cuda_cpath="${_cuda_cpath#:}"
 _cuda_cpath="${_cuda_cpath%:}"
 export CPATH="$_cuda_target_include${_cuda_cpath:+:$_cuda_cpath}"
-unset _cuda_conda_bin _cuda_conda_lib _cuda_conda_lib64 _cuda_target_include
-unset _cuda_path _cuda_ld_path _cuda_library_path _cuda_cpath
+unset _cuda_conda_lib _cuda_conda_lib64 _cuda_target_include
+unset _cuda_ld_path _cuda_library_path _cuda_cpath
 export TORCH_CUDA_ARCH_LIST="${EMBODIEDGEN_TORCH_CUDA_ARCH_LIST:-12.0}"
 export TCNN_CUDA_ARCHITECTURES="${EMBODIEDGEN_TCNN_CUDA_ARCHITECTURES:-120}"
 HOOK
+write_cuda_deactivation_hook "cu128"
 
 log_info "Verifying CUDA 12.8 compiler from the active conda environment..."
 source "$CONDA_PREFIX/etc/conda/activate.d/cuda128.sh"
