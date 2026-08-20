@@ -1,0 +1,8 @@
+{
+  "name": "embodiedgen",
+  "version": "2.1.0",
+  "description": "EmbodiedGen workflow plugin bundle with slash commands and reusable skills for asset generation, background generation, layout generation, simulation rendering, asset conversion, room creation, asset processing, and spatial scene editing",
+  "author": {
+    "name": "EmbodiedGen"
+  }
+}
