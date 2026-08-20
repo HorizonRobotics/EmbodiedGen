@@ -1,0 +1,17 @@
+{
+  "name": "embodiedgen-local",
+  "owner": {
+    "name": "EmbodiedGen"
+  },
+  "plugins": [
+    {
+      "name": "embodiedgen",
+      "description": "EmbodiedGen workflow plugin bundle with slash commands and reusable skills",
+      "version": "2.1.0",
+      "author": {
+        "name": "EmbodiedGen"
+      },
+      "source": "./plugins/embodiedgen"
+    }
+  ]
+}

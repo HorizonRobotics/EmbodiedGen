@@ -16,6 +16,8 @@ python/MANIFEST.in
 *.pyc
 *.pyi
 *.json
+!embodied_gen/skills/claude_plugin/.claude-plugin/marketplace.json
+!embodied_gen/skills/claude_plugin/plugins/embodiedgen/.claude-plugin/plugin.json
 *.bak
 *.zip
 wheels*/
