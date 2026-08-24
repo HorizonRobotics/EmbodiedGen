@@ -7,6 +7,7 @@
 [![📄 arXiv](https://img.shields.io/badge/📄-arXiv_v2-b31b1b)](https://arxiv.org/abs/2607.07459)
 [![🎥 Video](https://img.shields.io/badge/🎥-Video-red)](https://youtu.be/MIkJJSVM8L4)
 [![中文介绍](https://img.shields.io/badge/中文介绍-07C160?logo=wechat&logoColor=white)](https://mp.weixin.qq.com/s/RbMPX3vTTSwrW0MjwjeXuA)
+[![用户群](https://img.shields.io/badge/用户群-07C160?logo=wechat&logoColor=white)](https://horizonrobotics.feishu.cn/wiki/Q9XnwYTTGiPpe7kA5eucLewpnje)
 
 [![🤗 Dataset](https://img.shields.io/badge/🤗-Dataset-blue)](https://huggingface.co/datasets/HorizonRobotics/EmbodiedGenData)
 [![🤗 Hugging Face](https://img.shields.io/badge/🤗-EmbodiedGen_Asset_Gallery-blue)](https://huggingface.co/spaces/HorizonRobotics/EmbodiedGen-Gallery-Explorer)

@@ -130,6 +130,8 @@ Generate **high-quality textures** for 3D meshes using **text prompts**, support
 
 Text-conditioned **garments** deploy as **deformable meshes** in Genesis — the same generate-and-export path, beyond rigid bodies.
 
+<img src="../assets/soft_body.gif" alt="Text-conditioned garments simulated as deformable meshes in Genesis" style="width: 800px; max-width: 100%; border-radius: 12px; display: block; margin: 16px auto;">
+
 ### [⚙️ Articulated Objects (DIPO)](articulated_gen.md)
 
 Generate **articulated objects** from dual-state images with **DIPO** (NeurIPS 2025).
@@ -138,6 +140,8 @@ Generate **articulated objects** from dual-state images with **DIPO** (NeurIPS 2
 
 Semantic part segmentation and grasp pose annotation for sim-ready assets.
 
+<img src="../assets/affordance.gif" alt="Automatic part-level affordance annotation for simulator-ready assets" style="width: 800px; max-width: 100%; border-radius: 12px; display: block; margin: 16px auto;">
+
 ---
 
 ## 🏠 Scale — Large-Scale Scenes
@@ -145,6 +149,8 @@ Semantic part segmentation and grasp pose annotation for sim-ready assets.
 ### [🏠 Room Generation](room_gen.md)
 
 Generate **multi-room, navigable, instance-editable indoor scenes** at a controllable complexity tier, exported to URDF/USD.
+
+<img src="../assets/worlds.gif" alt="Large-scale multi-room scene generation" style="width: 700px; max-width: 100%; border-radius: 12px; display: block; margin: 16px auto;">
 
 ### [🌍 3D Scene Generation](scene_gen.md)
 

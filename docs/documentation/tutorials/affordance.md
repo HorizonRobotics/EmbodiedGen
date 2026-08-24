@@ -4,6 +4,8 @@ Generate **part-level affordance annotations** for a simulator-ready URDF asset.
 
 The pipeline labels three kinds of information: functional part segmentation, part-wise semantic affordances, and simulation-validated grasp poses. Starting from a URDF with visual and collision meshes, it assigns mesh faces to functional parts, annotates each part with interaction semantics, generates 6-DoF grasp candidates, and filters grasps with physics simulation.
 
+<img src="../assets/affordance.gif" alt="Automatic part-level affordance annotation for simulator-ready assets" style="width: 800px; max-width: 100%; border-radius: 12px; display: block; margin: 16px auto;">
+
 ---
 
 ## ⚡ Command-Line Usage
